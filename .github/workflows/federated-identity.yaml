@@ -1,4 +1,4 @@
-name: Long Lived Credentials
+name: Federated Identity
 
 on:
   workflow_dispatch:
