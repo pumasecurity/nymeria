@@ -1,0 +1,59 @@
+name: Long Lived Credentials
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read # read gh actions
+  contents: read # read access to the repo
+  checks: write # unit test results
+  security-events: write # write access to advanced security
+
+jobs:
+  terraform:
+    name: Apply Terraform
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize
+        shell: bash
+        run: |
+          jq --version
+          az --version
+          aws --version
+          gcloud --version
+
+      - shell: bash
+        env:
+          AZURE_BOOTSTRAP: ${{ secrets.AZURE_BOOTSTRAP }}
+        run: |
+          ARM_SUBSCRIPTION_ID=$(echo $AZURE_BOOTSTRAP | jq -r '.azure_subscription_id.value')
+          ARM_TENANT_ID=$(echo $AZURE_BOOTSTRAP | jq -r '.azure_tenant_id.value')
+          ARM_CLIENT_ID=$(echo $AZURE_BOOTSTRAP | jq -r '.github_service_principal_client_id.value')
+          ARM_RESOURCE_GROUP_NAME=$(echo $AZURE_BOOTSTRAP | jq -r '.resource_group_name.value')
+          ARM_STORAGE_ACCOUNT_NAME=$(echo $AZURE_BOOTSTRAP | jq -r '.terraform_state_storage_account_name.value')
+
+          echo "::add-mask::$ARM_SUBSCRIPTION_ID"
+          echo "::add-mask::$ARM_TENANT_ID"
+          echo "::add-mask::$ARM_CLIENT_ID"
+
+          echo ARM_SUBSCRIPTION_ID=$ARM_SUBSCRIPTION_ID >> $GITHUB_ENV
+          echo ARM_TENANT_ID=$ARM_TENANT_ID >> $GITHUB_ENV
+          echo ARM_CLIENT_ID=$ARM_CLIENT_ID >> $GITHUB_ENV
+          echo ARM_RESOURCE_GROUP_NAME=$ARM_RESOURCE_GROUP_NAME >> $GITHUB_ENV
+          echo ARM_STORAGE_ACCOUNT_NAME=$ARM_STORAGE_ACCOUNT_NAME >> $GITHUB_ENV
+
+      # Check out the repository
+      - name: Checkout
+        uses: actions/checkout@v2.5.0
+
+      - name: Azure Login
+        uses: azure/login@v1.4.6
+        with:
+          client-id: ${{ env.ARM_CLIENT_ID }}
+          tenant-id: ${{ env.ARM_TENANT_ID }}
+          subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
+
+      - name: Azure Command
+        shell: bash
+        run: |
+          az group list
