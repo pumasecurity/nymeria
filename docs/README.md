@@ -149,7 +149,7 @@ Configure the required GitHub Action secrets for the Nymeria repository to deplo
 
 ### GitHub Action
 
-### AWS Federated Identity
+### AWS Workload Identity Federation
 
 Run the following commands from the Azure VM to obtain an OpenID Connect JWT.
 
@@ -170,5 +170,8 @@ export $(aws sts assume-role-with-web-identity --region us-east-2 --role-arn "$A
 
 aws sts get-caller-identity --region us-east-2
 
-aws s3 cp --region us-east-2 s3://cross-cloud-kpgbfc1y/workloadidentity.png ~/workloadidentity.png
+aws s3 cp --region us-east-2 s3://cross-cloud-kpgbfc1y/aws-workload-identity.png ~/aws-workload-identity.png
 ```
+
+### Google Cloud Workload Identity Federation
+

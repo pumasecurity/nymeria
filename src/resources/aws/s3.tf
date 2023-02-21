@@ -19,7 +19,7 @@ module "cross_cloud" {
 
 resource "aws_s3_object" "object" {
   bucket = module.cross_cloud.s3_bucket_id
-  key    = "workloadidentity.png"
+  key    = "aws-workload-identity.png"
   source = "${path.module}/assets/aws-workload-identity.png"
   etag   = filemd5("${path.module}/assets/aws-workload-identity.png")
 }
