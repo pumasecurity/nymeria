@@ -1,8 +1,14 @@
 terraform {
+
+  backend "azurerm" {
+    container_name = "state"
+    key            = "google.tfstate"
+  }
+
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "4.7.0"
+      version = "4.53.1"
     }
 
     random = {
@@ -13,7 +19,7 @@ terraform {
 }
 
 provider "google" {
-  project         = var.GcpProjectId
-  region          = var.GcpRegion
+  project         = var.project_id
+  region          = var.region
   request_timeout = "120s"
 }

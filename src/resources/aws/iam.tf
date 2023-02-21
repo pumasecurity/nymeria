@@ -1,18 +1,3 @@
-# does not appear to be used
-# resource "aws_iam_openid_connect_provider" "azure_tenant_login" {
-#   url = "https://login.microsoftonline.com/${var.azure_tenant_id}/"
-
-#   client_id_list = [
-#     "https://management.azure.com",
-#   ]
-
-#   # Thumbprint for login.microsoftonline.com
-#   #626d44e704d1ceabe3bf0d53397464ac8080142c
-#   thumbprint_list = [
-#     "626d44e704d1ceabe3bf0d53397464ac8080142c",
-#   ]
-# }
-
 resource "aws_iam_openid_connect_provider" "azure_sts_tenant" {
   url = "https://sts.windows.net/${var.azure_tenant_id}/"
 
