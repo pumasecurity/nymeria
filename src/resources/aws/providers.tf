@@ -1,8 +1,14 @@
 terraform {
+
+  backend "azurerm" {
+    container_name = "state"
+    key            = "aws.tfstate"
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "3.72.0"
+      version = "4.55.0"
     }
 
     random = {
@@ -12,4 +18,6 @@ terraform {
   }
 }
 
-provider "aws" {}
+provider "aws" {
+  region = var.region
+}

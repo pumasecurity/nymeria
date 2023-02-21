@@ -1,10 +1,8 @@
 terraform {
 
   backend "azurerm" {
-    resource_group_name  = var.resource_group_name
-    storage_account_name = var.tf_state_storage_account_name
-    container_name       = "state"
-    key                  = "terraform.tfstate"
+    container_name = "state"
+    key            = "azure.tfstate"
   }
 
   required_providers {
@@ -21,6 +19,11 @@ terraform {
     random = {
       source  = "hashicorp/random"
       version = "3.1.0"
+    }
+
+    tls = {
+      source  = "hashicorp/tls"
+      version = "4.0.4"
     }
   }
 }

@@ -1,5 +1,12 @@
 resource "azuread_application" "github" {
   display_name = "github-ad-app"
+
+  web {
+    implicit_grant {
+      access_token_issuance_enabled = true
+      id_token_issuance_enabled     = true
+    }
+  }
 }
 
 resource "azuread_service_principal" "github" {
