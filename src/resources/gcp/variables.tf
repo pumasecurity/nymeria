@@ -15,6 +15,12 @@ variable "azure_tenant_id" {
 }
 
 variable "azure_virtual_machine_managed_identity_principal_id" {
-  description = "Azure Vitrual Machine MSI object id"
+  description = "Azure Virtual Machine MSI object id"
   type        = string
+}
+
+variable "azure_virtual_machine_managed_identity_audience" {
+  description = "Azure Virtual Machine MSI audience"
+  type        = string
+  default     = "https://management.azure.com"
 }

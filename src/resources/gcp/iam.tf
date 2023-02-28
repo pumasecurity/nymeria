@@ -18,7 +18,7 @@ resource "google_iam_workload_identity_pool_provider" "azure_sts_tenant" {
     issuer_uri = "https://sts.windows.net/${var.azure_tenant_id}/"
 
     allowed_audiences = [
-      "https://management.azure.com"
+      var.azure_virtual_machine_managed_identity_audience
     ]
   }
 }
@@ -39,4 +39,17 @@ resource "google_storage_bucket_iam_member" "cross_cloud_storage" {
   bucket = google_storage_bucket.cross_cloud.name
   role   = "roles/storage.objectViewer"
   member = "serviceAccount:${google_service_account.cross_cloud.email}"
+}
+
+data "template_file" "workload_identity_client_configuration" {
+  template = file("${path.module}/assets/gcp-azure-cross-cloud.tpl")
+
+  vars = {
+    project_number     = data.google_project.this.number
+    project_id         = var.project_id
+    identity_pool_id   = google_iam_workload_identity_pool.azure_sts_tenant.workload_identity_pool_id
+    provider_id        = google_iam_workload_identity_pool_provider.azure_sts_tenant.workload_identity_pool_provider_id
+    service_account_id = google_service_account.cross_cloud.account_id
+    jwt_audience       = var.azure_virtual_machine_managed_identity_audience
+  }
 }

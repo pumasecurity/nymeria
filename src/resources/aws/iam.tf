@@ -5,7 +5,7 @@ resource "aws_iam_openid_connect_provider" "azure_sts_tenant" {
     "https://management.azure.com",
   ]
 
-  # Thumbprint for login.microsoftonline.com
+  # Thumbprint for sts.windows.net
   #626d44e704d1ceabe3bf0d53397464ac8080142c
   thumbprint_list = [
     "626d44e704d1ceabe3bf0d53397464ac8080142c",

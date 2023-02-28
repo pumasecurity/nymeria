@@ -3,4 +3,7 @@ output "gcs_bucket" {
   value       = google_storage_bucket.cross_cloud.name
 }
 
-# todo output the client library config 
+output "workload_identity_client_configuration" {
+  description = "Workload Identity client configuration file"
+  value       = data.template_file.workload_identity_client_configuration.rendered
+}
