@@ -2,7 +2,7 @@ resource "aws_iam_openid_connect_provider" "azure_sts_tenant" {
   url = "https://sts.windows.net/${var.azure_tenant_id}/"
 
   client_id_list = [
-    "https://management.azure.com",
+    var.azure_virtual_machine_managed_identity_audience,
   ]
 
   # Thumbprint for sts.windows.net
@@ -11,7 +11,6 @@ resource "aws_iam_openid_connect_provider" "azure_sts_tenant" {
     "626d44e704d1ceabe3bf0d53397464ac8080142c",
   ]
 }
-
 
 data "aws_iam_policy_document" "azure_virtual_machine" {
   statement {
@@ -29,7 +28,7 @@ data "aws_iam_policy_document" "azure_virtual_machine" {
       test     = "StringEquals"
       variable = "sts.windows.net/${var.azure_tenant_id}/:aud"
       values = [
-        "https://management.azure.com"
+        var.azure_virtual_machine_managed_identity_audience
       ]
     }
 

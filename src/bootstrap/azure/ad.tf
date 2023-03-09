@@ -1,5 +1,6 @@
 resource "azuread_application" "github" {
-  display_name = "github-ad-app"
+  display_name    = "github-ad-app"
+  identifier_uris = ["api://nymeria-workload-identity"]
 
   web {
     implicit_grant {

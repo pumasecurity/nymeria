@@ -13,3 +13,9 @@ variable "azure_virtual_machine_managed_identity_principal_id" {
   description = "Azure Vitrual Machine MSI object id"
   type        = string
 }
+
+variable "azure_virtual_machine_managed_identity_audience" {
+  description = "Azure Virtual Machine MSI audience"
+  type        = string
+  default     = "api://nymeria-workload-identity"
+}

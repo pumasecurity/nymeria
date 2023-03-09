@@ -154,7 +154,7 @@ Configure the required GitHub Action secrets for the Nymeria repository to deplo
 Run the following commands from the Azure VM to obtain an OpenID Connect JWT.
 
 ```bash
-AZURE_JWT=$(curl -s "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com" -H "Metadata: true" | jq -r '.access_token')
+AZURE_JWT=$(curl -s "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=api://nymeria-workload-identity" -H "Metadata: true" | jq -r '.access_token')
 ```
 
 Validate the token is issues by the trusted Azure identity provider and the subject is the virtual machine's managed service identity.
