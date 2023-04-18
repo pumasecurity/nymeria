@@ -4,55 +4,55 @@ site_description: "Puma Security's Nymeria Cloud Workload Identity Configuration
 site_author: "Eric Johnson"
 
 theme:
-  name: material
-  palette:
-    scheme: "slate"
-    primary: "orange"
-    accent: "deep orange"
-  logo: img/nymeria.png
-  favicon: img/nymeria.png
-  features:
-    - navigation.instant
-    - navigation.indexes
-    - content.code.annotate
-    - content.code.copy
+    name: material
+    palette:
+        scheme: "slate"
+        primary: "orange"
+        accent: "deep orange"
+    logo: img/nymeria.png
+    favicon: img/nymeria.png
+    features:
+        - navigation.instant
+        - navigation.indexes
+        - content.code.annotate
+        - content.code.copy
 
 nav:
-  - Home: "index.md"
-  - Workshop:
-      - Getting Started: "gettingstarted.md"
+    - Home: "index.md"
+    - Workshop:
+          - Getting Started: "getting_started.md"
 
 markdown_extensions:
-  - admonition
-  - attr_list
-  - codehilite:
-      guess_lang: false
-  - footnotes
-  - toc:
-      permalink: false
-  - pymdownx.arithmatex
-  - pymdownx.betterem:
-      smart_enable: all
-  - pymdownx.caret
-  - pymdownx.critic
-  - pymdownx.details
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
-  - pymdownx.keys
-  - pymdownx.magiclink
-  - pymdownx.mark
-  - pymdownx.smartsymbols
-  - pymdownx.tabbed:
-      alternate_style: true
-  - pymdownx.tasklist:
-      custom_checkbox: true
-      clickable_checkbox: true
-  - pymdownx.tilde
+    - admonition
+    - attr_list
+    - codehilite:
+          guess_lang: false
+    - footnotes
+    - toc:
+          permalink: false
+    - pymdownx.arithmatex
+    - pymdownx.betterem:
+          smart_enable: all
+    - pymdownx.caret
+    - pymdownx.critic
+    - pymdownx.details
+    - pymdownx.emoji:
+          emoji_index: !!python/name:materialx.emoji.twemoji
+          emoji_generator: !!python/name:materialx.emoji.to_svg
+    - pymdownx.highlight:
+          anchor_linenums: true
+          line_spans: __span
+          pygments_lang_class: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - pymdownx.superfences
+    - pymdownx.keys
+    - pymdownx.magiclink
+    - pymdownx.mark
+    - pymdownx.smartsymbols
+    - pymdownx.tabbed:
+          alternate_style: true
+    - pymdownx.tasklist:
+          custom_checkbox: true
+          clickable_checkbox: true
+    - pymdownx.tilde
