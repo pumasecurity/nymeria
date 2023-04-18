@@ -17,7 +17,7 @@ resource "azuread_service_principal" "github" {
 resource "azuread_application_password" "github" {
   application_object_id = azuread_application.github.id
   display_name          = "github-long-lived-credential"
-  end_date_relative     = "4392h" # 6 months for sample pipeline testing, not best practice
+  end_date_relative     = "4392h" # 6 months for testing, not best practice
 }
 
 resource "azuread_application_federated_identity_credential" "github" {
