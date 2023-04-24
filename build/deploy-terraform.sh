@@ -15,7 +15,7 @@ export TF_VAR_aws_s3_bucket_id=$AWS_S3_BUCKET
 export TF_VAR_google_cloud_project_id=$GCP_PROJECT_ID
 export TF_VAR_google_cloud_service_account_key=$AZURE_VM_GOOGLE_SERVICE_ACCOUNT_KEY
 export TF_VAR_google_cloud_workload_identity_client_configuration=$GCP_WORKLOAD_IDENTITY_CLIENT_CONFIGURATION
-export TF_VAR_gcs_s3_bucket_id=$GCS_BUCKET
+export TF_VAR_gcs_bucket_id=$GCS_BUCKET
 
 echo "Deploying 04_gh_action resources..."
 cd "${CURRENT_DIR}/src/04_gh_action"

@@ -75,7 +75,7 @@ data "template_file" "startup_script" {
     google_cloud_project_id                             = var.google_cloud_project_id
     google_cloud_service_account_key                    = base64decode(var.google_cloud_service_account_key)
     google_cloud_workload_identity_client_configuration = base64decode(var.google_cloud_workload_identity_client_configuration)
-    gcs_s3_bucket_id                                    = var.gcs_s3_bucket_id
+    gcs_bucket_id                                       = var.gcs_bucket_id
   }
 }
 

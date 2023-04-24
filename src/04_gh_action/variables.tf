@@ -65,7 +65,7 @@ variable "google_cloud_workload_identity_client_configuration" {
   type        = string
 }
 
-variable "gcs_s3_bucket_id" {
+variable "gcs_bucket_id" {
   description = "AWS S3 bucket id"
   type        = string
 }

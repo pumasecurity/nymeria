@@ -60,6 +60,6 @@ ${google_cloud_workload_identity_client_configuration}
 EOL
 
 cat >/home/ubuntu/.config/gcloud/get-resources.sh <<EOL
-export GCS_BUCKET_ID=${gcs_s3_bucket_id}
+export GCS_BUCKET_ID=${gcs_bucket_id}
 export GCP_PROEJCT_ID=${google_cloud_project_id}
 EOL
