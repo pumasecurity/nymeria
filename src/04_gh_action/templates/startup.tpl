@@ -61,5 +61,5 @@ EOL
 
 cat >/home/ubuntu/.config/gcloud/get-resources.sh <<EOL
 export GCS_BUCKET_ID=${gcs_bucket_id}
-export GCP_PROEJCT_ID=${google_cloud_project_id}
+export GCP_PROJECT_ID=${google_cloud_project_id}
 EOL
