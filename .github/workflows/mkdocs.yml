@@ -1,4 +1,4 @@
-name: mkdocs
+name: Deploy Documentation
 
 on:
   workflow_dispatch:

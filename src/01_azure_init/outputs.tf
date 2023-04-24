@@ -31,3 +31,13 @@ output "terraform_state_storage_account_name" {
   description = "Storage account name for the Terraform state"
   value       = azurerm_storage_account.state.name
 }
+
+output "azure_virtual_machine_user_identity_principal_id" {
+  description = "User assigned identity principal id for the cross cloud virtual machine "
+  value       = azurerm_user_assigned_identity.cross_cloud.principal_id
+}
+
+output "azure_virtual_machine_user_identity_id" {
+  description = "User assigned identity id for the cross cloud virtual machine"
+  value       = azurerm_user_assigned_identity.cross_cloud.id
+}

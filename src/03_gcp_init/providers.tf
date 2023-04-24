@@ -1,10 +1,4 @@
 terraform {
-
-  backend "azurerm" {
-    container_name = "state"
-    key            = "google.tfstate"
-  }
-
   required_providers {
     google = {
       source  = "hashicorp/google"

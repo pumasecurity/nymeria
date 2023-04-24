@@ -1,11 +1,9 @@
 resource "google_storage_bucket" "cross_cloud" {
   depends_on = [
-    google_project_service.iam,
-    google_project_service.logging,
-    google_project_service.storage,
+    google_project_service.api,
   ]
 
-  name     = "cross-cloud-${random_string.unique_id.result}"
+  name     = "nymeria-cross-cloud-${random_string.unique_id.result}"
   location = var.region
 
   force_destroy               = true

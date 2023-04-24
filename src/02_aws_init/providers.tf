@@ -1,10 +1,5 @@
 terraform {
 
-  backend "azurerm" {
-    container_name = "state"
-    key            = "aws.tfstate"
-  }
-
   required_providers {
     aws = {
       source  = "hashicorp/aws"

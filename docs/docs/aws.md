@@ -1,5 +1,16 @@
 # AWS Identity Provider
 
+## Long Lived Credentials
+
+```bash
+export AWS_PROFILE=cross-cloud
+aws sts get-caller-identity
+
+source ~/.aws/get-resources.sh 
+echo $AWS_S3_BUCKET_ID
+aws s3 cp s3://$AWS_S3_BUCKET_ID/aws-workload-identity.png ~/aws-long-lived-credentials.png
+ls -la ~/aws-long-lived-credentials.png
+```
 
 ## AWS Workload Identity Federation
 
@@ -18,9 +29,13 @@ jwt_decode "$AZURE_JWT"
 Use the trusted OpenID Connect token to assume a role in the AWS account.
 
 ```bash
-export $(aws sts assume-role-with-web-identity --region us-east-2 --role-arn "$AWS_ROLE_ARN" --role-session-name "federated-identity-azure-demo" --web-identity-token "$AZURE_JWT" --output text --query "[['AWS_ACCESS_KEY_ID',Credentials.AccessKeyId],['AWS_SECRET_ACCESS_KEY',Credentials.SecretAccessKey],['AWS_SESSION_TOKEN',Credentials.SessionToken]][*].join(\`=\`,@)")
+echo $AWS_CROSS_CLOUD_ROLE_ARN
 
-aws sts get-caller-identity --region us-east-2
+export $(aws sts assume-role-with-web-identity --role-arn "$AWS_CROSS_CLOUD_ROLE_ARN" --role-session-name "nymeria-demo" --web-identity-token "$AZURE_JWT" --duration-seconds 3600 --output text --query "[['AWS_ACCESS_KEY_ID',Credentials.AccessKeyId],['AWS_SECRET_ACCESS_KEY',Credentials.SecretAccessKey],['AWS_SESSION_TOKEN',Credentials.SessionToken]][*].join(\`=\`,@)")
 
-aws s3 cp --region us-east-2 s3://cross-cloud-kpgbfc1y/aws-workload-identity.png ~/aws-workload-identity.png
+aws sts get-caller-identity
+
+aws s3 cp s3://$AWS_S3_BUCKET_ID/aws-workload-identity.png ~/aws-workload-identity.png
+
+ls -la ~/aws-workload-identity.png
 ```

@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "state" {
-  name                      = "terraform${random_string.unique_id.result}" # can only consist of lowercase letters and numbers, 3-24 chars long
+  name                      = "terraform${random_string.unique_id.result}"
   resource_group_name       = azurerm_resource_group.federated_identity.name
   location                  = azurerm_resource_group.federated_identity.location
   account_tier              = "Standard"

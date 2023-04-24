@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "azure_virtual_machine" {
 }
 
 resource "aws_iam_role" "cross_cloud" {
-  name               = "cross-cloud-azure-vm-role"
+  name               = "nymeria-azure-vm-role"
   path               = "/"
   description        = "IAM Role for Azure VM role assumption."
   assume_role_policy = data.aws_iam_policy_document.azure_virtual_machine.json
@@ -58,12 +58,12 @@ data "aws_iam_policy_document" "cross_cloud" {
       "s3:GetObject",
     ]
 
-    resources = ["${module.cross_cloud.s3_bucket_arn}/*"]
+    resources = ["${aws_s3_bucket.cross_cloud.arn}/*"]
   }
 }
 
 resource "aws_iam_policy" "cross_cloud" {
-  name        = "cross-cloud-azure-vm-policy"
+  name        = "nymeria-azure-vm-policy"
   path        = "/"
   description = "IAM policy for Azure VM role assumption."
   policy      = data.aws_iam_policy_document.cross_cloud.json
@@ -72,4 +72,20 @@ resource "aws_iam_policy" "cross_cloud" {
 resource "aws_iam_role_policy_attachment" "cross_cloud" {
   role       = aws_iam_role.cross_cloud.name
   policy_arn = aws_iam_policy.cross_cloud.arn
+}
+
+# WARNING: this is the bad way to do this
+resource "aws_iam_user" "long_lived_credential" {
+  name = "nymeria-azure-vm"
+}
+
+resource "aws_iam_user_policy_attachment" "long_lived_credential" {
+  user       = aws_iam_user.long_lived_credential.name
+  policy_arn = aws_iam_policy.cross_cloud.arn
+}
+
+resource "aws_iam_access_key" "long_lived_credential" {
+  user = aws_iam_user.long_lived_credential.name
+
+  # ANOTHER WARNING: The secret access key will be written to the state file.
 }

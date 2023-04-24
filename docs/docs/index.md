@@ -1,17 +1,15 @@
-# Welcome to MkDocs
+# Puma Security Workload Identity Federation
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+Authenticating to public cloud APIs has historically been done using long-lived credentials:
 
-## Commands
+* AWS IAM User Access Keys
+* Azure Service Principal Client Id / Secrets
+* Google Cloud Service Account JSON Web Tokens (JWT)
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+Unfortunately, managing long-lived credentials is a massive headache for development, operations, and security teams to manage.
 
-## Project layout
+Workload Identity Federation is a cloud-native capability that enables authentication to public cloud APIs using an OpenID Connect Identity Provider's JSON Web Token (JWT).
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+The configuration in this repository creates resources for authenticating resources cross-cloud between AWS, Azure, and Google Cloud.
+
+![](https://pumasecurity.github.io/nymeria/img/cross-cloud-resources.png)

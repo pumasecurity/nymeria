@@ -34,3 +34,9 @@ resource "azurerm_role_assignment" "github" {
   scope                = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${azurerm_resource_group.federated_identity.name}"
   role_definition_name = "Contributor"
 }
+
+resource "azurerm_user_assigned_identity" "cross_cloud" {
+  name                = "cross-cloud-vm-${random_string.unique_id.result}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.federated_identity.name
+}

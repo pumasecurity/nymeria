@@ -1,15 +1,17 @@
 # Puma Security Workload Identity Federation
 
-Authenticating to public cloud APIs has historically been done using long-lived credentials:
+![](https://pumasecurity.github.io/nymeria/img/nymeria.png)
 
-* AWS IAM User Access Keys
-* Azure Service Principal Client Id / Secrets
-* Google Cloud Service Account JSON Web Tokens (JWT)
+Welcome to Puma Security's Workload Identity Federation repository.
 
-Unfortunately, managing long-lived credentials is a massive headache for development, operations, and security teams to manage. Countless breaches have been 
+## Documentation
 
-Workload Identity Federation is a cloud-native capability that enables authentication to public cloud APIs using an OpenID Connect Identity Provider's JSON Web Token (JWT).  configuration in this repository creates resources for authenticating resources cross-cloud between AWS, Azure, and Google Cloud.
+Documentation, including step by step instructions for deploying the workshop, can be found in the repository's [GitHub Pages](https://pumasecurity.github.io/nymeria/)
 
+<!-- ## Presentations
 
+TODO -->
 
-[insert diagram here]
+## Source Code
+
+* [Source Code](./src/)

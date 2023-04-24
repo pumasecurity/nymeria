@@ -1,19 +1,19 @@
 resource "azurerm_virtual_network" "cross_cloud" {
-  name                = "cross-cloud-${random_string.unique_id.result}"
+  name                = "nymeria-${random_string.unique_id.result}"
   address_space       = ["10.42.0.0/16"]
   location            = var.location
   resource_group_name = var.resource_group_name
 }
 
 resource "azurerm_subnet" "cross_cloud" {
-  name                 = "cross-cloud-public_${random_string.unique_id.result}"
+  name                 = "nymeria-public-subnet-${random_string.unique_id.result}"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.cross_cloud.name
   address_prefixes     = ["10.42.0.0/24"]
 }
 
 resource "azurerm_public_ip" "cross_cloud" {
-  name                = "cross-cloud-public_ip_${random_string.unique_id.result}"
+  name                = "nymeria-public-ip-${random_string.unique_id.result}"
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Dynamic"
@@ -21,12 +21,12 @@ resource "azurerm_public_ip" "cross_cloud" {
 }
 
 resource "azurerm_network_interface" "cross_cloud" {
-  name                = "cross-cloud-nic-${random_string.unique_id.result}"
+  name                = "nymeria-nic-${random_string.unique_id.result}"
   location            = var.location
   resource_group_name = var.resource_group_name
 
   ip_configuration {
-    name                          = "cross-cloud-${random_string.unique_id.result}"
+    name                          = "nymeria-nic-${random_string.unique_id.result}"
     subnet_id                     = azurerm_subnet.cross_cloud.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.cross_cloud.id
@@ -34,7 +34,7 @@ resource "azurerm_network_interface" "cross_cloud" {
 }
 
 resource "azurerm_network_security_group" "cross_cloud" {
-  name                = "cross-cloud-${random_string.unique_id.result}"
+  name                = "nymeria-nsg-${random_string.unique_id.result}"
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -65,9 +65,18 @@ resource "tls_private_key" "ssh_key" {
 data "template_file" "startup_script" {
   template = file("${path.module}/templates/startup.tpl")
 
-  #   vars = {
-  #     
-  #   }
+  vars = {
+    aws_default_region       = var.aws_default_region
+    aws_access_key_id        = var.aws_access_key_id
+    aws_secret_access_key    = var.aws_secret_access_key
+    aws_s3_bucket_id         = var.aws_s3_bucket_id
+    aws_cross_cloud_role_arn = var.aws_cross_cloud_role_arn
+
+    google_cloud_project_id                             = var.google_cloud_project_id
+    google_cloud_service_account_key                    = base64decode(var.google_cloud_service_account_key)
+    google_cloud_workload_identity_client_configuration = base64decode(var.google_cloud_workload_identity_client_configuration)
+    gcs_s3_bucket_id                                    = var.gcs_s3_bucket_id
+  }
 }
 
 resource "azurerm_linux_virtual_machine" "cross_cloud" {
@@ -103,6 +112,9 @@ resource "azurerm_linux_virtual_machine" "cross_cloud" {
   }
 
   identity {
-    type = "SystemAssigned"
+    type = "UserAssigned"
+    identity_ids = [
+      var.azure_virtual_machine_managed_identity_id
+    ]
   }
 }

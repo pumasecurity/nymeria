@@ -7,10 +7,16 @@ variable "location" {
 variable "resource_group_name" {
   description = "The resource group name for the workload resources."
   type        = string
+  default     = "nymeria-federated-identity"
 }
 
-variable "tf_state_storage_account_name" {
-  description = "Terraform state storage account name."
+variable "github_organization" {
+  description = "GitHub Organization hosting the action"
+  type        = string
+}
+
+variable "github_repository" {
+  description = "GitHub Repository hosting the action"
   type        = string
 }
 
