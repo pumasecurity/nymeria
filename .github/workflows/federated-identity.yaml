@@ -24,6 +24,8 @@ jobs:
       - shell: bash
         env:
           AZURE_BOOTSTRAP: ${{ secrets.AZURE_BOOTSTRAP }}
+          AWS_BOOTSTRAP: ${{ secrets.AWS_BOOTSTRAP }}
+          GCP_BOOTSTRAP: ${{ secrets.GCP_BOOTSTRAP }}
         run: |
           ARM_SUBSCRIPTION_ID=$(jq -r '.azure_subscription_id.value' <<< $AZURE_BOOTSTRAP)
           ARM_TENANT_ID=$(jq -r '.azure_tenant_id.value' <<< $AZURE_BOOTSTRAP)

@@ -19,7 +19,7 @@ export TF_VAR_gcs_s3_bucket_id=$GCS_BUCKET
 
 echo "Deploying 04_gh_action resources..."
 cd "${CURRENT_DIR}/src/04_gh_action"
-terraform init --backend-config="storage_account_name=$ARM_STORAGE_ACCOUNT_NAME" --backend-config="resource_group_name=$ARM_RESOURCE_GROUP_NAME"
+terraform init --backend-config="storage_account_name=$ARM_STORAGE_ACCOUNT_NAME"
 terraform plan -out tf.plan
 terraform apply -auto-approve tf.plan
 
