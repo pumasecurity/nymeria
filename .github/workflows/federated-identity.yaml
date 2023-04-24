@@ -49,11 +49,16 @@ jobs:
           echo "::add-mask::$ARM_SUBSCRIPTION_ID"
           echo "::add-mask::$ARM_TENANT_ID"
           echo "::add-mask::$ARM_CLIENT_ID"
+          echo "::add-mask::$AZURE_VIRTUAL_MACHINE_USER_IDENTITY_ID"
+          echo "::add-mask::$AZURE_VIRTUAL_MACHINE_USER_IDENTITY_PRINCIPAL_ID"
           echo "::add-mask::$AZURE_VM_AWS_ACCESS_KEY_ID"
           echo "::add-mask::$AZURE_VM_AWS_SECRET_ACCESS_KEY"
           echo "::add-mask::$AZURE_VM_AWS_ROLE_ARN"
+          echo "::add-mask::$AWS_S3_BUCKET"
+          echo "::add-mask::$GCP_PROJECT_ID"
           echo "::add-mask::$GCP_WORKLOAD_IDENTITY_CLIENT_CONFIGURATION"
           echo "::add-mask::$AZURE_VM_GOOGLE_SERVICE_ACCOUNT_KEY"
+          echo "::add-mask::$GCS_BUCKET"
 
           echo ARM_SUBSCRIPTION_ID=$ARM_SUBSCRIPTION_ID >> $GITHUB_ENV
           echo ARM_TENANT_ID=$ARM_TENANT_ID >> $GITHUB_ENV
