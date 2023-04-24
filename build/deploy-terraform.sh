@@ -3,7 +3,7 @@ set -e
 CURRENT_DIR=$PWD
 
 # set TF vars for deploy
-export TF_VAR_resource_group_name=$ARM_RESOURCE_GROUP_NAME
+export TF_VAR_resource_group_name=$RESOURCE_GROUP_NAME
 export TF_VAR_azure_virtual_machine_managed_identity_id=$AZURE_VIRTUAL_MACHINE_USER_IDENTITY_ID
 
 export TF_VAR_aws_default_region=$AWS_DEFAULT_REGION
@@ -19,7 +19,7 @@ export TF_VAR_gcs_s3_bucket_id=$GCS_BUCKET
 
 echo "Deploying 04_gh_action resources..."
 cd "${CURRENT_DIR}/src/04_gh_action"
-terraform init --backend-config="storage_account_name=$ARM_STORAGE_ACCOUNT_NAME"
+terraform init --backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME"
 terraform plan -out tf.plan
 terraform apply -auto-approve tf.plan
 
