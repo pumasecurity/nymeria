@@ -27,11 +27,11 @@ jobs:
           AWS_BOOTSTRAP: ${{ secrets.AWS_BOOTSTRAP }}
           GCP_BOOTSTRAP: ${{ secrets.GCP_BOOTSTRAP }}
         run: |
-          SUBSCRIPTION_ID=$(jq -r '.azure_subscription_id.value' <<< $AZURE_BOOTSTRAP)
-          TENANT_ID=$(jq -r '.azure_tenant_id.value' <<< $AZURE_BOOTSTRAP)
-          CLIENT_ID=$(jq -r '.github_service_principal_client_id.value' <<< $AZURE_BOOTSTRAP)
-          RESOURCE_GROUP_NAME=$(jq -r '.resource_group_name.value' <<< $AZURE_BOOTSTRAP)
-          STORAGE_ACCOUNT_NAME=$(jq -r '.terraform_state_storage_account_name.value' <<< $AZURE_BOOTSTRAP)
+          ARM_SUBSCRIPTION_ID=$(jq -r '.azure_subscription_id.value' <<< $AZURE_BOOTSTRAP)
+          ARM_TENANT_ID=$(jq -r '.azure_tenant_id.value' <<< $AZURE_BOOTSTRAP)
+          ARM_CLIENT_ID=$(jq -r '.github_service_principal_client_id.value' <<< $AZURE_BOOTSTRAP)
+          ARM_RESOURCE_GROUP_NAME=$(jq -r '.resource_group_name.value' <<< $AZURE_BOOTSTRAP)
+          ARM_STORAGE_ACCOUNT_NAME=$(jq -r '.terraform_state_storage_account_name.value' <<< $AZURE_BOOTSTRAP)
           AZURE_VIRTUAL_MACHINE_USER_IDENTITY_ID=$(jq -r '.azure_virtual_machine_user_identity_id.value' <<< $AZURE_BOOTSTRAP)
           AZURE_VIRTUAL_MACHINE_USER_IDENTITY_PRINCIPAL_ID=$(jq -r '.azure_virtual_machine_user_identity_principal_id.value' <<< $AZURE_BOOTSTRAP)
 
@@ -46,20 +46,20 @@ jobs:
           GCP_WORKLOAD_IDENTITY_CLIENT_CONFIGURATION=$(jq -r '.workload_identity_client_configuration.value' <<< $GCP_BOOTSTRAP)
           AZURE_VM_GOOGLE_SERVICE_ACCOUNT_KEY=$(jq -r '.azure_vm_google_service_account_key.value' <<< $GCP_BOOTSTRAP)
 
-          echo "::add-mask::$SUBSCRIPTION_ID"
-          echo "::add-mask::$TENANT_ID"
-          echo "::add-mask::$CLIENT_ID"
+          echo "::add-mask::$ARM_SUBSCRIPTION_ID"
+          echo "::add-mask::$ARM_TENANT_ID"
+          echo "::add-mask::$ARM_CLIENT_ID"
           echo "::add-mask::$AZURE_VM_AWS_ACCESS_KEY_ID"
           echo "::add-mask::$AZURE_VM_AWS_SECRET_ACCESS_KEY"
           echo "::add-mask::$AZURE_VM_AWS_ROLE_ARN"
           echo "::add-mask::$GCP_WORKLOAD_IDENTITY_CLIENT_CONFIGURATION"
           echo "::add-mask::$AZURE_VM_GOOGLE_SERVICE_ACCOUNT_KEY"
 
-          echo SUBSCRIPTION_ID=$SUBSCRIPTION_ID >> $GITHUB_ENV
-          echo TENANT_ID=$TENANT_ID >> $GITHUB_ENV
-          echo CLIENT_ID=$CLIENT_ID >> $GITHUB_ENV
-          echo RESOURCE_GROUP_NAME=$RESOURCE_GROUP_NAME >> $GITHUB_ENV
-          echo STORAGE_ACCOUNT_NAME=$STORAGE_ACCOUNT_NAME >> $GITHUB_ENV
+          echo ARM_SUBSCRIPTION_ID=$ARM_SUBSCRIPTION_ID >> $GITHUB_ENV
+          echo ARM_TENANT_ID=$ARM_TENANT_ID >> $GITHUB_ENV
+          echo ARM_CLIENT_ID=$ARM_CLIENT_ID >> $GITHUB_ENV
+          echo ARM_RESOURCE_GROUP_NAME=$ARM_RESOURCE_GROUP_NAME >> $GITHUB_ENV
+          echo ARM_STORAGE_ACCOUNT_NAME=$ARM_STORAGE_ACCOUNT_NAME >> $GITHUB_ENV
           echo AZURE_VIRTUAL_MACHINE_USER_IDENTITY_ID=$AZURE_VIRTUAL_MACHINE_USER_IDENTITY_ID >> $GITHUB_ENV
           echo AZURE_VIRTUAL_MACHINE_USER_IDENTITY_PRINCIPAL_ID=$AZURE_VIRTUAL_MACHINE_USER_IDENTITY_PRINCIPAL_ID >> $GITHUB_ENV
 
@@ -81,9 +81,9 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1.4.6
         with:
-          client-id: ${{ env.CLIENT_ID }}
-          tenant-id: ${{ env.TENANT_ID }}
-          subscription-id: ${{ env.SUBSCRIPTION_ID }}
+          client-id: ${{ env.ARM_CLIENT_ID }}
+          tenant-id: ${{ env.ARM_TENANT_ID }}
+          subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2

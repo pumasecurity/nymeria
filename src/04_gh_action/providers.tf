@@ -3,6 +3,7 @@ terraform {
   backend "azurerm" {
     container_name = "state"
     key            = "azure.tfstate"
+    use_oidc       = true
   }
 
   required_providers {
@@ -34,5 +35,6 @@ terraform {
 }
 
 provider "azurerm" {
+  use_oidc = true
   features {}
 }
