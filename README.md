@@ -4,7 +4,7 @@
 
 Welcome to Puma Security's Workload Identity Federation repository. Nymeria's goal is to help cloud identity and security teams to eliminate long-lived credentials from their cloud estate. The Cloud Infrastructure as Code (IaC) configuration in this repository includes the folowing resources:
 
-* Azure Service Principal Client Id / Secret for authenticating to an Azure AD Tenant from the *Long Lived Credentials* GitHub Action
+* Azure Service Principal Client Id / Secret for authenticating to an Azure AD Tenant from the *Long Lived Credentials* GitHub Action.
 
 * Azure Service Principal Federated Identity configuration for authenticating to an Azure AD Tenent using a GitHub Action's built-in OpenID Connect (OIDC) JWT.
 
@@ -20,7 +20,7 @@ Welcome to Puma Security's Workload Identity Federation repository. Nymeria's go
 
 ## Documentation
 
-Documentation, including step by step instructions for deploying the workshop and inspecting the resource configuration, can be found in the [Nymeria GitHub Pages](https://pumasecurity.github.io/nymeria/)
+Documentation, including step by step instructions for deploying the workshop and inspecting the resource configuration, can be found in the [Nymeria GitHub Pages](https://pumasecurity.github.io/nymeria/).
 
 ## Learning More
 
