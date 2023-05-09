@@ -2,11 +2,11 @@
 
 ![](https://pumasecurity.github.io/nymeria/img/nymeria.png)
 
-Welcome to Puma Security's Workload Identity Federation repository. Nymeria's goal is to help cloud identity and security teams to eliminate long-lived credentials from their cloud estate. The Cloud Infrastructure as Code (IaC) configuration in this repository includes the folowing resources:
+Welcome to Puma Security's Workload Identity Federation repository. Nymeria's goal is to help cloud identity and security teams to eliminate long-lived credentials from their cloud estate. The Cloud Infrastructure as Code (IaC) configuration in this repository includes the following resources:
 
 * Azure Service Principal Client Id / Secret for authenticating to an Azure AD Tenant from the *Long Lived Credentials* GitHub Action.
 
-* Azure Service Principal Federated Identity configuration for authenticating to an Azure AD Tenent using a GitHub Action's built-in OpenID Connect (OIDC) JWT.
+* Azure Service Principal Federated Identity configuration for authenticating to an Azure AD Tenant using a GitHub Action's built-in OpenID Connect (OIDC) JWT.
 
 * Azure Virtual Machine for authenticating to the AWS S3 API and Google Cloud Storage (GCS) API.
 
@@ -16,7 +16,7 @@ Welcome to Puma Security's Workload Identity Federation repository. Nymeria's go
 
 * Google Cloud Service Account Key for authenticating to the GCS API from the Azure Virtual Machine using a long-lived credential.
 
-* Google Cloud Workload Identity Pool for authenticating to the GCS API using the Azure Virutal Machine's built-in OpenID Connect JWT.
+* Google Cloud Workload Identity Pool for authenticating to the GCS API using the Azure Virtual Machine's built-in OpenID Connect JWT.
 
 ## Documentation
 
