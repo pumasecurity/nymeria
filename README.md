@@ -28,7 +28,9 @@ Documentation, including step by step instructions for deploying the workshop an
 
 #### RSA Conference 2023
 
-[![Destroying Long-Lived Cloud Credentials with Workload Identity Federation - Eric Johnson](https://pumasecurity.github.io/nymeria/img/destroying-long-lived-credentials-workload-identity-federation.png)](https://pumasecurity.github.io/nymeria/assets/2023_USA23_CSCO-M05_01_Destroying_Long-Lived_Cloud_Credentials_with_Workload_Identity_Federation.pdf)
+[![Destroying Long-Lived Cloud Credentials with Workload Identity Federation - Eric Johnson](https://pumasecurity.github.io/nymeria/img/destroying-long-lived-credentials-workload-identity-federation.png)](https://youtu.be/Loj4eOIu-zo)
+
+[Presentation Slides](https://pumasecurity.github.io/nymeria/assets/2023_USA23_CSCO-M05_01_Destroying_Long-Lived_Cloud_Credentials_with_Workload_Identity_Federation.pdf)
 
 ## Source Code
 
