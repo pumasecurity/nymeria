@@ -41,3 +41,5 @@ Documentation, including step by step instructions for deploying the workshop an
 ## Contributors
 
 [Eric Johnson](https://github.com/ejohn20) - Principal Security Engineer, Puma Security
+
+[Brandon Evans](https://github.com/BrandonE) - Certified Instructor and Course Author, SANS Institute
