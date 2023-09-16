@@ -3,7 +3,7 @@ const { ManagedIdentityCredential } = require('@azure/identity')
 const { BlobServiceClient, AnonymousCredential } = require('@azure/storage-blob')
 const AWS = require('aws-sdk')
 const aws = require('./aws')
-const gcp = require('./gcp')
+const google = require('./google')
 const GoogleCloudStorage = require('@google-cloud/storage').Storage
 const { ExternalAccountClient } = require('google-auth-library')
 
@@ -149,12 +149,12 @@ const initializeS3Client = async awsRoleArn => {
   })
 }
 
-const initializeGcsClient = async gcpConfig => {
+const initializeGcsClient = async googleConfig => {
   if (gcs) {
     return
   }
 
-  gcpConfig.credential_source = {
+  googleConfig.credential_source = {
     url: `${msiEndpoint}?api-version=2017-09-01&resource=api://upload-to-big-3-${uniqueIdentifier}`,
     headers: {
       Secret: msiSecret
@@ -165,7 +165,7 @@ const initializeGcsClient = async gcpConfig => {
     }
   }
 
-  const authClient = ExternalAccountClient.fromJSON(gcpConfig)
+  const authClient = ExternalAccountClient.fromJSON(googleConfig)
   authClient.scopes = ['https://www.googleapis.com/auth/cloud-platform']
 
   gcs = new GoogleCloudStorage({ authClient })
@@ -190,17 +190,17 @@ module.exports.uploadFile = async (filename, content) => {
     )
   }
 
-  if (gcpConfig !== 'null') {
+  if (googleConfig !== 'null') {
     await initializeGcsClient(
       JSON.parse(
-        Buffer.from(gcpConfig, 'base64').toString()
+        Buffer.from(googleConfig, 'base64').toString()
       )
     )
 
     storagePlatformsUploadedTo.push('Google Cloud Storage')
 
     promises.push(
-      gcp.uploadFileToGcs(filename, content, gcs)
+      google.uploadFileToGcs(filename, content, gcs)
     )
   }
   */

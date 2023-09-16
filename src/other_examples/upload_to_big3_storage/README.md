@@ -17,6 +17,8 @@ As Azure does not support an AWS Sigv4 exchange process like Google Cloud does, 
 ```bash
 aws configure
 az login
+gcloud auth login
+export TF_VAR_google_cloud_project_id=<Replace this block with your Google Cloud Project ID>
 
 cd ./functions/nodejs/upload
 npm ci
@@ -33,7 +35,6 @@ TODO: Maybe somehow specify code directory so we can support other languages.
 #### From AWS
 
 ```bash
-aws configure
 cd ./terraform
 export AWS_FUNCTION_URL=$(terraform output --json | jq -r '.aws_function_url.value')
 export API_KEY=$(terraform output --json | jq -r '.api_key.value')
@@ -47,6 +48,15 @@ cd ./terraform
 export AZURE_FUNCTION_URL="https://$(terraform output --json | jq -r '.azure_function_host.value')/api/upload"
 export API_KEY=$(terraform output --json | jq -r '.api_key.value')
 curl -H "X-API-Key: $API_KEY" "$AZURE_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "test", "content": "test"}'
+```
+
+#### From Google
+
+```bash
+cd ./terraform
+export GOOGLE_FUNCTION_URL=$(terraform output --json | jq -r '.google_function_url.value')
+export API_KEY=$(terraform output --json | jq -r '.api_key.value')
+curl -H "X-API-Key: $API_KEY" "$GOOGLE_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "test", "content": "test"}'
 ```
 
 ### Teardown

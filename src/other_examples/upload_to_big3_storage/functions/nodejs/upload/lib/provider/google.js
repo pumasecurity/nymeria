@@ -1,18 +1,15 @@
 const fs = require('fs')
 const axios = require('axios')
 const { Storage } = require('@google-cloud/storage')
-const { SecretManagerServiceClient } = require('@google-cloud/secret-manager')
 const AWS = require('aws-sdk')
 const { ClientAssertionCredential } = require('@azure/identity')
 const aws = require('./aws')
 const azure = require('./azure')
 
-const uniqueStringGcp = process.env.UNIQUE_STRING_GCP
-const uniqueStringAzure = process.env.UNIQUE_STRING_AZURE
+const uniqueIdentifier = process.env.UNIQUE_IDENTIFIER
 const durationSeconds = 3600
 let projectId
 let storage
-let secretManager
 let sts
 let s3
 let azureIdentity
@@ -32,12 +29,6 @@ const initializeProjectId = async () => {
 const initializeStorageClient = () => {
   if (!storage) {
     storage = new Storage()
-  }
-}
-
-const initializeSecretManager = () => {
-  if (!secretManager) {
-    secretManager = new SecretManagerServiceClient()
   }
 }
 
@@ -70,19 +61,8 @@ module.exports.respond = (statusCode, responseBody, ...args) => {
   res.status(statusCode).send(JSON.stringify(responseBody))
 }
 
-const getSecret = async key => {
-  await initializeProjectId()
-  initializeSecretManager()
-
-  const [secret] = await secretManager.accessSecretVersion({
-    name: `projects/${projectId}/secrets/${key}/versions/latest`
-  })
-
-  return secret.payload.data.toString()
-}
-
 const uploadFileToGcs = async (filename, content, client) => {
-  const bucketName = `upload-to-big-3-${uniqueStringGcp}`
+  const bucketName = `upload-to-big3-${uniqueIdentifier}`
   const localFileName = `/tmp/${filename}`
   fs.writeFileSync(localFileName, content)
 
@@ -94,7 +74,7 @@ const uploadFileToGcs = async (filename, content, client) => {
   })
 }
 
-const getGcpIdentityToken = async audience => {
+const getGoogleIdentityToken = async audience => {
   const res = await axios.get('http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity', {
     headers: {
       'Metadata-Flavor': 'Google'
@@ -112,7 +92,7 @@ const initializeS3Client = async awsRoleArn => {
     return
   }
 
-  const gcpIdentityToken = await getGcpIdentityToken('sts.amazonaws.com')
+  const googleIdentityToken = await getGoogleIdentityToken('sts.amazonaws.com')
 
   return new Promise((resolve, reject) => {
     initializeStsClient()
@@ -121,7 +101,7 @@ const initializeS3Client = async awsRoleArn => {
       RoleArn: awsRoleArn,
       RoleSessionName: 'upload-to-big-3-google',
       DurationSeconds: durationSeconds,
-      WebIdentityToken: gcpIdentityToken
+      WebIdentityToken: googleIdentityToken
     }, async (err, data) => {
       if (err) {
         reject(err)
@@ -152,17 +132,12 @@ const initializeAzureIdentity = azureConfig => {
   azureIdentity = new ClientAssertionCredential(
     azureConfig.tenant_id,
     azureConfig.client_id,
-    async () => await getGcpIdentityToken(`api://upload-to-big-3-${uniqueStringAzure}`)
+    async () => await getGoogleIdentityToken(`api://upload-to-big-3-${uniqueIdentifier}`)
   )
 }
 
 module.exports.uploadFile = async (filename, content) => {
   initializeStorageClient()
-
-  const [awsRoleArn, azureConfig] = await Promise.all([
-    getSecret('aws-role-arn'),
-    getSecret('azure-config')
-  ])
 
   const storagePlatformsUploadedTo = ['Google Cloud Storage']
   const promises = [uploadFileToGcs(filename, content, storage)]

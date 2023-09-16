@@ -2,7 +2,7 @@
   "name": "upload_to_big3_storage",
   "version": "1.0.0",
   "description": "Cloud function for uploading a file to the Big 3 cloud storage services (where possible) from each cloud provider using Workload Identity Federation.",
-  "main": "upload_from_aws.js",
+  "main": "index.js",
   "scripts": {
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -34,7 +34,6 @@
   "dependencies": {
     "@azure/identity": "3.0.0",
     "@azure/storage-blob": "12.14.0",
-    "@google-cloud/secret-manager": "5.0.1",
     "@google-cloud/storage": "7.1.0",
     "aws-sdk": "2.1459.0",
     "axios": "1.5.0"

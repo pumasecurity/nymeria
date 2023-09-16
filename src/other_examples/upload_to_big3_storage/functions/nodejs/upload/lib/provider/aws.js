@@ -1,6 +1,5 @@
 const AWS = require('aws-sdk')
-const azure = require('./azure')
-const gcp = require('./gcp')
+const google = require('./google')
 const GoogleCloudStorage = require('@google-cloud/storage').Storage
 const { ExternalAccountClient } = require('google-auth-library')
 
@@ -81,17 +80,17 @@ const uploadFileToS3 = async (filename, content, client) => new Promise((resolve
   })
 })
 
-const initializeGcsClient = async gcpConfig => {
+const initializeGcsClient = async googleConfig => {
   if (gcs) {
     return
   }
 
-  gcpConfig.credential_source = {
+  googleConfig.credential_source = {
     environment_id: 'aws1',
     regional_cred_verification_url: 'https://sts.{region}.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15'
   }
 
-  const authClient = ExternalAccountClient.fromJSON(gcpConfig)
+  const authClient = ExternalAccountClient.fromJSON(googleConfig)
   authClient.scopes = ['https://www.googleapis.com/auth/cloud-platform']
 
   gcs = new GoogleCloudStorage({ authClient })
@@ -104,24 +103,17 @@ const initializeGcsClient = async gcpConfig => {
 module.exports.uploadFile = async (filename, content) => {
   initializeS3Client()
 
-  /*
-  const [sas, gcpConfig] = await Promise.all([
-    getSecret('/azure/sas'),
-    getSecret('/gcp/config')
-  ])
-  */
-
   const storagePlatformsUploadedTo = ['AWS S3']
   const promises = [uploadFileToS3(filename, content, s3)]
 
   /*
-  if (gcpConfig !== 'null') {
-    await initializeGcsClient(JSON.parse(gcpConfig))
+  if (googleConfig !== 'null') {
+    await initializeGcsClient(JSON.parse(googleConfig))
 
     storagePlatformsUploadedTo.push('Google Cloud Storage')
 
     promises.push(
-      gcp.uploadFileToGcs(filename, content, gcs)
+      google.uploadFileToGcs(filename, content, gcs)
     )
   }
   */

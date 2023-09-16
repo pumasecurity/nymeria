@@ -1,7 +1,7 @@
 const aws = require('./aws')
 const azure = require('./azure')
-const gcp = require('./gcp')
-const providers = { aws, azure, gcp }
+const google = require('./google')
+const providers = { aws, azure, google }
 
 const getProviderName = () => {
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
@@ -9,7 +9,7 @@ const getProviderName = () => {
   } else if (process.env.APPSETTING_AzureWebJobsStorage) {
     return 'azure'
   } else if (process.env.GCF_BLOCK_RUNTIME_nodejs6 || process.env.GAE_RUNTIME) {
-    return 'gcp'
+    return 'google'
   } else {
     throw new Error(`Provider not detected. Environment variables: ${JSON.stringify(process.env)}`)
   }

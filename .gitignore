@@ -35,4 +35,4 @@ override.tf.json
 docs/site/*
 
 # Node.js
-node_modules/*
+node_modules
