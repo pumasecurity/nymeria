@@ -1,6 +1,6 @@
 data "azurerm_subscription" "current" {}
 
-resource "azurerm_role_assignment" "function" {
+resource "azurerm_role_assignment" "upload" {
   scope              = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${azurerm_resource_group.upload_to_big3_storage.name}/providers/Microsoft.Storage/storageAccounts/${azurerm_storage_account.upload_to_big3_storage.name}/blobServices/default/containers/${azurerm_storage_container.upload_to_big3_storage.name}"
 
   # Storage Blob Data Contributor

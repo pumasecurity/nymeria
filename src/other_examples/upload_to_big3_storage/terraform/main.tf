@@ -29,8 +29,10 @@ module "azure" {
   source            = "./azure"
 }
 
-#module "google" {
-#  unique_identifier = random_string.unique_identifier.result
-#  api_key           = random_string.api_key.result
-#  source            = "./google"
-#}
+module "google" {
+  unique_identifier       = random_string.unique_identifier.result
+  api_key                 = random_string.api_key.result
+  google_cloud_project_id = var.google_cloud_project_id
+  google_cloud_region     = var.google_cloud_region
+  source                  = "./google"
+}
