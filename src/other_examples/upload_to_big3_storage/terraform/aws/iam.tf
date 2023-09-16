@@ -65,12 +65,12 @@ resource "aws_iam_policy" "upload" {
   policy = data.aws_iam_policy_document.upload.json
 }
 
-resource "aws_iam_role_policy_attachment" "upload" {
+resource "aws_iam_role_policy_attachment" "function" {
   role       = aws_iam_role.function.name
   policy_arn = aws_iam_policy.upload.arn
 }
 
-resource "aws_iam_policy" "lambda_cloudwatch" {
+resource "aws_iam_policy" "function_cloudwatch" {
   name   = "upload-to-big3-lambda-cloudwatch"
   policy = data.aws_iam_policy_document.lambda_cloudwatch.json
 }

@@ -6,7 +6,7 @@ This directory contains a minimally-viable codebase for cloud functions uploadin
 - Azure uploading files to Google Cloud Storage (by establishing trust via JWTs)
 - Google Cloud uploading files to AWS S3 (by establishing trust via JWTs)
 - Google Cloud uploading files to Azure Storage (by establishing trust via JWTs)
-- AWS uploading files to Google Cloud Storage ([by creating a Version 4 AWS Signature, sending it to the Google Cloud Security Token Service, and exchange it for a short-lived OIDC token](https://cloud.google.com/iam/docs/workload-identity-federation-with-other-clouds#rest))
+- AWS uploading files to Google Cloud Storage ([by creating a Version 4 AWS Signature, sending it to the Google Cloud Security Token Service, and exchanging it for a short-lived OIDC token](https://cloud.google.com/iam/docs/workload-identity-federation-with-other-clouds#rest))
 
 As Azure does not support an AWS Sigv4 exchange process like Google Cloud does, this codebase does not provide a solution for AWS uploading files to Azure Storage.
 
@@ -15,9 +15,12 @@ As Azure does not support an AWS Sigv4 exchange process like Google Cloud does, 
 ### Deploy
 
 ```bash
-cd ./functions/nodejs
+aws configure
+az login
+
+cd ./functions/nodejs/upload
 npm ci
-cd ../../terraform
+cd ../../../terraform
 terraform init
 terraform apply --auto-approve
 ```
@@ -30,10 +33,20 @@ TODO: Maybe somehow specify code directory so we can support other languages.
 #### From AWS
 
 ```bash
+aws configure
 cd ./terraform
 export AWS_FUNCTION_URL=$(terraform output --json | jq -r '.aws_function_url.value')
 export API_KEY=$(terraform output --json | jq -r '.api_key.value')
 curl -H "X-API-Key: $API_KEY" "$AWS_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "test", "content": "test"}'
+```
+
+#### From Azure
+
+```bash
+cd ./terraform
+export AZURE_FUNCTION_URL="https://$(terraform output --json | jq -r '.azure_function_host.value')/api/upload"
+export API_KEY=$(terraform output --json | jq -r '.api_key.value')
+curl -H "X-API-Key: $API_KEY" "$AZURE_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "test", "content": "test"}'
 ```
 
 ### Teardown

@@ -22,11 +22,12 @@ module "aws" {
   source            = "./aws"
 }
 
-#module "azure" {
-#  unique_identifier = random_string.unique_identifier.result
-#  api_key           = random_string.api_key.result
-#  source            = "./azure"
-#}
+module "azure" {
+  unique_identifier = random_string.unique_identifier.result
+  api_key           = random_string.api_key.result
+  azure_location    = var.azure_location
+  source            = "./azure"
+}
 
 #module "google" {
 #  unique_identifier = random_string.unique_identifier.result
