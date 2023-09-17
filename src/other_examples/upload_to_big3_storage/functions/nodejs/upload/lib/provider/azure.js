@@ -8,6 +8,7 @@ const GoogleCloudStorage = require('@google-cloud/storage').Storage
 const { ExternalAccountClient } = require('google-auth-library')
 
 const uniqueIdentifier = process.env.APPSETTING_UNIQUE_IDENTIFIER || process.env.UNIQUE_IDENTIFIER
+const awsRoleArn = process.env.AWS_ROLE_ARN
 const googleConfig = process.env.APPSETTING_GOOGLE_CLOUD_FEDERATION_CONFIGURATION || process.env.GOOGLE_CLOUD_FEDERATION_CONFIGURATION
 const allowedJwtAudience = process.env.APPSETTING_ALLOWED_JWT_AUDIENCE || process.env.ALLOWED_JWT_AUDIENCE
 const managedIdentityCredential = new ManagedIdentityCredential()
@@ -181,7 +182,6 @@ module.exports.uploadFile = async (filename, content) => {
   const storagePlatformsUploadedTo = ['Azure Storage']
   const promises = [uploadFileToAzureStorage(filename, content)]
 
-  /*
   if (awsRoleArn) {
     await initializeS3Client(awsRoleArn)
 
@@ -191,7 +191,6 @@ module.exports.uploadFile = async (filename, content) => {
       aws.uploadFileToS3(filename, content, s3)
     )
   }
-  */
 
   if (googleConfig) {
     await initializeGcsClient(

@@ -17,58 +17,6 @@ data "aws_iam_policy_document" "assume_role" {
     actions = ["sts:AssumeRole"]
     effect  = "Allow"
   }
-
-  # Upload Files From Azure
-
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-
-    principals {
-      type = "Federated"
-      identifiers = [
-        aws_iam_openid_connect_provider.azure_tenant.arn
-      ]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "sts.windows.net/${var.azure_tenant_id}/:aud"
-      values = [var.allowed_jwt_audience]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "sts.windows.net/${var.azure_tenant_id}/:sub"
-      values = [
-        var.azure_function_identity_principal_id
-      ]
-    }
-  }
-
-  # Upload Files From Google
-
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-
-    principals {
-      type = "Federated"
-      identifiers = ["accounts.google.com"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "accounts.google.com:oaud"
-      values = [var.allowed_jwt_audience]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "accounts.google.com:sub"
-      values = [var.google_service_account_id]
-    }
-  }
 }
 
 data "aws_iam_policy_document" "upload" {
@@ -122,4 +70,14 @@ resource "aws_iam_role_policy_attachment" "upload_to_big3_storage" {
 resource "aws_iam_policy" "upload_to_big3_storage_cloudwatch" {
   name   = "upload-to-big3-lambda-cloudwatch"
   policy = data.aws_iam_policy_document.lambda_cloudwatch.json
+}
+
+resource "aws_iam_role_policy_attachment" "upload_to_big3_storage_azure" {
+  role       = aws_iam_role.azure.name
+  policy_arn = aws_iam_policy.upload.arn
+}
+
+resource "aws_iam_role_policy_attachment" "upload_to_big3_storage_google" {
+  role       = aws_iam_role.google.name
+  policy_arn = aws_iam_policy.upload.arn
 }

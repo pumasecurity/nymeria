@@ -38,7 +38,7 @@ module "azure" {
   allowed_jwt_audience                  = local.allowed_jwt_audience
   runtime                               = var.runtime
   azure_location                        = var.azure_location
-  aws_iam_role_arn                      = module.aws.aws_iam_role_arn
+  aws_iam_role_arn                      = module.aws.azure_aws_iam_role_arn
   google_service_account_id             = module.google.google_service_account_id
   google_cloud_federation_configuration = module.google.azure_workload_identity_client_configuration
   source                                = "./azure"
@@ -52,8 +52,8 @@ module "google" {
   google_cloud_project_id              = var.google_cloud_project_id
   google_cloud_region                  = var.google_cloud_region
   aws_iam_role_name                    = module.aws.aws_iam_role_name
-  aws_iam_role_arn                     = module.aws.aws_iam_role_arn
   aws_account_id                       = module.aws.aws_account_id
+  aws_iam_role_arn                     = module.aws.google_aws_iam_role_arn
   azure_function_identity_principal_id = module.azure.azure_function_identity_principal_id
   azure_tenant_id                      = module.azure.azure_tenant_id
   azuread_app_id                       = module.azure.google_azuread_app_id

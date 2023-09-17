@@ -88,6 +88,7 @@ resource "azurerm_linux_function_app" "upload_to_big3_storage" {
     UNIQUE_IDENTIFIER                     = var.unique_identifier
     API_KEY                               = var.api_key
     ALLOWED_JWT_AUDIENCE                  = var.allowed_jwt_audience
+    AWS_ROLE_ARN                          = var.aws_iam_role_arn
     GOOGLE_CLOUD_FEDERATION_CONFIGURATION = var.google_cloud_federation_configuration
   }
 
