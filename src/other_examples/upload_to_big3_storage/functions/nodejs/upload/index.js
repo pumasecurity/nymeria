@@ -33,7 +33,7 @@ module.exports = async (...args) => {
       statusCode = 400
   
       responseBody = {
-        err: err.toString()
+        err: err instanceof Error ? err.toString() : err
       }
     }
   }

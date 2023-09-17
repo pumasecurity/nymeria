@@ -8,7 +8,7 @@ const getProviderName = () => {
     return 'aws'
   } else if (process.env.APPSETTING_AzureWebJobsStorage) {
     return 'azure'
-  } else if (process.env.GCF_BLOCK_RUNTIME_nodejs6 || process.env.GAE_RUNTIME) {
+  } else if (process.env.GAE_RUNTIME) {
     return 'google'
   } else {
     throw new Error(`Provider not detected. Environment variables: ${JSON.stringify(process.env)}`)

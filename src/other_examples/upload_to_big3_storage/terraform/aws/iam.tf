@@ -1,9 +1,6 @@
 data "aws_region" "current" {
 }
 
-data "aws_caller_identity" "current" {
-}
-
 locals {
   region         = data.aws_region.current.name
   account        = data.aws_caller_identity.current.account_id
@@ -54,7 +51,7 @@ data "aws_iam_policy_document" "lambda_cloudwatch" {
   }
 }
 
-resource "aws_iam_role" "function" {
+resource "aws_iam_role" "upload_to_big3_storage" {
   name               = "upload-to-big3"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_iam_policy.json
@@ -66,11 +63,11 @@ resource "aws_iam_policy" "upload" {
 }
 
 resource "aws_iam_role_policy_attachment" "function" {
-  role       = aws_iam_role.function.name
+  role       = aws_iam_role.upload_to_big3_storage.name
   policy_arn = aws_iam_policy.upload.arn
 }
 
-resource "aws_iam_policy" "function_cloudwatch" {
+resource "aws_iam_policy" "upload_to_big3_storage_cloudwatch" {
   name   = "upload-to-big3-lambda-cloudwatch"
   policy = data.aws_iam_policy_document.lambda_cloudwatch.json
 }

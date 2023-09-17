@@ -4,20 +4,14 @@ const GoogleCloudStorage = require('@google-cloud/storage').Storage
 const { ExternalAccountClient } = require('google-auth-library')
 
 const uniqueIdentifier = process.env.UNIQUE_IDENTIFIER
+const googleConfig = process.env.GOOGLE_CLOUD_FEDERATION_CONFIGURATION
 const durationSeconds = 3600
 let s3
-let secretsManager
 let gcs
 
 const initializeS3Client = () => {
   if (!s3) {
     s3 = new AWS.S3()
-  }
-}
-
-const initializeSecretsManagerClient = async () => {
-  if (!secretsManager) {
-    secretsManager = new AWS.SecretsManager({ region: process.env.AWS_REGION })
   }
 }
 
@@ -46,22 +40,6 @@ module.exports.respond = (statusCode, responseBody) => {
       'Access-Control-Allow-Methods': 'OPTIONS,POST'
     }
   }
-}
-
-const getSecret = async name => {
-  await initializeSecretsManagerClient()
-
-  return new Promise((resolve, reject) => {
-    secretsManager.getSecretValue({
-      SecretId: `${uniqueStringAws}${name}`
-    }, (err, data) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(data.SecretString)
-      }
-    })
-  })
 }
 
 const uploadFileToS3 = async (filename, content, client) => new Promise((resolve, reject) => {
@@ -106,7 +84,6 @@ module.exports.uploadFile = async (filename, content) => {
   const storagePlatformsUploadedTo = ['AWS S3']
   const promises = [uploadFileToS3(filename, content, s3)]
 
-  /*
   if (googleConfig !== 'null') {
     await initializeGcsClient(JSON.parse(googleConfig))
 
@@ -116,7 +93,6 @@ module.exports.uploadFile = async (filename, content) => {
       google.uploadFileToGcs(filename, content, gcs)
     )
   }
-  */
 
   await Promise.all(promises)
   return storagePlatformsUploadedTo

@@ -1,3 +1,14 @@
+variable "runtime" {
+  description = "The runtime of the functions to use. Must have associated function code."
+  type        = string
+  default     = "nodejs"
+
+  validation {
+    condition     = contains(["nodejs"], var.runtime)
+    error_message = "The runtime must be 'nodejs'."
+  }
+}
+
 variable "aws_profile" {
   description = "The AWS profile in the local ~/.aws/config file to use for authentication."
   type        = string
@@ -31,4 +42,3 @@ variable "google_cloud_region" {
   type        = string
   default     = "us-east1"
 }
-

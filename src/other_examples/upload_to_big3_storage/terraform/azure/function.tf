@@ -1,7 +1,7 @@
 data "archive_file" "upload_to_big3_storage_build" {
   type        = "zip"
-  source_dir  = "${path.module}/../../functions/nodejs"
-  output_path = "/tmp/upload-to-big3-nodejs-azure.zip"
+  source_dir  = "${path.module}/../../functions/${var.runtime}"
+  output_path = "/tmp/upload-to-big3-${var.runtime}-azure.zip"
 }
 
 # Reference: https://adrianhall.github.io/typescript/2019/10/23/terraform-functions/
@@ -80,7 +80,7 @@ resource "azurerm_linux_function_app" "upload_to_big3_storage" {
   service_plan_id            = azurerm_service_plan.upload_to_big3_storage.id
 
   app_settings = {
-    FUNCTIONS_WORKER_RUNTIME    = "node"
+    FUNCTIONS_WORKER_RUNTIME    = var.runtime == "nodejs" ? "node" : ""
     FUNCTION_APP_EDIT_MODE      = "readonly"
     FUNCTIONS_EXTENSION_VERSION = "~4"
     HASH                        = "${base64encode(filesha256(data.archive_file.upload_to_big3_storage_build.output_path))}"

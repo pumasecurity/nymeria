@@ -8,6 +8,17 @@ variable "api_key" {
   type        = string
 }
 
+variable "runtime" {
+  description = "The runtime of the functions to use. Must have associated function code."
+  type        = string
+  default     = "nodejs"
+
+  validation {
+    condition     = contains(["nodejs"], var.runtime)
+    error_message = "The runtime must be 'nodejs'."
+  }
+}
+
 variable "azure_location" {
   description = "The location of the resource group containing the Cougar resources."
   type        = string

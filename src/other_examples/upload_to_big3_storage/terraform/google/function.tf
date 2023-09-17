@@ -1,7 +1,7 @@
 data "archive_file" "upload_to_big3_storage_build" {
   type        = "zip"
-  source_dir  = "${path.module}/../../functions/nodejs/upload"
-  output_path = "/tmp/upload-to-big3-nodejs-google.zip"
+  source_dir  = "${path.module}/../../functions/${var.runtime}/upload"
+  output_path = "/tmp/upload-to-big3-${var.runtime}-google.zip"
 }
 
 resource "google_storage_bucket" "upload_to_big3_storage_function" {
@@ -18,7 +18,7 @@ resource "google_storage_bucket_object" "upload_to_big3_storage_function" {
 
 resource "google_cloudfunctions_function" "upload_to_big3_storage" {
   name                  = "upload-to-big3"
-  runtime               = "nodejs18"
+  runtime               = var.runtime == "nodejs" ? "nodejs18" : ""
 
   source_archive_bucket = google_storage_bucket.upload_to_big3_storage_function.name
   source_archive_object = google_storage_bucket_object.upload_to_big3_storage_function.name

@@ -27,9 +27,6 @@ terraform init
 terraform apply --auto-approve
 ```
 
-TODO: Make sure providers are optional
-TODO: Maybe somehow specify code directory so we can support other languages.
-
 ### Invoking Functions
 
 #### From AWS
