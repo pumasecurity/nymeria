@@ -59,3 +59,8 @@ variable "azure_tenant_id" {
   description = "Azure AD tenant for federation"
   type        = string
 }
+
+variable "azuread_app_id" {
+  description = "Azure App Registration Client ID for federation"
+  type        = string
+}

@@ -56,5 +56,6 @@ module "google" {
   aws_account_id                       = module.aws.aws_account_id
   azure_function_identity_principal_id = module.azure.azure_function_identity_principal_id
   azure_tenant_id                      = module.azure.azure_tenant_id
+  azuread_app_id                       = module.azure.google_azuread_app_id
   source                               = "./google"
 }

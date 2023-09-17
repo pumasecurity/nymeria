@@ -9,6 +9,8 @@ const azure = require('./azure')
 const uniqueIdentifier = process.env.UNIQUE_IDENTIFIER
 const allowedJwtAudience = process.env.ALLOWED_JWT_AUDIENCE
 const awsRoleArn = process.env.AWS_ROLE_ARN
+const azureAdAppId = process.env.AZURE_AD_APP_ID
+const azureTenantId = process.env.AZURE_TENANT_ID
 const durationSeconds = 3600
 let storage
 let sts
@@ -81,7 +83,7 @@ const initializeS3Client = async awsRoleArn => {
     return
   }
 
-  const googleIdentityToken = await getGoogleIdentityToken('sts.amazonaws.com')
+  const googleIdentityToken = await getGoogleIdentityToken(allowedJwtAudience)
 
   return new Promise((resolve, reject) => {
     initializeStsClient()
@@ -113,14 +115,14 @@ const initializeS3Client = async awsRoleArn => {
   })
 }
 
-const initializeAzureIdentity = azureConfig => {
+const initializeAzureIdentity = (azureAdAppId, azureTenantId) => {
   if (azureIdentity) {
     return
   }
 
   azureIdentity = new ClientAssertionCredential(
-    azureConfig.tenant_id,
-    azureConfig.client_id,
+    azureTenantId,
+    azureAdAppId,
     async () => await getGoogleIdentityToken(allowedJwtAudience)
   )
 }
@@ -141,9 +143,8 @@ module.exports.uploadFile = async (filename, content) => {
     )
   }
 
-  /*
-  if (azureConfig) {
-    initializeAzureIdentity(JSON.parse(azureConfig))
+  if (azureAdAppId && azureTenantId) {
+    initializeAzureIdentity(azureAdAppId, azureTenantId)
 
     storagePlatformsUploadedTo.push('Azure Storage')
 
@@ -151,7 +152,6 @@ module.exports.uploadFile = async (filename, content) => {
       azure.uploadFileToAzureStorage(filename, content, azureIdentity)
     )
   }
-  */
 
   await Promise.all(promises)
   return storagePlatformsUploadedTo

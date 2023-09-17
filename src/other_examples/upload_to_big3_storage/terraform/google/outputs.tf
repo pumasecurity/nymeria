@@ -9,9 +9,11 @@ output "google_service_account_id" {
 }
 
 output "aws_workload_identity_client_configuration" {
-  value = data.template_file.aws_workload_identity_client_configuration.rendered
+  description = "The Workload Identity client configuration for federation from AWS"
+  value       = data.template_file.aws_workload_identity_client_configuration.rendered
 }
 
 output "azure_workload_identity_client_configuration" {
-  value = data.template_file.azure_workload_identity_client_configuration.rendered
+  description = "The Workload Identity client configuration for federation from Azure"
+  value       = data.template_file.azure_workload_identity_client_configuration.rendered
 }

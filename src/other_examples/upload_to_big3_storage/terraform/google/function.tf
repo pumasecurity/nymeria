@@ -27,8 +27,11 @@ resource "google_cloudfunctions_function" "upload_to_big3_storage" {
   service_account_email = google_service_account.upload_to_big3_storage.email
 
   environment_variables = {
-    UNIQUE_IDENTIFIER = var.unique_identifier
-    API_KEY           = var.api_key
-    AWS_ROLE_ARN      = var.aws_iam_role_arn
+    UNIQUE_IDENTIFIER          = var.unique_identifier
+    API_KEY                    = var.api_key
+    ALLOWED_JWT_AUDIENCE       = var.allowed_jwt_audience
+    AWS_ROLE_ARN               = var.aws_iam_role_arn
+    AZURE_AD_APP_ID            = var.azuread_app_id
+    AZURE_TENANT_ID            = var.azure_tenant_id
   }
 }

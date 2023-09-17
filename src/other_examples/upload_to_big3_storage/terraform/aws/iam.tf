@@ -60,7 +60,7 @@ data "aws_iam_policy_document" "assume_role" {
     condition {
       test     = "StringEquals"
       variable = "accounts.google.com:oaud"
-      values = ["sts.amazonaws.com"]
+      values = [var.allowed_jwt_audience]
     }
 
     condition {
