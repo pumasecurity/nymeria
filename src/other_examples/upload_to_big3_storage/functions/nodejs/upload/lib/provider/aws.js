@@ -84,7 +84,7 @@ module.exports.uploadFile = async (filename, content) => {
   const storagePlatformsUploadedTo = ['AWS S3']
   const promises = [uploadFileToS3(filename, content, s3)]
 
-  if (googleConfig !== 'null') {
+  if (googleConfig) {
     await initializeGcsClient(
       JSON.parse(googleConfig)
     )

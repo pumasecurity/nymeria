@@ -21,23 +21,23 @@ let sts
 let s3
 let gcs
 
-const initializeBlobServiceClient = (sas, credential) => {
+const initializeBlobServiceClient = credential => {
   if (!blobServiceClient) {
     if (!credential) {
-      credential = (sas) ? new AnonymousCredential() : managedIdentityCredential
+      credential = managedIdentityCredential
     }
 
-    const storageUrl = `https://uploadtobig3${uniqueIdentifier}.blob.core.windows.net${sas || ''}`
+    const storageUrl = `https://uploadtobig3${uniqueIdentifier}.blob.core.windows.net`
     blobServiceClient = new BlobServiceClient(storageUrl, credential)
   }
 }
 
-const getContainerClient = (containerName, sas, credential) => {
+const getContainerClient = (containerName, credential) => {
   if (!containerName) {
     throw new Error('Must provide a container name.')
   }
 
-  initializeBlobServiceClient(sas, credential)
+  initializeBlobServiceClient(credential)
 
   if (!(containerName in containerClients)) {
     containerClients[containerName] = blobServiceClient.getContainerClient(containerName)
@@ -46,12 +46,12 @@ const getContainerClient = (containerName, sas, credential) => {
   return containerClients[containerName]
 }
 
-const getBlockBlobClient = (containerName, blobName, sas, credential) => {
+const getBlockBlobClient = (containerName, blobName, credential) => {
   if (!containerName || !blobName) {
     throw new Error('Must provide a blob and container name.')
   }
 
-  const containerClient = getContainerClient(containerName, sas, credential)
+  const containerClient = getContainerClient(containerName, credential)
 
   if (!(blobName in blockBlobClients)) {
     blockBlobClients[blobName] = containerClient.getBlockBlobClient(blobName)
@@ -95,8 +95,8 @@ module.exports.respond = (statusCode, responseBody, ...args) => {
   }
 }
 
-const uploadFileToAzureStorage = async (filename, content, sas, credential) => {
-  const blockBlobClient = getBlockBlobClient('upload-to-big3', filename, sas, credential)
+const uploadFileToAzureStorage = async (filename, content, credential) => {
+  const blockBlobClient = getBlockBlobClient('upload-to-big3', filename, credential)
   return await blockBlobClient.upload(content, content.length)
 }
 
@@ -182,7 +182,7 @@ module.exports.uploadFile = async (filename, content) => {
   const promises = [uploadFileToAzureStorage(filename, content)]
 
   /*
-  if (awsRoleArn !== 'null') {
+  if (awsRoleArn) {
     await initializeS3Client(awsRoleArn)
 
     storagePlatformsUploadedTo.push('AWS S3')
@@ -193,7 +193,7 @@ module.exports.uploadFile = async (filename, content) => {
   }
   */
 
-  if (googleConfig !== 'null') {
+  if (googleConfig) {
     await initializeGcsClient(
       JSON.parse(googleConfig)
     )

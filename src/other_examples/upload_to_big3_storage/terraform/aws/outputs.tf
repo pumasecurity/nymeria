@@ -4,8 +4,13 @@ output "aws_function_url" {
 }
 
 output "aws_iam_role_name" {
-  description = "AWS IAM Role used for federation"
+  description = "The name of the AWS IAM Role used for federation"
   value       = aws_iam_role.upload_to_big3_storage.name
+}
+
+output "aws_iam_role_arn" {
+  description = "The ARN of the AWS IAM Role used for federation"
+  value       = aws_iam_role.upload_to_big3_storage.arn
 }
 
 output "aws_account_id" {

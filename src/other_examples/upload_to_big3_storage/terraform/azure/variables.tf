@@ -30,7 +30,17 @@ variable "azure_location" {
   default     = "centralus"
 }
 
+variable "aws_iam_role_arn" {
+  description = "The ARN of the AWS IAM Role used for federation"
+  type        = string
+}
+
+variable "google_service_account_id" {
+  description = "The ID of the Google Cloud Service Account used for federation"
+  type        = string
+}
+
 variable "google_cloud_federation_configuration" {
-  description = "Base64 encoded client configuration for federating from Azure to Google Cloud."
+  description = "Client configuration for federating from AWS to Google Cloud."
   type        = string
 }

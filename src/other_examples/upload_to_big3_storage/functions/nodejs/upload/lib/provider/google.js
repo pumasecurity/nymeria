@@ -8,24 +8,12 @@ const azure = require('./azure')
 
 const uniqueIdentifier = process.env.UNIQUE_IDENTIFIER
 const allowedJwtAudience = process.env.ALLOWED_JWT_AUDIENCE
+const awsRoleArn = process.env.AWS_ROLE_ARN
 const durationSeconds = 3600
-let projectId
 let storage
 let sts
 let s3
 let azureIdentity
-
-const initializeProjectId = async () => {
-  if (!projectId) {
-    const res = await axios.get('http://metadata.google.internal/computeMetadata/v1/project/project-id', {
-      headers: {
-        'Metadata-Flavor': 'Google'
-      }
-    })
-
-    projectId = res.data
-  }
-}
 
 const initializeStorageClient = () => {
   if (!storage) {
@@ -143,8 +131,7 @@ module.exports.uploadFile = async (filename, content) => {
   const storagePlatformsUploadedTo = ['Google Cloud Storage']
   const promises = [uploadFileToGcs(filename, content, storage)]
 
-  /*
-  if (awsRoleArn !== 'null') {
+  if (awsRoleArn) {
     await initializeS3Client(awsRoleArn)
 
     storagePlatformsUploadedTo.push('AWS S3')
@@ -154,13 +141,14 @@ module.exports.uploadFile = async (filename, content) => {
     )
   }
 
-  if (azureConfig !== 'null') {
+  /*
+  if (azureConfig) {
     initializeAzureIdentity(JSON.parse(azureConfig))
 
     storagePlatformsUploadedTo.push('Azure Storage')
 
     promises.push(
-      azure.uploadFileToAzureStorage(filename, content, undefined, azureIdentity)
+      azure.uploadFileToAzureStorage(filename, content, azureIdentity)
     )
   }
   */

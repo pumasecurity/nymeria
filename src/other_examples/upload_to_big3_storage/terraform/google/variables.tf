@@ -36,7 +36,12 @@ variable "google_cloud_region" {
 }
 
 variable "aws_iam_role_name" {
-  description = "AWS IAM Role used for federation"
+  description = "The name of the AWS IAM Role used for federation"
+  type        = string
+}
+
+variable "aws_iam_role_arn" {
+  description = "The ARN of the AWS IAM Role used for federation"
   type        = string
 }
 

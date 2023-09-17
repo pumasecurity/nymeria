@@ -29,5 +29,6 @@ resource "google_cloudfunctions_function" "upload_to_big3_storage" {
   environment_variables = {
     UNIQUE_IDENTIFIER = var.unique_identifier
     API_KEY           = var.api_key
+    AWS_ROLE_ARN      = var.aws_iam_role_arn
   }
 }

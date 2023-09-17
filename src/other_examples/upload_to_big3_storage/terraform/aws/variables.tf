@@ -41,7 +41,22 @@ variable "aws_partition" {
   }
 }
 
+variable "azure_function_identity_principal_id" {
+  description = "Azure Function Identity for federation"
+  type        = string
+}
+
+variable "azure_tenant_id" {
+  description = "Azure AD tenant for federation"
+  type        = string
+}
+
+variable "google_service_account_id" {
+  description = "The ID of the Google Cloud Service Account used for federation"
+  type        = string
+}
+
 variable "google_cloud_federation_configuration" {
-  description = "Base64 encoded client configuration for federating from AWS to Google Cloud."
+  description = "Client configuration for federating from AWS to Google Cloud."
   type        = string
 }
