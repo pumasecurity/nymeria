@@ -8,6 +8,11 @@ variable "api_key" {
   type        = string
 }
 
+variable "allowed_jwt_audience" {
+  description = "The JWT audience that the Workload Identity Federation allows."
+  type        = string
+}
+
 variable "runtime" {
   description = "The runtime of the functions to use. Must have associated function code."
   type        = string
@@ -23,4 +28,9 @@ variable "azure_location" {
   description = "The location of the resource group containing the Cougar resources."
   type        = string
   default     = "centralus"
+}
+
+variable "google_cloud_federation_configuration" {
+  description = "Base64 encoded client configuration for federating from Azure to Google Cloud."
+  type        = string
 }

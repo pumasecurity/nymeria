@@ -8,6 +8,11 @@ variable "api_key" {
   type        = string
 }
 
+variable "allowed_jwt_audience" {
+  description = "The JWT audience that the Workload Identity Federation allows."
+  type        = string
+}
+
 variable "runtime" {
   description = "The runtime of the functions to use. Must have associated function code."
   type        = string
@@ -37,5 +42,15 @@ variable "aws_iam_role_name" {
 
 variable "aws_account_id" {
   description = "AWS Account ID from which to federate"
+  type        = string
+}
+
+variable "azure_function_identity_principal_id" {
+  description = "Azure Function Identity for federation"
+  type        = string
+}
+
+variable "azure_tenant_id" {
+  description = "Azure AD tenant for federation"
   type        = string
 }

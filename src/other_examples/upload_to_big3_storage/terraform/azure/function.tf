@@ -80,13 +80,15 @@ resource "azurerm_linux_function_app" "upload_to_big3_storage" {
   service_plan_id            = azurerm_service_plan.upload_to_big3_storage.id
 
   app_settings = {
-    FUNCTIONS_WORKER_RUNTIME    = var.runtime == "nodejs" ? "node" : ""
-    FUNCTION_APP_EDIT_MODE      = "readonly"
-    FUNCTIONS_EXTENSION_VERSION = "~4"
-    HASH                        = "${base64encode(filesha256(data.archive_file.upload_to_big3_storage_build.output_path))}"
-    WEBSITE_RUN_FROM_PACKAGE    = "https://${azurerm_storage_account.upload_to_big3_storage_function.name}.blob.core.windows.net/${azurerm_storage_container.upload_to_big3_storage_function.name}/${azurerm_storage_blob.upload_to_big3_storage.name}${data.azurerm_storage_account_sas.functions.sas}"
-    UNIQUE_IDENTIFIER           = var.unique_identifier
-    API_KEY                     = var.api_key
+    FUNCTIONS_WORKER_RUNTIME              = var.runtime == "nodejs" ? "node" : ""
+    FUNCTION_APP_EDIT_MODE                = "readonly"
+    FUNCTIONS_EXTENSION_VERSION           = "~4"
+    HASH                                  = "${base64encode(filesha256(data.archive_file.upload_to_big3_storage_build.output_path))}"
+    WEBSITE_RUN_FROM_PACKAGE              = "https://${azurerm_storage_account.upload_to_big3_storage_function.name}.blob.core.windows.net/${azurerm_storage_container.upload_to_big3_storage_function.name}/${azurerm_storage_blob.upload_to_big3_storage.name}${data.azurerm_storage_account_sas.functions.sas}"
+    UNIQUE_IDENTIFIER                     = var.unique_identifier
+    API_KEY                               = var.api_key
+    ALLOWED_JWT_AUDIENCE                  = var.allowed_jwt_audience
+    GOOGLE_CLOUD_FEDERATION_CONFIGURATION = var.google_cloud_federation_configuration
   }
 
   site_config {

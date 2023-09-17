@@ -31,9 +31,10 @@ module.exports = async (...args) => {
       }
     } catch (err) {
       statusCode = 400
+      const errString = err.toString()
   
       responseBody = {
-        err: err instanceof Error ? err.toString() : err
+        err: errString.includes('[object Object]') ? err : errString
       }
     }
   }

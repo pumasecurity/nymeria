@@ -8,6 +8,8 @@ const GoogleCloudStorage = require('@google-cloud/storage').Storage
 const { ExternalAccountClient } = require('google-auth-library')
 
 const uniqueIdentifier = process.env.APPSETTING_UNIQUE_IDENTIFIER || process.env.UNIQUE_IDENTIFIER
+const googleConfig = process.env.APPSETTING_GOOGLE_CLOUD_FEDERATION_CONFIGURATION || process.env.GOOGLE_CLOUD_FEDERATION_CONFIGURATION
+const allowedJwtAudience = process.env.APPSETTING_ALLOWED_JWT_AUDIENCE || process.env.ALLOWED_JWT_AUDIENCE
 const managedIdentityCredential = new ManagedIdentityCredential()
 let blobServiceClient
 const containerClients = {}
@@ -105,7 +107,7 @@ const getAzureIdentityToken = async () => {
     },
     params: {
       'api-version': '2017-09-01',
-      resource: `api://upload-to-big-3-${uniqueIdentifier}`
+      resource: allowedJwtAudience
     }
   })
 
@@ -155,7 +157,7 @@ const initializeGcsClient = async googleConfig => {
   }
 
   googleConfig.credential_source = {
-    url: `${msiEndpoint}?api-version=2017-09-01&resource=api://upload-to-big-3-${uniqueIdentifier}`,
+    url: `${msiEndpoint}?api-version=2017-09-01&resource=${allowedJwtAudience}`,
     headers: {
       Secret: msiSecret
     },
@@ -189,12 +191,11 @@ module.exports.uploadFile = async (filename, content) => {
       aws.uploadFileToS3(filename, content, s3)
     )
   }
+  */
 
   if (googleConfig !== 'null') {
     await initializeGcsClient(
-      JSON.parse(
-        Buffer.from(googleConfig, 'base64').toString()
-      )
+      JSON.parse(googleConfig)
     )
 
     storagePlatformsUploadedTo.push('Google Cloud Storage')
@@ -203,7 +204,6 @@ module.exports.uploadFile = async (filename, content) => {
       google.uploadFileToGcs(filename, content, gcs)
     )
   }
-  */
 
   await Promise.all(promises)
   return storagePlatformsUploadedTo

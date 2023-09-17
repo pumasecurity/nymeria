@@ -8,6 +8,11 @@ variable "api_key" {
   type        = string
 }
 
+variable "allowed_jwt_audience" {
+  description = "The JWT audience that the Workload Identity Federation allows."
+  type        = string
+}
+
 variable "runtime" {
   description = "The runtime of the functions to use. Must have associated function code."
   type        = string

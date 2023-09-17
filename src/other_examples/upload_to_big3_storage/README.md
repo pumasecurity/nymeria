@@ -1,6 +1,6 @@
 # Upload to Big 3 Storage Services
 
-This directory contains a minimally-viable codebase for cloud functions uploading files to cloud storage using the following Workload Identity Federation integrations:
+This directory contains a minimally-viable codebase for cloud functions that upload files to the cloud storage services of the other providers using the following Workload Identity Federation integrations:
 
 - Azure uploading files to AWS S3 (by establishing trust via JWTs)
 - Azure uploading files to Google Cloud Storage (by establishing trust via JWTs)
@@ -12,7 +12,7 @@ As Azure does not support an AWS Sigv4 exchange process like Google Cloud does, 
 
 ## Usage
 
-### Deploy
+### Deploy Infrastructure
 
 ```bash
 aws configure
@@ -22,6 +22,7 @@ export TF_VAR_google_cloud_project_id=<Replace this block with your Google Cloud
 
 cd ./functions/nodejs/upload
 npm ci
+
 cd ../../../terraform
 terraform init
 terraform apply --auto-approve
@@ -29,34 +30,38 @@ terraform apply --auto-approve
 
 ### Invoking Functions
 
-#### From AWS
+Make sure you have deployed the infrastructure and are still in a terminal session that is authenticated to the cloud providers. Then, run one of the following:
+
+#### Upload Files From AWS
 
 ```bash
 cd ./terraform
 export AWS_FUNCTION_URL=$(terraform output --json | jq -r '.aws_function_url.value')
 export API_KEY=$(terraform output --json | jq -r '.api_key.value')
-curl -H "X-API-Key: $API_KEY" "$AWS_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "test", "content": "test"}'
+curl -H "X-API-Key: $API_KEY" "$AWS_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "from_aws", "content": "test"}'
 ```
 
-#### From Azure
+#### Upload Files From Azure
 
 ```bash
 cd ./terraform
 export AZURE_FUNCTION_URL="https://$(terraform output --json | jq -r '.azure_function_host.value')/api/upload"
 export API_KEY=$(terraform output --json | jq -r '.api_key.value')
-curl -H "X-API-Key: $API_KEY" "$AZURE_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "test", "content": "test"}'
+curl -H "X-API-Key: $API_KEY" "$AZURE_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "from_azure", "content": "test"}'
 ```
 
-#### From Google
+#### Upload Files From Google Cloud
 
 ```bash
 cd ./terraform
 export GOOGLE_FUNCTION_URL=$(terraform output --json | jq -r '.google_function_url.value')
 export API_KEY=$(terraform output --json | jq -r '.api_key.value')
-curl -H "X-API-Key: $API_KEY" "$GOOGLE_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "test", "content": "test"}'
+curl -H "X-API-Key: $API_KEY" "$GOOGLE_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "from_google", "content": "test"}'
 ```
 
 ### Teardown
+
+Make you are still in a terminal session that is authenticated to the cloud providers. Then, run one of the following:
 
 ```bash
 terraform destroy --auto-approve

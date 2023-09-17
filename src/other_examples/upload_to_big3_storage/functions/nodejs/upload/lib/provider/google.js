@@ -7,6 +7,7 @@ const aws = require('./aws')
 const azure = require('./azure')
 
 const uniqueIdentifier = process.env.UNIQUE_IDENTIFIER
+const allowedJwtAudience = process.env.ALLOWED_JWT_AUDIENCE
 const durationSeconds = 3600
 let projectId
 let storage
@@ -132,7 +133,7 @@ const initializeAzureIdentity = azureConfig => {
   azureIdentity = new ClientAssertionCredential(
     azureConfig.tenant_id,
     azureConfig.client_id,
-    async () => await getGoogleIdentityToken(`api://upload-to-big-3-${uniqueIdentifier}`)
+    async () => await getGoogleIdentityToken(allowedJwtAudience)
   )
 }
 

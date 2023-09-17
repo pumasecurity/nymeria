@@ -6,3 +6,7 @@ output "google_function_url" {
 output "aws_workload_identity_client_configuration" {
   value = data.template_file.aws_workload_identity_client_configuration.rendered
 }
+
+output "azure_workload_identity_client_configuration" {
+  value = data.template_file.azure_workload_identity_client_configuration.rendered
+}
