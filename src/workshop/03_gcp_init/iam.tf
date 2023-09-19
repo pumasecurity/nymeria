@@ -4,14 +4,14 @@ resource "google_iam_workload_identity_pool" "azure_sts_tenant" {
     google_project_service.api,
   ]
 
-  workload_identity_pool_id = "nymeria-identity-pool"
+  workload_identity_pool_id = "nymeria-identity-pool-${random_string.unique_id.result}"
   display_name              = "Azure Cross Cloud IdP"
   description               = "Azure Cross Cloud Identity"
 }
 
 resource "google_iam_workload_identity_pool_provider" "azure_sts_tenant" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.azure_sts_tenant.workload_identity_pool_id
-  workload_identity_pool_provider_id = "azure-vm"
+  workload_identity_pool_provider_id = "azure-vm-${random_string.unique_id.result}"
   display_name                       = "Azure VM"
 
   attribute_mapping = {

@@ -7,7 +7,7 @@ variable "location" {
 variable "resource_group_name" {
   description = "The resource group name for the workload resources."
   type        = string
-  default     = "nymeria-federated-identity"
+  default     = "nymeria-workshop"
 }
 
 variable "github_organization" {
@@ -23,7 +23,7 @@ variable "github_repository" {
 variable "virtual_machine_sku" {
   description = "Azure VM SKU size"
   type        = string
-  default     = "Standard_DS1_v2"
+  default     = "Standard_A2_v2"
 }
 
 variable "admin_cidr_block" {
