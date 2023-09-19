@@ -18,7 +18,7 @@ export TF_VAR_google_cloud_workload_identity_client_configuration=$GCP_WORKLOAD_
 export TF_VAR_gcs_bucket_id=$GCS_BUCKET
 
 echo "Deploying 04_gh_action resources..."
-cd "${CURRENT_DIR}/src/04_gh_action"
+cd "${CURRENT_DIR}/src/workshop/04_gh_action"
 terraform init --backend-config="storage_account_name=$ARM_STORAGE_ACCOUNT_NAME" --backend-config="resource_group_name=$ARM_RESOURCE_GROUP_NAME"
 terraform plan -out tf.plan
 terraform apply -auto-approve tf.plan
