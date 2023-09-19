@@ -1,5 +1,27 @@
-resource "azuread_application" "github" {
-  display_name    = "github-ad-app"
+# Long-lived credential (no permissions)
+resource "azuread_application" "github_creds" {
+  display_name = "github-creds-ad-app"
+}
+
+resource "azuread_service_principal" "github_creds" {
+  application_id = azuread_application.github_creds.application_id
+}
+
+resource "azuread_application_password" "github_creds" {
+  application_object_id = azuread_application.github_creds.id
+  display_name          = "github-creds-long-lived"
+  end_date_relative     = "24h" # 6 months for testing, not best practice
+}
+
+resource "azurerm_role_assignment" "github_creds" {
+  principal_id         = azuread_service_principal.github_creds.object_id
+  scope                = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${azurerm_resource_group.federated_identity.name}"
+  role_definition_name = "Reader"
+}
+
+# GitHub credential (permissions)
+resource "azuread_application" "github_federation" {
+  display_name    = "github-federation-ad-app"
   identifier_uris = ["api://nymeria-workshop"]
 
   web {
@@ -10,27 +32,21 @@ resource "azuread_application" "github" {
   }
 }
 
-resource "azuread_service_principal" "github" {
-  application_id = azuread_application.github.application_id
+resource "azuread_service_principal" "github_federation" {
+  application_id = azuread_application.github_federation.application_id
 }
 
-resource "azuread_application_password" "github" {
-  application_object_id = azuread_application.github.id
-  display_name          = "github-long-lived-credential"
-  end_date_relative     = "4392h" # 6 months for testing, not best practice
-}
-
-resource "azuread_application_federated_identity_credential" "github" {
-  application_object_id = azuread_application.github.id
-  display_name          = "github-federated-identity"
+resource "azuread_application_federated_identity_credential" "github_federation" {
+  application_object_id = azuread_application.github_federation.id
+  display_name          = "github-federation"
   description           = "Deployments for GH Action"
   audiences             = ["api://AzureADTokenExchange"]
   issuer                = "https://token.actions.githubusercontent.com"
   subject               = "repo:${var.github_organization}/${var.github_repository}:ref:refs/heads/main"
 }
 
-resource "azurerm_role_assignment" "github" {
-  principal_id         = azuread_service_principal.github.object_id
+resource "azurerm_role_assignment" "github_federation" {
+  principal_id         = azuread_service_principal.github_federation.object_id
   scope                = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${azurerm_resource_group.federated_identity.name}"
   role_definition_name = "Contributor"
 }

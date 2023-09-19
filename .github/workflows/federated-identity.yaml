@@ -29,7 +29,7 @@ jobs:
         run: |
           ARM_SUBSCRIPTION_ID=$(jq -r '.azure_subscription_id.value' <<< $AZURE_BOOTSTRAP)
           ARM_TENANT_ID=$(jq -r '.azure_tenant_id.value' <<< $AZURE_BOOTSTRAP)
-          ARM_CLIENT_ID=$(jq -r '.github_service_principal_client_id.value' <<< $AZURE_BOOTSTRAP)
+          ARM_CLIENT_ID=$(jq -r '.github_federation_client_id.value' <<< $AZURE_BOOTSTRAP)
           ARM_RESOURCE_GROUP_NAME=$(jq -r '.resource_group_name.value' <<< $AZURE_BOOTSTRAP)
           ARM_STORAGE_ACCOUNT_NAME=$(jq -r '.terraform_state_storage_account_name.value' <<< $AZURE_BOOTSTRAP)
           AZURE_VIRTUAL_MACHINE_USER_IDENTITY_ID=$(jq -r '.azure_virtual_machine_user_identity_id.value' <<< $AZURE_BOOTSTRAP)

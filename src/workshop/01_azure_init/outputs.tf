@@ -1,12 +1,18 @@
-output "github_service_principal_client_id" {
+output "github_creds_client_id" {
   description = "GH Action application (client) id"
-  value       = azuread_application.github.application_id
+  value       = azuread_application.github_creds.application_id
   sensitive   = true
 }
 
-output "github_service_principal_client_secret" {
+output "github_creds_client_secret" {
   description = "GH Action service principal client secret"
-  value       = azuread_application_password.github.value
+  value       = azuread_application_password.github_creds.value
+  sensitive   = true
+}
+
+output "github_federation_client_id" {
+  description = "GH Action application (client) id"
+  value       = azuread_application.github_federation.application_id
   sensitive   = true
 }
 
