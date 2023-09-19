@@ -1,6 +1,15 @@
 # Long Lived Credentials
 
-Explore Nymeria's long lived credentials for each cloud provider.
+Explore Nymeria's long lived credentials for each cloud provider: Azure, AWS, and Google Cloud. Use each long lived credential to access resources in each cloud provider.
+
+## GitHub Action Credentials
+
+!!! warning "Stolen Credentials"
+    Running the `long-lived-credentials` action will purposely expose an Azure client id and client secret in the GitHub Actions logs. These credentials are real and should be immediately deleted during the workshop to prevent exposure.
+
+1. 
+
+![](./img/gh-secret-actions.png)
 
 ## Azure Service Principal Secret
 
