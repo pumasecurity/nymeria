@@ -64,7 +64,7 @@ Complete the following steps to create the resources required to authenticate th
 
     !!! abstract "Terminal Output"
         ```bash
-        Apply complete! Resources: 10 added, 0 changed, 0 destroyed.
+        Apply complete! Resources: 13 added, 0 changed, 0 destroyed.
 
         Outputs:
 
@@ -374,6 +374,22 @@ Complete the following steps to create the resources required for the Azure virt
     - **Secret**: Paste the JSON Terraform output
 
 1. Press the **Add Secret** button.
+
+## Nymeria GitHub Deployment
+
+The final setup step is deploying the Nymeria virtual machine to your Azure subscription. This virtual machine will be used to authenticate to your AWS and Google Cloud accounts.
+
+1. In your GitHub repository, navigate to the *Actions* tab. Then, click on the *I understand my workflows, go ahead and enable them.* button.
+
+    ![](./img/gh-actions.png)
+
+1. Click on the *Federated Identity* workflow. On the right, press the *Run workflow* dropdown list and then press the *Run workflow* button. This will start the workflow on the `main` branch.
+
+    ![](./img/gh-action-fed.png)
+
+1. The *Federated Identity* workflow should complete the a green success status. Feel free to select the run to view the jobs and output logs.
+
+    ![](./img/gh-action-fed-done.png)
 
 ## Next Steps
 
