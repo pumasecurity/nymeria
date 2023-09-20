@@ -1,14 +1,32 @@
 # Prerequisites
 
-To complete the Nymeria workshop, you must register for the following cloud services:
+## Background Knowledge
 
-## GitHub Personal Account
+The workshop is written such that those with entry level Information Technology and Information Security experience can complete the steps. Just be careful to read the instructions closely and take your time. If an instruction is unclear or you get stuck, please open a pull request in the [Nymeria GitHub repository](https://github.com/pumasecurity/nymeria){: target="_blank" rel="noopener"} to improve the documentation.
+
+Familiarity with the following services and tools can help you better understand the concepts covered during the workshop:
+
+- [x] Identity and Access Management (IAM) in the [Azure](https://learn.microsoft.com/en-us/azure/role-based-access-control/overview){: target="_blank" rel="noopener"}, [AWS](https://docs.aws.amazon.com/iam/){: target="_blank" rel="noopener"}, and [Google](https://cloud.google.com/iam/docs/){: target="_blank" rel="noopener"} clouds
+- [x] [OpenID Connect](https://openid.net/developers/how-connect-works/){: target="_blank" rel="noopener"}
+- [x] [Linux command-line interface (CLI)](https://ubuntu.com/tutorials/command-line-for-beginners){: target="_blank" rel="noopener"}
+- [x] [jq](https://jqlang.github.io/jq/){: target="_blank" rel="noopener"}
+- [x] [GitHub](https://docs.github.com/en){: target="_blank" rel="noopener"} and [GitHub Actions](https://docs.github.com/en/actions){: target="_blank" rel="noopener"}
+- [x] [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/infrastructure-as-code){: target="_blank" rel="noopener"}
+
+## Cloud Accounts
+
+The Nymeria workshop deploys the cross-cloud identity scenario using [GitHub](https://github.com/){: target="_blank" rel="noopener"}, [Microsoft Azure](https://portal.azure.com){: target="_blank" rel="noopener"}, [Amazon Web Services](https://console.aws.amazon.com){: target="_blank" rel="noopener"}, and [Google Cloud](https://cloud.google.com){: target="_blank" rel="noopener"}. Costs for running the workshop's resource are expected to be less than $2.50 USD per day. You are responsible for any costs incurred during the workshop.
+
+!!! danger "Cloud Providers Required"
+    You must register an account with each of the following cloud providers to successfully complete the workshop.
+
+### GitHub Personal Account
 
 1. Use the following link to register for a free GitHub Personal Account:
 
     [https://docs.github.com/en/get-started/signing-up-for-github/signing-up-for-a-new-github-account](https://docs.github.com/en/get-started/signing-up-for-github/signing-up-for-a-new-github-account){: target="_blank" rel="noopener"}
 
-## Azure Subscription
+### Azure Subscription
 
 1. Use the following link to register for an Azure account and create a new subscription:
 
@@ -20,7 +38,7 @@ To complete the Nymeria workshop, you must register for the following cloud serv
 
 1. After creating the new virtual machine, you can delete the new resource group from the Azure Portal.
 
-## AWS Account
+### AWS Account
 
 1. Use the following link to register for a new personal free tier AWS account:
 
@@ -32,7 +50,7 @@ To complete the Nymeria workshop, you must register for the following cloud serv
 
 1. After creating the S3 bucket, you can delete the bucket from the AWS Console.
 
-## Google Cloud Account
+### Google Cloud Account
 
 1. Use the following link to register for a new personal Google Cloud project:
 
@@ -44,6 +62,6 @@ To complete the Nymeria workshop, you must register for the following cloud serv
 
 1. After creating the GCS bucket, you can delete the bucket from the Google Cloud Console.
 
-## IBM Cloud Account
+## Next Steps
 
-Got ya! You don't need an IBM Cloud account for this workshop. Let's move on to the [Getting Started](getting_started.md) instructions.
+With your cloud accounts, move on to the [Getting Started](getting_started.md) section.
