@@ -44,7 +44,7 @@ From the GitHub Action called *Long Lived Credentials*, find the Azure tenant id
     Login successful.
     ```
 
-## Azure Service Principal Secret
+### Azure Service Principal Secret
 
 Use the long-lived stolen client id and secret values to authenticate to the Azure tenant.
 
@@ -120,61 +120,236 @@ Use the long-lived stolen client id and secret values to authenticate to the Azu
 
 1. Now that we have proven the stolen credentials work, restart the Azure Cloud Shell to re-authenticate under your personal account.
 
+    ![](./img/az-cloudshell-restart.png)
+
 1. Run the following command to delete the compromised service principal from your Azure subscription.
 
     ```bash
-    LONG_LIVED_SP_ID=$(az ad sp list --display-name github-creds-ad-app | jq -r '.[].id')
-    az ad sp delete --id $LONG_LIVED_SP_ID
+    LONG_LIVED_APP_ID=$(az ad app list | jq -r '.[] | select(.displayName=="github-creds-ad-app").id')
+    az ad app delete --id $LONG_LIVED_APP_ID
     ```
 
-1. Finally, go back to the GitHub repository and delete the run that contained the stolen credentials.
+1. Go back to the GitHub repository and delete the run that contained the stolen credentials.
 
     ![](./img/gh-action-ll-delete.png)
 
-## AWS Access Key
+!!! success "Credential Containment"
+    Congratulations, you have successfully contained the stolen Azure credentials. Imagine doing this at scale across an enterprise each time a credential is accidentally leaked. Workload identity federation is powerful way to avoid the need for long lived credentials.
 
-1. Find the long lived AWS credentials on the Nymeria virtual machine.
+## Nymeria Virtual Machine
+
+Start hunting for long-lived AWS and Google cloud credentials on the Nymeria virtual machine. To do this, you will first need to connect to the Nymeria virtual machine over SSH. The private SSH key is stored in a Terraform output parameter called `ssh_private_key` from the `04_gh_action` deployment. Using the Azure Cloud Shell, store this output in the `~/.ssh/nymeria.pem` file.
+
+1. Run the following commands in the Azure Cloud Shell to authenticate to the Terraform state storage account.
+
+    ```bash
+    cd ~/clouddrive/nymeria/src/workshop/01_azure_init/
+    ARM_RESOURCE_GROUP_NAME=$(terraform output --json | jq -r '.resource_group_name.value')
+    ARM_STORAGE_ACCOUNT_NAME=$(terraform output --json | jq -r '.terraform_state_storage_account_name.value')
+    cd ~/clouddrive/nymeria/src/workshop/04_gh_action/
+    terraform init --backend-config="storage_account_name=$ARM_STORAGE_ACCOUNT_NAME" --backend-config="resource_group_name=$ARM_RESOURCE_GROUP_NAME"
+    ```
+
+1. Read the `ssh_private_key` output parameter and store the private key in the `~/clouddrive/.ssh/nymeria.pem` file.
+
+    ```bash
+    mkdir -p ~/.ssh
+    terraform output --json | jq -r '.ssh_private_key.value' > ~/.ssh/nymeria.pem
+    chmod 400 ~/.ssh/nymeria.pem
+    ```
+
+1. Use the `ssh_private_key` output parameter to connect to the Nymeria virtual machine over SSH.
+
+    ```bash
+    NYMERIA_FQDN=$(terraform output --json | jq -r '.azure_virtual_machine_fqdn.value')
+    ssh -i ~/.ssh/nymeria.pem ubuntu@$NYMERIA_FQDN
+    ```
+
+    !!! abstract "Terminal Output"
+        If you have successfully connected to the Nymeria virtual machine. The prompt should look like the following:
+
+        ```bash
+        Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 6.2.0-1012-azure x86_64)
+        ...
+        ubuntu@nymeria:~$
+        ```
+
+### AWS Access Key
+
+Inspect the `~/.aws/` directory for configuration files containing long-lived AWS credentials.
+
+1. List the files in the `~/.aws/` directory. Do you see a file that might contain long-lived credentials?
 
     ```bash
     ls -la ~/.aws/
+    ```
+
+    !!! abstract "Terminal Output"
+        ```bash
+        total 20
+        drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 19 22:38 .
+        drwxr-x--- 6 ubuntu ubuntu 4096 Sep 20 16:49 ..
+        -rw-r--r-- 1 root   root     67 Sep 19 22:38 config
+        -rw-r--r-- 1 root   root    121 Sep 19 22:38 credentials
+        -rw-r--r-- 1 root   root    174 Sep 19 22:38 get-resources.sh
+        ```
+
+1. Use the `cat` command to view the long-lived AWS credentials.
+
+    ```bash
     cat ~/.aws/credentials
     ```
 
-1. Use the long lived credentials to access the data in AWS S3.
+    !!! abstract "Terminal Output"
+        ```bash
+        [cross-cloud]
+        aws_access_key_id = [STOLEN_AWS_ACCESS_KEY_ID]
+        aws_secret_access_key = [STOLEN_AWS_SECRET_ACCESS_KEY]
+        ```
+
+1. Set the `AWS_PROFILE` environment variable to `cross-cloud` and use the `aws sts get-caller-identity` command to test the credentials validity.
 
     ```bash
     export AWS_PROFILE=cross-cloud
     aws sts get-caller-identity
+    ```
 
+    !!! abstract "Terminal Output"
+        ```bash
+        {
+            "UserId": "AIDAEXAMPLEID",
+            "Account": "123456789012",
+            "Arn": "arn:aws:iam::123456789012:user/nymeria-azure-vm"
+        }
+        ```
+
+1. Review the environment variables pre-populated into the `~/.aws/get-resources.sh` script. The values include the unique AWS S3 bucket with a Nymeria image.
+
+    ```bash
+    cat ~/.aws/get-resources.sh
+    ```
+
+    !!! abstract "Terminal Output"
+        ```bash
+        export AWS_S3_BUCKET_ID=nymeria-cross-cloud-abc123
+        export AWS_CROSS_CLOUD_ROLE_ARN=arn:aws:iam::123456789012:role/nymeria-azure-vm-role
+        export AWS_DEFAULT_REGION=us-east-2
+        ```
+
+1. Source the environment variables in the `~/.aws/get-resources.sh` script and verify the bucket name is populated in the `AWS_S3_BUCKET_ID` environment variable.
+
+    ```bash
     source ~/.aws/get-resources.sh 
     echo $AWS_S3_BUCKET_ID
-    aws s3 cp s3://$AWS_S3_BUCKET_ID/aws-workload-identity.png ~/aws-long-lived-credentials.png
+    ```
 
+    !!! abstract "Terminal Output"
+        ```bash
+        nymeria-cross-cloud-abc123
+        ```
+
+1. Run the `aws s3 cp` command to download the Nymeria image from the S3 bucket using the stolen long-lived credentials.
+
+    ```bash
+    aws s3 cp s3://$AWS_S3_BUCKET_ID/aws-workload-identity.png ~/aws-long-lived-credentials.png
     ls -la ~/aws-long-lived-credentials.png
     ```
 
-## Google Cloud Service Account Key
+    !!! abstract "Terminal Output"
+        ```bash
+        download: s3://nymeria-cross-cloud-iulqhgnx/aws-workload-identity.png to ./aws-long-lived-credentials.png
+        -rw-rw-r-- 1 ubuntu ubuntu 156686 Sep 19 00:25 /home/ubuntu/aws-long-lived-credentials.png
+        ```
 
-1. Find the long lived Google Cloud credentials on the Nymeria virtual machine.
+### Google Cloud Service Account Key
+
+Inspect the `~/.config/gcloud/` directory for configuration files containing long-lived Google Cloud credentials.
+
+1. List the files in the `~/.config/gcloud/` directory. Do you see a file that might contain long-lived credentials?
 
     ```bash
     ls -la ~/.config/gcloud/
+    ```
+
+    !!! abstract "Terminal Output"
+        ```bash
+        total 20
+        drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 19 22:38 .
+        drwxr-xr-x 3 root   root   4096 Sep 19 22:38 ..
+        -rw-r--r-- 1 root   root    799 Sep 19 22:38 cross-cloud-client-config.json
+        -rw-r--r-- 1 root   root   2387 Sep 19 22:38 cross-cloud-key.json
+        -rw-r--r-- 1 root   root     89 Sep 19 22:38 get-resources.sh
+        ```
+
+1. Use the `cat` command to view the long-lived GCP service account key.
+
+    ```bash
     cat ~/.config/gcloud/cross-cloud-key.json
     ```
 
-1. Use the long lived credentials to access the data in GCS.
+    !!! abstract "Terminal Output"
+        ```json
+        {
+            "type": "service_account",
+            "project_id": "nymeria-workshop",
+            "private_key_id": "662b8b4b471ac0b823d5b0a8206a185f6203cf55",
+            "private_key": "-----BEGIN PRIVATE KEY-----
+            ...[snipped for brevity]
+        }
+        ```
+
+1. Review the environment variables pre-populated into the `~/.config/gcloud/get-resources.sh` script. The values include the unique GCS bucket with a Nymeria image.
+
+    ```bash
+    cat ~/.config/gcloud/get-resources.sh
+    ```
+
+    !!! abstract "Terminal Output"
+        ```bash
+        export GCS_BUCKET_ID=nymeria-cross-cloud-abc123
+        export GCP_PROJECT_ID=[YOUR_GCP_PROJECT_ID]
+        ```
+
+1. Source the environment variables in the `~/.config/gcloud/get-resources.sh` script and verify the bucket name is populated in the `AWS_S3_BUCKET_ID` environment variable.
+
+    ```bash
+    source ~/.config/gcloud/get-resources.sh
+    echo $GCS_BUCKET_ID
+    ```
+
+    !!! abstract "Terminal Output"
+        ```bash
+        nymeria-cross-cloud-abc123
+        ```
+
+1. Run the `gcloud auth activate-service-account` command to configure the `gcloud` CLI to use the stolen long-lived credentials.
 
     ```bash
     gcloud auth activate-service-account --key-file=/home/ubuntu/.config/gcloud/cross-cloud-key.json
+    ```
 
-    GCP_TOKEN=$(gcloud auth print-identity-token)
-    jq -R 'split(".") | .[1] | @base64d | fromjson' <<< $GCP_TOKEN
+    !!! abstract "Terminal Output"
+        ```bash
+        Activated service account credentials for: [nymeria-cross-cloud-sa@nymeria-workshop.iam.gserviceaccount.com]
+        ```
 
-    source ~/.config/gcloud/get-resources.sh
+1. Run the `gsutil` command to download the Nymeria image from the GCS bucket using the stolen long-lived credentials.
 
-    echo $GCS_BUCKET_ID
-
+    ```bash
     gsutil cp gs://$GCS_BUCKET_ID/gcp-workload-identity.png ~/gcp-long-lived-credential.png
-
     ls -la ~/gcp-long-lived-credential.png
     ```
+
+    !!! abstract "Terminal Output"
+        ```bash
+        Copying gs://nymeria-cross-cloud-e9zwi7h7/gcp-workload-identity.png...
+        / [1 files][155.7 KiB/155.7 KiB]
+        -rw-rw-r-- 1 ubuntu ubuntu 159450 Sep 20 18:02 /home/ubuntu/gcp-long-lived-credential.png
+        ```
+
+## Next Steps
+
+!!! danger "Long-Lived Credential Exploitation"
+    Congratulations, you have successfully stolen and used long-lived credentials to gain access to Azure, AWS, and GCP resources. These long-lived credentials will be destroyed using the [Nymeria Teardown](./teardown.md) steps at the end of the workshop.
+
+Next, move on to the [Azure Federation](./azure_federation.md) section to learn how to use Azure Workload Identity Federation to avoid the need for long-lived client secrets.

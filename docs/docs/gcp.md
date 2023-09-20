@@ -2,6 +2,11 @@
 
 ## Workload Identity Federation
 
+<!-- 
+GCP_TOKEN=$(gcloud auth print-identity-token)
+    jq -R 'split(".") | .[1] | @base64d | fromjson' <<< $GCP_TOKEN
+-->
+
 1. Run the following command to set the Google Cloud project id and GCS bucket.
 
     ```bash

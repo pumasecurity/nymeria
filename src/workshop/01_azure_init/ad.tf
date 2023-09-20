@@ -10,7 +10,7 @@ resource "azuread_service_principal" "github_creds" {
 resource "azuread_application_password" "github_creds" {
   application_object_id = azuread_application.github_creds.id
   display_name          = "github-creds-long-lived"
-  end_date_relative     = "24h" # 6 months for testing, not best practice
+  end_date_relative     = "24h" # short window for the workshop
 }
 
 resource "azurerm_role_assignment" "github_creds" {

@@ -26,6 +26,7 @@ nav:
           - Azure Federation: "azure.md"
           - AWS Federation: "aws.md"
           - Google Cloud Federation: "gcp.md"
+          - Teardown: "teardown.md"
 
 markdown_extensions:
     - admonition
