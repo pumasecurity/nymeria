@@ -27,22 +27,24 @@ From the GitHub Action called *Long Lived Credentials*, find the Azure tenant id
 
 1. Expand the *Azure Login* step to find the Azure tenant id, client id, and client secret values in the log output.
 
-    ```bash
-    Run azure/login@v1.4.6
+    !!! abstract "Console Output"
+        ```bash
+        Run azure/login@v1.4.6
         with:
-        creds: ***"clientId":"[your-client-id]","clientSecret":"[your-client-secret]","subscriptionId":"[your-subscription-id]","tenantId":"[your-tenant-id]"***
-        enable-AzPSSession: false
-        environment: azurecloud
-        allow-no-subscriptions: false
-        audience: api://AzureADTokenExchange
-    ```
+          creds: ***"clientId":"[your-client-id]","clientSecret":"[your-client-secret]","subscriptionId":"[your-subscription-id]","tenantId":"[your-tenant-id]"***
+          enable-AzPSSession: false
+          environment: azurecloud
+          allow-no-subscriptions: false
+          audience: api://AzureADTokenExchange
+        ```
 
 1. These long-lived credentials are being used to authenticate to the Azure subscription. Observe the GitHub Action also shows a *Note* suggesting that we use a a federated credential to use OIDC based authentication.
 
-    ```bash
-    Note: Azure/login action also supports OIDC login mechanism. Refer https://github.com/azure/login#configure-a-service-principal-with-a-federated-credential-to-use-oidc-based-authentication for more details.
-    Login successful.
-    ```
+    !!! abstract "Console Output"
+        ```bash
+        Note: Azure/login action also supports OIDC login mechanism. Refer https://github.com/azure/login#configure-a-service-principal-with-a-federated-credential-to-use-oidc-based-authentication for more details.
+        Login successful.
+        ```
 
 ### Azure Service Principal Secret
 
@@ -352,4 +354,4 @@ Inspect the `~/.config/gcloud/` directory for configuration files containing lon
 !!! danger "Long-Lived Credential Exploitation"
     Congratulations, you have successfully stolen and used long-lived credentials to gain access to Azure, AWS, and GCP resources. These long-lived credentials will be destroyed using the [Nymeria Teardown](./teardown.md) steps at the end of the workshop.
 
-Next, move on to the [Azure Federation](./azure_federation.md) section to learn how to use Azure Workload Identity Federation to avoid the need for long-lived client secrets.
+Next, move on to the [Azure Federation](./azure.md) section to learn how to use Azure Workload Identity Federation to avoid the need for long-lived client secrets.

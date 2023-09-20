@@ -14,9 +14,9 @@ Nymeria's goal is to help cloud identity and security teams to eliminate long-li
 
 1. A GitHub Action needs to authenticate to an Azure AD Tenant to run a Terraform deployment.
 
-- The Terraform deployment creates an Azure virtual machine that requires data stored in both AWS S3 and Google Cloud Storage (GCS).
+1. The Terraform deployment creates an Azure virtual machine that requires data stored in both AWS S3 and Google Cloud Storage (GCS).
 
-![](https://pumasecurity.github.io/nymeria/img/cross-cloud-resources.png)
+![](./img/cross-cloud-resources.png)
 
 There are two ways to complete this architecture. The first pattern relies on long-lived credentials, and the second pattern relies on Workload Identity Federation.
 
@@ -24,17 +24,17 @@ There are two ways to complete this architecture. The first pattern relies on lo
 
 1. The GitHub Action uses an Azure Service Principal Client Id and Client Secret for authenticating to the Azure AD Tenant.
 
-- The Azure Virtual machine uses AWS IAM User Access Keys for authenticating to the AWS S3 API.
+1. The Azure Virtual machine uses AWS IAM User Access Keys for authenticating to the AWS S3 API.
 
-- The Azure Virtual machine uses a Google Cloud Service Account Key for authenticating to the GCS API.
+1. The Azure Virtual machine uses a Google Cloud Service Account Key for authenticating to the GCS API.
 
 ### Workload Identity Federation
 
 1. The GitHub Action uses a built-in OpenID Connect (OIDC) JWT token for authenticating to the Azure AD Tenant.
 
-- The Azure virtual machine obtains a signed OpenID Connect JWT from the instance metadata service (IMDS). Then, uses the identity token to authenticate to an AWS Identity Provider and access the S3 API.
+1. The Azure virtual machine obtains a signed OpenID Connect JWT from the instance metadata service (IMDS). Then, uses the identity token to authenticate to an AWS Identity Provider and access the S3 API.
 
-- The Azure virtual machine obtains a signed OpenID Connect JWT from the instance metadata service (IMDS). Then, uses the identity token to impersonate a Google Cloud service account and access the GCS API.
+1. The Azure virtual machine obtains a signed OpenID Connect JWT from the instance metadata service (IMDS). Then, uses the identity token to impersonate a Google Cloud service account and access the GCS API.
 
 ## Other Examples
 
