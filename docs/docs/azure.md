@@ -16,7 +16,7 @@ Inspect the GitHub *Federated Identity* workflow and identify the OIDC token's s
 
 1. Expand the *Azure Login* step to view the log output from the the `azure/login` action. Observe the following log output from the `azure/login` action showing the federated token details.
 
-    - The identity token's issuer is set to `https://token.actions.githubusercontent.com `.
+    - The identity token's issuer is set to `https://token.actions.githubusercontent.com`.
 
     - The identity token's subject uniquely identifies your `nymeria` repository and `main` branch running the *Federated Identity* workflow.
 

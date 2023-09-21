@@ -213,7 +213,7 @@ Complete the following steps to create the resources required for the Azure virt
         aws_default_region = "us-east-2"
         aws_s3_bucket = "nymeria-cross-cloud-ipdrhsne"
         azure_vm_aws_access_key_id = <sensitive>
-        azure_vm_aws_role_arn = "arn:aws:iam::111111111111:role/nymeria-azure-vm-role"
+        azure_vm_aws_role_arn = "arn:aws:iam::123456789012:role/nymeria-azure-vm-role"
         azure_vm_aws_secret_access_key = <sensitive>
         ```
 
@@ -243,7 +243,7 @@ Complete the following steps to create the resources required for the Azure virt
           "azure_vm_aws_role_arn": {
             "sensitive": false,
             "type": "string",
-            "value": "arn:aws:iam::111111111111:role/nymeria-azure-vm-role"
+            "value": "arn:aws:iam::123456789012:role/nymeria-azure-vm-role"
           },
           "azure_vm_aws_secret_access_key": {
             "sensitive": true,
