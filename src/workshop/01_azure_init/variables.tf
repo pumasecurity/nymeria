@@ -19,15 +19,3 @@ variable "github_repository" {
   description = "GitHub Repository hosting the action"
   type        = string
 }
-
-variable "virtual_machine_sku" {
-  description = "Azure VM SKU size"
-  type        = string
-  default     = "Standard_A2_v2"
-}
-
-variable "admin_cidr_block" {
-  description = "Trusted public IP address for SSH."
-  type        = string
-  default     = "0.0.0.0/0"
-}
