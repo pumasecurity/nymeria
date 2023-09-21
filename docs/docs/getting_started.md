@@ -323,8 +323,8 @@ Complete the following steps to create the resources required for the Azure virt
         Outputs:
 
         azure_vm_google_service_account_key = <sensitive>
-        gcp_project_id = "nymeria-workshop"
-        gcs_bucket = "nymeria-cross-cloud-e9zwi7h7"
+        gcp_project_id = "[YOUR_GOOGLE_PROJECT_ID]"
+        gcs_bucket = "nymeria-cross-cloud-abc123"
         workload_identity_client_configuration = ...
         ```
 

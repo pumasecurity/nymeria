@@ -165,7 +165,7 @@ Use the Nymeria virtual machine's OpenID Connect token to assume the AWS IAM rol
     AZURE_JWT=$(curl -s "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=api://nymeria-workshop" -H "Metadata: true" | jq -r '.access_token')
     ```
 
-1. Source the environment variables in the `~/.aws/get-resources.sh` script and verify the  name is populated in the `AWS_S3_BUCKET_ID` environment variable.
+1. Source the environment variables in the `~/.aws/get-resources.sh` script and verify the role ARN is populated in the `AWS_CROSS_CLOUD_ROLE_ARN` environment variable.
 
     ```bash
     source ~/.aws/get-resources.sh 
@@ -214,6 +214,6 @@ Use the Nymeria virtual machine's OpenID Connect token to assume the AWS IAM rol
 ## Next Steps
 
 !!! success "AWS Workload Identity"
-    With this configuration, we have successfully killed the AWS long-lived access keys. The Nymeria virtual machine is now using the native identity token (JWT)to assume the AWS IAM Role and access the AWS S3 API.
+    With this configuration, we have successfully killed the AWS long-lived access keys. The Nymeria virtual machine is now using its native identity token (JWT) to assume the AWS IAM Role and access the AWS S3 API.
 
 Next, move on to the [Google Workload Identity Federation](./gcp.md) section to learn how to authenticate the Nymeria virtual machine using AWS Identity Federation.

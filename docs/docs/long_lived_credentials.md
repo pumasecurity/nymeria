@@ -293,7 +293,7 @@ Inspect the `~/.config/gcloud/` directory for configuration files containing lon
         ```json
         {
             "type": "service_account",
-            "project_id": "nymeria-workshop",
+            "project_id": "[YOUR_GOOGLE_PROJECT_ID]",
             "private_key_id": "662b8b4b471ac0b823d5b0a8206a185f6203cf55",
             "private_key": "-----BEGIN PRIVATE KEY-----
             ...[snipped for brevity]
@@ -332,7 +332,7 @@ Inspect the `~/.config/gcloud/` directory for configuration files containing lon
 
     !!! abstract "Terminal Output"
         ```bash
-        Activated service account credentials for: [nymeria-cross-cloud-sa@nymeria-workshop.iam.gserviceaccount.com]
+        Activated service account credentials for: [nymeria-cross-cloud-sa@[YOUR_GOOGLE_PROJECT_ID].iam.gserviceaccount.com]
         ```
 
 1. Run the `gsutil` command to download the Nymeria image from the GCS bucket using the stolen long-lived credentials.
