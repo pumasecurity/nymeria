@@ -63,7 +63,7 @@ Use the Nymeria virtual machine's OpenID Connect token to impersonate the Google
 1. Source the environment variables in the `~/.config/gcloud/get-resources.sh` script and verify the project and bucket names are populated in the `GCS_BUCKET_ID` and `GCP_PROJECT_ID` environment variables.
 
     ```bash
-    ~/.config/gcloud/get-resources.sh
+    source ~/.config/gcloud/get-resources.sh
     echo $GCS_BUCKET_ID
     echo $GCP_PROJECT_ID
     ```
