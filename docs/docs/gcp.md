@@ -24,7 +24,7 @@ Inspect the Google Cloud Workload Identity Provider and Service Account configur
 
     - The **Allowed Audiences** includes one entry matching the Nymeria virtual machine's identity token's `aud` claim: `api://nymeria-workshop`.
 
-    ![](./img/gcp-workload-identity-pool.png)
+    ![](./img/gcp-azure-pool.png)
 
 1. The Workload Identity Pool and Provider resources do not inherently grant access to impersonate a service account. Permissions are granted by connecting a service account to the identity pool. Press the back button to navigate back to the workload identity pool. Then, select the *Connected Service Accounts* tab in the right window. Expand the *nymeria-cross-cloud-sa* service account to view the identity pool principals with access to impersonate the service account.
 
