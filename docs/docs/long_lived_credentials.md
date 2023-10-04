@@ -97,7 +97,7 @@ Use the long-lived stolen client id and secret values to authenticate to the Azu
 1. The following command will list the resource groups that the service principal has access to: `nymeria-workshop`.
 
     ```bash
-    az group list
+    az group list -o table
     ```
 
     !!! abstract "Terminal Output"
