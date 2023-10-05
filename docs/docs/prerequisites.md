@@ -32,7 +32,18 @@ The Nymeria workshop deploys the cross-cloud identity scenario using [GitHub](ht
 
     [https://azure.microsoft.com/en-us/free/](https://azure.microsoft.com/en-us/free/){: target="_blank" rel="noopener"}
 
-1. The workshop requires you to be able to create an Azure virtual machine. After creating the new subscription, we highly recommend manually creating a new virtual machine in the `eastus` location using the Azure Portal to ensure that your account is fully activated. If you are unable to create a new virtual machine, please contact Microsoft Support to increase your quota. Follow these instructions to create a new virtual machine:
+1. In the [Azure Portal](https://portal.azure.com/){: target="_blank" rel="noopener"} and press the **Cloud Shell** icon next to the search box.
+
+    ![](./img/az-portal.png)
+
+1. Run the following commands to enable the Web and Compute APIs in your subscription.
+
+    ```bash
+    az provider register --namespace Microsoft.Web
+    az provider register --namespace Microsoft.Compute
+    ```
+
+1. The workshop requires you to be able to create an Azure virtual machine. After creating the new subscription, we highly recommend manually creating a new `Standard_A2_v2` virtual machine in the `eastus` location using the Azure Portal to ensure that your account is fully activated. If you are unable to create a new virtual machine, please contact Microsoft Support to increase your quota. Follow these instructions to create a new virtual machine:
 
     [https://learn.microsoft.com/en-us/azure/virtual-machines/linux/quick-create-portal?tabs=ubuntu](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/quick-create-portal?tabs=ubuntu){: target="_blank" rel="noopener"}
 
