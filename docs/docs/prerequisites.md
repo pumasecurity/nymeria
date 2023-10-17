@@ -41,6 +41,7 @@ The Nymeria workshop deploys the cross-cloud identity scenario using [GitHub](ht
     ```bash
     az provider register --namespace Microsoft.Web
     az provider register --namespace Microsoft.Compute
+    az provider register --namespace Microsoft.CloudShell
     ```
 
 1. The workshop requires you to be able to create an Azure virtual machine. After creating the new subscription, we highly recommend manually creating a new `Standard_A2_v2` virtual machine in the `eastus` location using the Azure Portal to ensure that your account is fully activated. If you are unable to create a new virtual machine, please contact Microsoft Support to increase your quota. Follow these instructions to create a new virtual machine:
