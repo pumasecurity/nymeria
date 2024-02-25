@@ -67,9 +67,14 @@ resource "aws_iam_role_policy_attachment" "upload_to_big3_storage" {
   policy_arn = aws_iam_policy.upload.arn
 }
 
-resource "aws_iam_policy" "upload_to_big3_storage_cloudwatch" {
+resource "aws_iam_policy" "lambda_cloudwatch" {
   name   = "upload-to-big3-lambda-cloudwatch"
   policy = data.aws_iam_policy_document.lambda_cloudwatch.json
+}
+
+resource "aws_iam_role_policy_attachment" "upload_to_big3_storage_cloudwatch" {
+  role       = aws_iam_role.upload_to_big3_storage.name
+  policy_arn = aws_iam_policy.lambda_cloudwatch.arn
 }
 
 resource "aws_iam_role_policy_attachment" "upload_to_big3_storage_azure" {
