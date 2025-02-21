@@ -1,7 +1,8 @@
 
 resource "google_container_cluster" "nymeria" {
-  name     = local.gke.cluster_name
-  location = var.region
+  name                = local.gke.cluster_name
+  location            = var.region
+  deletion_protection = false
 
   network    = google_compute_network.nymeria.name
   subnetwork = google_compute_subnetwork.private.name

@@ -33,7 +33,6 @@ locals {
     "compute.admin",
     "iam.roleAdmin",
     "iam.serviceAccountAdmin",
-    "iam.serviceAccountUser",
     "resourcemanager.projectIamAdmin",
     "iam.securityAdmin",
     "iam.serviceAccountKeyAdmin",
@@ -43,6 +42,7 @@ locals {
     "serviceusage.serviceUsageAdmin",
     "storage.admin",
     "logging.admin",
+    "container.admin",
   ]
 }
 
