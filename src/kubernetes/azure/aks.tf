@@ -13,7 +13,7 @@ resource "azurerm_kubernetes_cluster" "nymeria" {
   # configure Entra ID / K8s RBAC integrations
   role_based_access_control_enabled = true
   azure_active_directory_role_based_access_control {
-    tenant_id              = data.azurerm_client_config.current.tenant_id
+    tenant_id              = data.azurerm_client_config.this.tenant_id
     admin_group_object_ids = [azuread_group.aks_cluster_admin.object_id]
   }
 
@@ -67,11 +67,4 @@ resource "azurerm_role_assignment" "nymeria_network" {
   scope                = azurerm_subnet.private.id
 
   depends_on = [null_resource.wait_for_cluster]
-}
-
-resource "azurerm_role_assignment" "nymeria_acr" {
-  principal_id                     = azurerm_kubernetes_cluster.nymeria.kubelet_identity[0].object_id
-  role_definition_name             = "AcrPull"
-  scope                            = azurerm_container_registry.nymeria.id
-  skip_service_principal_aad_check = true
 }

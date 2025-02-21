@@ -11,7 +11,7 @@ resource "google_project_iam_member" "gke_node" {
 
 resource "google_service_account" "nymeria" {
   account_id   = "nymeria"
-  display_name = "GKE Nymeria static credential pod service account"
+  display_name = "GKE Nymeria pod service account"
 }
 
 resource "google_service_account_key" "nymeria" {

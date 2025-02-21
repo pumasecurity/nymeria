@@ -9,13 +9,51 @@ variable "project_id" {
   type        = string
 }
 
-variable "gke_workload_identity_namespace" {
-  description = "GKE workload identity namespace"
+variable "aws_active" {
+  description = "Enable AWS OIDC federation"
+  type        = bool
+  default     = false
+}
+
+variable "aws_eks_cluster_issuer_url" {
+  description = "AWS EKS cluster OIDC issuer URL"
+  type        = string
+  default     = ""
+}
+
+variable "aws_eks_cluster_audience" {
+  description = "Azure AKS cluster OIDC audience"
+  type        = string
+  default     = "sts.amazonaws.com"
+
+}
+
+variable "azure_active" {
+  description = "Enable Azure OIDC federation"
+  type        = bool
+  default     = false
+
+}
+
+variable "azure_aks_cluster_issuer_url" {
+  description = "Azure AKS cluster OIDC issuer URL"
+  type        = string
+  default     = ""
+}
+
+variable "azure_aks_cluster_audience" {
+  description = "Azure AKS cluster OIDC audience"
+  type        = string
+  default     = "api://AzureADTokenExchange"
+}
+
+variable "workload_identity_namespace" {
+  description = "Kubernetes workload identity namespace"
   type        = string
 }
 
-variable "gke_workload_identity_service_account" {
-  description = "GCP workload identity service account"
+variable "workload_identity_service_account" {
+  description = "Kubernetes workload identity service account"
   type        = string
 }
 

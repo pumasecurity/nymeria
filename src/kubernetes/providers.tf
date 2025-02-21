@@ -1,6 +1,14 @@
 terraform {
   required_providers {
 
+    azurerm = {
+      source = "hashicorp/azurerm"
+    }
+
+    azuread = {
+      source = "hashicorp/azuread"
+    }
+
     google = {
       source  = "hashicorp/google"
       version = "6.20.0"
@@ -15,10 +23,18 @@ terraform {
       source  = "hashicorp/null"
       version = "3.2.3"
     }
+  }
+}
 
-    tls = {
-      source  = "hashicorp/tls"
-      version = "4.0.6"
+provider "azurerm" {
+  subscription_id = var.azure_subscription_id
+
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+    key_vault {
+      purge_soft_delete_on_destroy = false
     }
   }
 }

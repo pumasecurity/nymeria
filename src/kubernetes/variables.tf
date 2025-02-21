@@ -22,13 +22,18 @@ variable "azure_active" {
   default     = false
 }
 
+variable "azure_subscription_id" {
+  description = "Azure subscription id"
+  type        = string
+}
+
 variable "azure_location" {
-  description = "Azure region"
+  description = "Azure location"
   type        = string
   default     = "eastus2"
 }
 
-variable "virtual_machine_size" {
+variable "azure_virtual_machine_size" {
   description = "AKS node instance type"
   type        = string
   default     = "Standard_D4s_v3"

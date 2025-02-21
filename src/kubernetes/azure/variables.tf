@@ -7,7 +7,54 @@ variable "location" {
 variable "virtual_machine_size" {
   description = "AKS node instance type"
   type        = string
-  default     = "Standard_D4s_v3"
+}
+
+variable "aws_active" {
+  description = "Enable AWS OIDC federation"
+  type        = bool
+  default     = false
+}
+
+variable "aws_eks_cluster_issuer_url" {
+  description = "AWS EKS cluster OIDC issuer URL"
+  type        = string
+  default     = ""
+}
+
+variable "aws_eks_cluster_audience" {
+  description = "Azure AKS cluster OIDC audience"
+  type        = string
+  default     = "sts.amazonaws.com"
+}
+
+variable "gcp_active" {
+  description = "Enable GCP OIDC federation"
+  type        = bool
+  default     = false
+}
+
+variable "gcp_gke_cluster_issuer_url" {
+  description = "GKE cluster OIDC issuer URL"
+  type        = string
+  default     = ""
+}
+
+variable "gcp_gke_cluster_audience" {
+  description = "GKE cluster OIDC audience"
+  type        = string
+  default     = ""
+}
+
+variable "workload_identity_namespace" {
+  description = "Kubernetes workload identity namespace"
+  type        = string
+  default     = ""
+}
+
+variable "workload_identity_service_account" {
+  description = "Kubernetes workload identity service account"
+  type        = string
+  default     = ""
 }
 
 variable "tag_owner" {

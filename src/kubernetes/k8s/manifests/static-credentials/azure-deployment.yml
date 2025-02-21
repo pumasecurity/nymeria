@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nymeria-azure
+  namespace: static-credential
+  labels:
+    app: nymeria
+    cloud: azure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nymeria
+      cloud: azure
+  template:
+    metadata:
+      name: nymeria-gcloud
+      labels:
+        app: nymeria
+        cloud: azure
+    spec:
+      containers:
+        - name: azcli
+          image: mcr.microsoft.com/azure-cli:latest
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "-c", "--"]
+          args: ["while true; do sleep 30; done;"]
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+              ephemeral-storage: 1Gi
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+              ephemeral-storage: 1Gi
+          env:
+            - name: NYMERIA_STORAGE_BUCKET
+              value: ${nymeria_storage_bucket}
+            - name: ARM_TENANT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: azure-service-principal
+                  key: tenant_id
+            - name: ARM_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: azure-service-principal
+                  key: client_id
+            - name: ARM_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: azure-service-principal
+                  key: client_secret
+      nodeSelector:
+        kubernetes.io/os: linux

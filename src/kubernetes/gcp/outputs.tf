@@ -19,6 +19,11 @@ output "nymeria_cluster_issuer" {
   value = google_container_cluster.nymeria.self_link
 }
 
+output "nymeria_service_account_email" {
+  value     = google_service_account.nymeria.email
+  sensitive = true
+}
+
 output "nymeria_service_account_key" {
   value     = google_service_account_key.nymeria.private_key
   sensitive = true

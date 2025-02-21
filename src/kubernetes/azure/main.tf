@@ -1,6 +1,6 @@
-data "azurerm_client_config" "current" {}
+data "azurerm_client_config" "this" {}
 
-data "azurerm_subscription" "current" {}
+data "azurerm_subscription" "this" {}
 
 resource "azurerm_resource_group" "this" {
   name     = local.aks.cluster_name
