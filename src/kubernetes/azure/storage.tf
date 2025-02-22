@@ -30,11 +30,11 @@ resource "azurerm_storage_blob" "storage" {
 resource "azurerm_role_assignment" "storage_service_principal" {
   principal_id         = azuread_service_principal.nymeria.object_id
   scope                = azurerm_storage_account.nymeria.id
-  role_definition_name = "Reader"
+  role_definition_name = "Storage Blob Data Reader"
 }
 
 resource "azurerm_role_assignment" "storage_managed_identity" {
   principal_id         = azurerm_user_assigned_identity.nymeria.principal_id
   scope                = azurerm_storage_account.nymeria.id
-  role_definition_name = "Reader"
+  role_definition_name = "Storage Blob Data Reader"
 }

@@ -29,6 +29,6 @@ output "nymeria_cluster_issuer" {
   value = azurerm_kubernetes_cluster.nymeria.oidc_issuer_url
 }
 
-output "nymeria_storage_account" {
+output "nymeria_storage_account_name" {
   value = azurerm_storage_account.nymeria.name
 }

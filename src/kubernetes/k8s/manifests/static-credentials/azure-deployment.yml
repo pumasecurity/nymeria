@@ -14,7 +14,7 @@ spec:
       cloud: azure
   template:
     metadata:
-      name: nymeria-gcloud
+      name: nymeria-azure
       labels:
         app: nymeria
         cloud: azure
@@ -35,8 +35,8 @@ spec:
               cpu: "250m"
               ephemeral-storage: 1Gi
           env:
-            - name: NYMERIA_STORAGE_BUCKET
-              value: ${nymeria_storage_bucket}
+            - name: NYMERIA_STORAGE_ACCOUNT
+              value: ${nymeria_storage_account}
             - name: ARM_TENANT_ID
               valueFrom:
                 secretKeyRef:

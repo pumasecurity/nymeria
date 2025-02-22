@@ -27,6 +27,96 @@ workload-identity             Active   11m
 
 Use the following sections to verify that you can connect to each cloud provider API using the static credentials stored in a Kubernetes secret.
 
+### Azure Cloud
+
+Find the static credentials for Azure Cloud by running the following command:
+
+```bash
+k get secrets -n static-credential
+```
+
+You will see a secret called *azure-service-principal* that contains the static service principal client id and client secret for the *nymeria* service account inside of your GCP project's IAM & Admin console.
+
+```text
+azure-service-principal   Opaque   3      18m
+```
+
+To see where the service account key is used, run the following command to describe the nymeria gcloud deployment:
+
+```bash
+k describe deployment -n static-credential nymeria-azure
+```
+
+You will see that the deployment is mounting the service account key as into a volume called *gcp-service-account-key*. The service account key will be located in the `/mnt/service-account/` directory.
+
+```text
+Environment:
+  NYMERIA_STORAGE_ACCOUNT:  nymeria49d0fec8
+  ARM_TENANT_ID:           <set to the key 'tenant_id' in secret 'azure-service-principal'>      Optional: false
+  ARM_CLIENT_ID:           <set to the key 'client_id' in secret 'azure-service-principal'>      Optional: false
+  ARM_CLIENT_SECRET:       <set to the key 'client_secret' in secret 'azure-service-principal'>  Optional: false
+```
+
+To verify that the service account key grants access to Azure cloud resources, run the following command to exec into the nymeria-azure pod:
+
+```bash
+k exec -n static-credential -it $(k get pod -n static-credential -l app=nymeria,cloud=azure -o json | jq -r '.items[0].metadata.name') -- /bin/bash
+```
+
+The command creates a shell inside the gcloud pod, which you can use to authenticate to your project and obtain the nymeria logo from the GCS bucket.
+
+```text
+root [ / ]#
+```
+
+Verify the Azure service principal client id, client secret, and tenant id are properly populated into the properly mounted into the container.
+
+```bash
+env | grep ARM_
+```
+
+The output should show the three Azure environment variables used to authenticate to the service principals Entra ID tenant. account key in JSON format.
+
+```json
+ARM_CLIENT_ID=<id>
+ARM_TENANT_ID=<id>
+ARM_CLIENT_SECRET=<secret>
+```
+
+Use the service account key to authenticate to your GCP project.
+
+```bash
+az login --service-principal -u ${ARM_CLIENT_ID} -p="${ARM_CLIENT_SECRET}" --tenant ${ARM_TENANT_ID}
+```
+
+Verify that you can list the blobs in the Nymeria Azure storage account. This command will use the static service principal credentials to authenticate to the Azure storage API.
+
+```bash
+az storage blob list --account-name $NYMERIA_STORAGE_ACCOUNT --container-name nymeria --auth-mode login
+```
+
+The results will show you the contents of the bucket, including the *gcp-workload-identity.png*.
+
+```text
+"container": "nymeria",
+"content": "",
+"deleted": null,
+"encryptedMetadata": null,
+"encryptionKeySha256": null,
+"encryptionScope": null,
+"hasLegalHold": null,
+"hasVersionsOnly": null,
+"immutabilityPolicy": {
+  "expiryTime": null,
+  "policyMode": null
+},
+"isAppendBlobSealed": null,
+"isCurrentVersion": null,
+"lastAccessedOn": null,
+"metadata": {},
+"name": "azure-workload-identity.png",
+```
+
 ### Google Cloud
 
 Find the static credentials for Google Cloud by running the following command:

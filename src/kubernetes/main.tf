@@ -46,6 +46,11 @@ module "kubernetes_gke" {
   aws_active   = var.aws_active
   azure_active = var.azure_active
 
+  azure_nymeria_tenant_id                       = var.azure_active ? module.azure[0].nymeria_tenant_id : ""
+  azure_nymeria_service_principal_client_id     = var.azure_active ? module.azure[0].nymeria_service_principal_client_id : ""
+  azure_nymeria_service_principal_client_secret = var.azure_active ? module.azure[0].nymeria_service_principal_client_secret : ""
+  azure_nymeria_workload_identity_client_id     = var.azure_active ? module.azure[0].nymeria_workload_identity_client_id : ""
+  azure_nymeria_storage_account_name            = var.azure_active ? module.azure[0].nymeria_storage_account_name : ""
 
   gcp_nymeria_service_account_key = var.gcp_active ? module.gcp[0].nymeria_service_account_key : ""
   gcp_nymeria_storage_bucket      = var.gcp_active ? module.gcp[0].nymeria_storage_bucket : ""
