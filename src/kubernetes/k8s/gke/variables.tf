@@ -4,6 +4,11 @@ variable "aws_active" {
   default     = false
 }
 
+variable "aws_oidc_audience" {
+  description = "AWS service account token audience"
+  type        = string
+}
+
 variable "azure_active" {
   description = "Enable Azure pod resources"
   type        = bool
@@ -32,6 +37,11 @@ variable "azure_nymeria_workload_identity_client_id" {
 
 variable "azure_nymeria_storage_account_name" {
   description = "Nymeria Azure storage account name"
+  type        = string
+}
+
+variable "azure_oidc_audience" {
+  description = "Azure service account token audience"
   type        = string
 }
 

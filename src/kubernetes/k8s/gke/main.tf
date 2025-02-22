@@ -7,7 +7,7 @@ resource "kubernetes_manifest" "workload_identity_ns" {
 }
 
 resource "kubernetes_manifest" "workload_identity_service_account" {
-  manifest = yamldecode(file("${path.module}/../manifests/workload-identity/gcp-sa.yml"))
+  manifest = yamldecode(file("${path.module}/../manifests/workload-identity/sa.yml"))
 
   depends_on = [kubernetes_manifest.workload_identity_ns]
 }

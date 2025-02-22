@@ -83,10 +83,10 @@ ARM_TENANT_ID=<id>
 ARM_CLIENT_SECRET=<secret>
 ```
 
-Use the service account key to authenticate to your GCP project.
+Use the service principal client secret to authenticate to the Entra ID tenant.
 
 ```bash
-az login --service-principal -u ${ARM_CLIENT_ID} -p="${ARM_CLIENT_SECRET}" --tenant ${ARM_TENANT_ID}
+az login --service-principal --tenant ${ARM_TENANT_ID} -u ${ARM_CLIENT_ID} -p="${ARM_CLIENT_SECRET}" 
 ```
 
 Verify that you can list the blobs in the Nymeria Azure storage account. This command will use the static service principal credentials to authenticate to the Azure storage API.
@@ -208,6 +208,159 @@ storage_class: STANDARD
 ## Kubernetes Workload Identity
 
 Use the following sections to verify that you can connect to each cloud provider API using the built in workload identity credentials stored in a Kubernetes secret.
+
+### Azure Managed Identity Federation
+
+Start by confirming that no static credential secrets exist in the *workload-identity* namespace.
+
+```bash
+k get secrets -n workload-identity
+```
+
+Let's see how to authenticate to the Azure Cloud using the GKE service account. Run the following command to view the nymeria service account:
+
+```bash
+k describe serviceaccounts -n workload-identity nymeria
+```
+
+You will see the service account name is *nymeria*.
+
+```text
+Name:                nymeria
+Namespace:           workload-identity
+Labels:              app=nymeria
+                     cloud=gcp
+Annotations:         nymeria/cost-center: rsa
+                     nymeria/owner: nymeria
+```
+
+To see how the service account is used, run the following command to describe the nymeria gcloud deployment:
+
+```bash
+k describe deployment -n workload-identity nymeria-azure
+```
+
+You will see that the deployment is assigning the *nymeria* service account to all of the containers launched by the deployment:
+
+```text
+Name:                   nymeria-azure
+Namespace:              workload-identity
+CreationTimestamp:      Sat, 22 Feb 2025 10:42:42 -0600
+Labels:                 app=nymeria
+                        cloud=azure
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=nymeria,cloud=azure
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:           app=nymeria
+                    cloud=azure
+  Service Account:  nymeria
+```
+
+To verify that the pod's service account has access to Google cloud resources, run the following command to exec into the *nymeria-gcloud* pod:
+
+```bash
+k exec -n workload-identity -it $(k get pod -n workload-identity -l app=nymeria,cloud=azure -o json | jq -r '.items[0].metadata.name') -- /bin/bash
+```
+
+The command creates a shell inside the workload identity gcloud pod, which you can use to authenticate using the pod's service account to the Azure storage account and obtain the nymeria logo from the storage container.
+
+```text
+root [ / ]#
+```
+
+Verify the Azure service principal client secret is no longer in the pod's environment variables.
+
+```bash
+env | grep ARM_
+```
+
+The response confirms that only the tenant id and client id values are stored in the environment variables. The static service principal client secret is not needed.
+
+```text
+ARM_CLIENT_ID=<id>
+ARM_TENANT_ID=<id>
+```
+
+View the service account's identity token in the /var/run/secrets/kubernetes.io/serviceaccount/token file.
+
+```bash
+cat /var/run/secrets/azure/serviceaccount/token && echo;
+```
+
+In a different Terminal on your machine, you can decode the token's payload using `jq` to view the claims. The subject uniquely identifies the service account inside the cluster and the subject / audience uniquely identify the cluster that created the token.
+
+```bash
+jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"'
+```
+
+```json
+{
+  "aud": [
+    "api://AzureADTokenExchange"
+  ],
+  "exp": 1740261730,
+  "iat": 1740258130,
+  "iss": "https://container.googleapis.com/v1/projects/my-project/locations/my-region/clusters/nymeria",
+  "jti": "d7c222bf-2872-4002-89d9-2737c94f18fa",
+  "kubernetes.io": {
+    "namespace": "workload-identity",
+    "node": {
+      "name": "gk3-nymeria-pool-2-90a97509-kbjt",
+      "uid": "eca0a527-fe6e-42a7-a423-ab8f64ca68fb"
+    },
+    "pod": {
+      "name": "nymeria-azure-5dff96b78d-x54dk",
+      "uid": "bc493859-da99-47f0-984d-da5a6353731c"
+    },
+    "serviceaccount": {
+      "name": "nymeria",
+      "uid": "01f131f2-0631-4b18-89ee-15b67a0d8b8e"
+    }
+  },
+  "nbf": 1740258130,
+  "sub": "system:serviceaccount:workload-identity:nymeria"
+}
+```
+
+Because trust has been configured for the Azure managed identity, the federated token can be used to authenticate to the Azure tenant instead of the long lived client secret. To view the trust relationship, you can browse to the [Azure portal](https://portal.azure.com/) and view the *nymeria* managed identity. The federated credential settings will show an entry called *gcp-gke* that trusts the GKE cluster's issuer, audience, and subject values.
+
+Use the GKE pod's service account token to authenticate to the Entra ID tenant.
+
+```bash
+az login --service-principal --tenant ${ARM_TENANT_ID} -u ${ARM_CLIENT_ID} --federated-token $(cat /var/run/secrets/azure/serviceaccount/token)
+```
+
+Verify that you can list the blobs in the Nymeria Azure storage account. This command will use the static service principal credentials to authenticate to the Azure storage API.
+
+```bash
+az storage blob list --account-name $NYMERIA_STORAGE_ACCOUNT --container-name nymeria --auth-mode login
+```
+
+The results will show you the contents of the bucket, including the *gcp-workload-identity.png*.
+
+```text
+"container": "nymeria",
+"content": "",
+"deleted": null,
+"encryptedMetadata": null,
+"encryptionKeySha256": null,
+"encryptionScope": null,
+"hasLegalHold": null,
+"hasVersionsOnly": null,
+"immutabilityPolicy": {
+  "expiryTime": null,
+  "policyMode": null
+},
+"isAppendBlobSealed": null,
+"isCurrentVersion": null,
+"lastAccessedOn": null,
+"metadata": {},
+"name": "azure-workload-identity.png",
+```
 
 ### GKE Workload Identity Federation
 
