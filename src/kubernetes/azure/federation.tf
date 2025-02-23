@@ -11,7 +11,7 @@ resource "azurerm_federated_identity_credential" "aws_eks" {
   parent_id           = azurerm_user_assigned_identity.nymeria.id
   resource_group_name = azurerm_resource_group.this.name
 
-  audience = [var.aws_eks_cluster_audience]
+  audience = [var.workload_identity_audience]
   issuer   = var.aws_eks_cluster_issuer_url
   subject  = "system:serviceaccount:${var.workload_identity_namespace}:${var.workload_identity_service_account}"
 }
@@ -23,7 +23,7 @@ resource "azurerm_federated_identity_credential" "gcp_gke" {
   parent_id           = azurerm_user_assigned_identity.nymeria.id
   resource_group_name = azurerm_resource_group.this.name
 
-  audience = [var.gcp_gke_cluster_audience]
+  audience = [var.workload_identity_audience]
   issuer   = var.gcp_gke_cluster_issuer_url
   subject  = "system:serviceaccount:${var.workload_identity_namespace}:${var.workload_identity_service_account}"
 }

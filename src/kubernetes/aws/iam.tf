@@ -1,3 +1,4 @@
+# EKS node / worker permissions
 data "aws_iam_policy_document" "eks_assume_role" {
   statement {
     principals {
@@ -89,7 +90,7 @@ resource "aws_iam_openid_connect_provider" "eks" {
   url = aws_eks_cluster.nymeria.identity[0].oidc[0].issuer
 
   client_id_list = [
-    "sts.amazonaws.com",
+    var.workload_identity_audience,
   ]
 
   thumbprint_list = [
@@ -116,7 +117,7 @@ data "aws_iam_policy_document" "eks_ebs_csi_assume_role" {
     condition {
       test     = "StringEquals"
       variable = "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:aud"
-      values   = ["sts.amazonaws.com"]
+      values   = [var.workload_identity_audience]
     }
 
     condition {
@@ -143,127 +144,51 @@ resource "aws_iam_role_policy_attachment" "eks_ebs_csi_controller" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
 }
 
-# AUDIT LOG IAM RESOURCES
-# data "aws_iam_policy_document" "audit_log_assume_role" {
-#   statement {
-#     principals {
-#       type = "Service"
-#       identifiers = [
-#         "cloudtrail.amazonaws.com",
-#         "vpc-flow-logs.amazonaws.com",
-#         "delivery.logs.amazonaws.com",
-#       ]
-#     }
+# Nymeria IAM user / role permissions
 
-#     actions = ["sts:AssumeRole"]
-#     effect  = "Allow"
-#   }
-# }
+data "aws_iam_policy_document" "nymeria" {
+  statement {
+    sid    = "AllowS3ListAccess"
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket",
+    ]
+    resources = [
+      aws_s3_bucket.nymeria.arn
+    ]
+  }
 
-# resource "aws_iam_role" "audit_log" {
-#   name               = "${local.eks.cluster_name}-audit-logs-role-${local.deployment_id}"
-#   path               = "/"
-#   description        = "IAM role for CloudWatch audit logging"
-#   assume_role_policy = data.aws_iam_policy_document.audit_log_assume_role.json
+  statement {
+    sid    = "AllowS3DataAccess"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectAttributes",
+      "s3:GetObjectTagging",
+    ]
+    resources = [
+      "${aws_s3_bucket.nymeria.arn}/*"
+    ]
+  }
+}
 
-#   tags = {
-#     Product = "security"
-#   }
-# }
+resource "aws_iam_policy" "nymeria" {
+  name        = "nymeria-${local.deployment_id}"
+  path        = "/"
+  description = "IAM policy for Nymeria"
+  policy      = data.aws_iam_policy_document.nymeria.json
+}
 
-# data "aws_iam_policy_document" "audit_log_policy" {
-#   statement {
-#     sid    = "AllowCloudWatchLogging"
-#     effect = "Allow"
-#     actions = [
-#       "logs:CreateLogGroup",
-#       "logs:CreateLogStream",
-#       "logs:DescribeLogGroups",
-#       "logs:DescribeLogStreams",
-#       "logs:PutLogEvents",
-#       "logs:GetLogEvents",
-#       "logs:FilterLogEvents",
-#     ]
-#     resources = [
-#       "${aws_cloudwatch_log_group.cloudtrail.arn}:*",
-#       "${aws_cloudwatch_log_group.flow_logs.arn}:*",
-#     ]
-#   }
-# }
+resource "aws_iam_user_policy_attachment" "nymeria" {
+  user       = aws_iam_user.nymeria.name
+  policy_arn = aws_iam_policy.nymeria.arn
+}
 
-# resource "aws_iam_policy" "audit_log" {
-#   name        = "${local.eks.cluster_name}-audit-logs-policy-${local.deployment_id}"
-#   path        = "/"
-#   description = "IAM policy for CloudWatch audit logging"
-#   policy      = data.aws_iam_policy_document.audit_log_policy.json
+resource "aws_iam_user" "nymeria" {
+  name = "nymeria-${local.deployment_id}"
+  path = "/"
+}
 
-#   tags = {
-#     Product = "security"
-#   }
-# }
-
-# resource "aws_iam_role_policy_attachment" "audit_log" {
-#   role       = aws_iam_role.audit_log.name
-#   policy_arn = aws_iam_policy.audit_log.arn
-# }
-
-# NODE APP PERMISSIONS
-# data "aws_iam_policy_document" "nymeria_pod" {
-#   statement {
-#     sid    = "AllowS3ListAllAccess"
-#     effect = "Allow"
-#     actions = [
-#       "s3:ListAllMyBuckets",
-#     ]
-#     resources = ["*"]
-#   }
-
-#   statement {
-#     sid    = "AllowS3ListAccess"
-#     effect = "Allow"
-#     actions = [
-#       "s3:ListBucket",
-#     ]
-#     resources = [
-#       aws_s3_bucket.nymeria.arn
-#     ]
-#   }
-
-#   statement {
-#     sid    = "AllowS3DataAccess"
-#     effect = "Allow"
-#     actions = [
-#       "s3:GetObject",
-#       "s3:GetObjectAttributes",
-#       "s3:GetObjectTagging",
-#     ]
-#     resources = [
-#       "${aws_s3_bucket.nymeria.arn}/*"
-#     ]
-#   }
-# }
-
-# resource "aws_iam_policy" "nymeria_pod" {
-#   name        = "${local.eks.cluster_name}-api-pod-policy-${local.deployment_id}"
-#   path        = "/"
-#   description = "IAM policy for ${local.eks.cluster_name} pods running in EKS"
-#   policy      = data.aws_iam_policy_document.nymeria_pod.json
-
-#   tags = {
-#     Product = local.eks.cluster_name
-#   }
-# }
-
-# resource "aws_iam_role_policy_attachment" "nymeria_pod" {
-#   role       = aws_iam_role.eks_node.name
-#   policy_arn = aws_iam_policy.nymeria_pod.arn
-# }
-
-# resource "aws_iam_user" "maverick" {
-#   name = "kubeace-maverick-${local.deployment_id}"
-#   path = "/"
-
-#   tags = {
-#     Product = local.eks.cluster_name
-#   }
-# }
+resource "aws_iam_access_key" "nymeria" {
+  user = aws_iam_user.nymeria.name
+}

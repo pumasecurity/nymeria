@@ -4,6 +4,21 @@ variable "aws_active" {
   default     = false
 }
 
+variable "aws_nymeria_aws_secret_access_key_id" {
+  description = "Nymeria AWS secret access key id"
+  type        = string
+}
+
+variable "aws_nymeria_secret_access_key" {
+  description = "Nymeria AWS secret access key"
+  type        = string
+}
+
+variable "aws_nymeria_s3_bucket_name" {
+  description = "Nymeria AWS S3 bucket"
+  type        = string
+}
+
 variable "aws_oidc_audience" {
   description = "AWS service account token audience"
   type        = string

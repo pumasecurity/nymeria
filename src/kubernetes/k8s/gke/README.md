@@ -27,6 +27,78 @@ workload-identity             Active   11m
 
 Use the following sections to verify that you can connect to each cloud provider API using the static credentials stored in a Kubernetes secret.
 
+### AWS Cloud
+
+Find the static credentials for AWS Cloud by running the following command:
+
+```bash
+k get secrets -n static-credential
+```
+
+You will see a secret called *aws-iam-user* that contains the static credentials to the *nymeria* IAM User in your AWS account.
+
+```text
+aws-iam-user              Opaque   2      28m
+```
+
+To see where the service account key is used, run the following command to describe the nymeria gcloud deployment:
+
+```bash
+k describe deployment -n static-credential nymeria-aws
+```
+
+You will see that the deployment is mounting the IAM credentials into environment variables containing the access key and secret key.
+
+```text
+Environment:
+  NYMERIA_S3_BUCKET:      nymeria-0206cb87
+  AWS_ACCESS_KEY_ID:      <set to the key 'aws_secret_access_key_id' in secret 'aws-iam-user'>  Optional: false
+  AWS_SECRET_ACCESS_KEY:  <set to the key 'aws_secret_access_key' in secret 'aws-iam-user'>     Optional: false
+```
+
+To verify that the IAM credentials grant access to AWS cloud resources, run the following command to exec into the nymeria-aws pod:
+
+```bash
+k exec -n static-credential -it $(k get pod -n static-credential -l app=nymeria,cloud=aws -o json | jq -r '.items[0].metadata.name') -- /bin/bash
+```
+
+The command creates a shell inside the aws pod, which you can use to authenticate to your project and obtain the nymeria logo from the GCS bucket.
+
+```text
+bash-4.2#
+```
+
+Verify the AWS IAM credentials properly populated into the container's environment variables.
+
+```bash
+env | grep AWS
+```
+
+The output should show the two AWS environment variables used to authenticate to the AWS account.
+
+```json
+AWS_SECRET_ACCESS_KEY=<secretkey>
+AWS_ACCESS_KEY_ID=<id>
+```
+
+Use the AWS credentials to authenticate to the AWS account. The output will confirm that you have authenticating to the account as the nymeria IAM user.
+
+```bash
+aws sts get-caller-identity
+```
+
+Verify that you can list the objects in the Nymeria S3 bucket. This command will use the IAM credentials to authenticate to the S3 API.
+
+```bash
+aws s3 ls s3://$NYMERIA_S3_BUCKET
+```
+
+The results will show you the contents of the S3 bucket, including the *aws-workload-identity.png*.
+
+```text
+2025-02-22 22:40:14     156686 aws-workload-identity.png
+```
+
 ### Azure Cloud
 
 Find the static credentials for Azure Cloud by running the following command:
@@ -35,7 +107,7 @@ Find the static credentials for Azure Cloud by running the following command:
 k get secrets -n static-credential
 ```
 
-You will see a secret called *azure-service-principal* that contains the static service principal client id and client secret for the *nymeria* service account inside of your GCP project's IAM & Admin console.
+You will see a secret called *azure-service-principal* that contains the static service principal client id and client secret for the *nymeria* service principal in Entra ID.
 
 ```text
 azure-service-principal   Opaque   3      18m
@@ -47,7 +119,7 @@ To see where the service account key is used, run the following command to descr
 k describe deployment -n static-credential nymeria-azure
 ```
 
-You will see that the deployment is mounting the service account key as into a volume called *gcp-service-account-key*. The service account key will be located in the `/mnt/service-account/` directory.
+You will see that the deployment is reading the service principal credentials into a environment variables containing the client id, client secret, and tenant id.
 
 ```text
 Environment:
@@ -57,25 +129,25 @@ Environment:
   ARM_CLIENT_SECRET:       <set to the key 'client_secret' in secret 'azure-service-principal'>  Optional: false
 ```
 
-To verify that the service account key grants access to Azure cloud resources, run the following command to exec into the nymeria-azure pod:
+To verify that the service principal credentials grants access to Azure cloud resources, run the following command to exec into the nymeria-azure pod:
 
 ```bash
 k exec -n static-credential -it $(k get pod -n static-credential -l app=nymeria,cloud=azure -o json | jq -r '.items[0].metadata.name') -- /bin/bash
 ```
 
-The command creates a shell inside the gcloud pod, which you can use to authenticate to your project and obtain the nymeria logo from the GCS bucket.
+The command creates a shell inside the azure pod, which you can use to authenticate to your tenant and obtain the nymeria logo from the Azure storage account.
 
 ```text
 root [ / ]#
 ```
 
-Verify the Azure service principal client id, client secret, and tenant id are properly populated into the properly mounted into the container.
+Verify the Azure service principal client id, client secret, and tenant id are properly populated into the environment variables.
 
 ```bash
 env | grep ARM_
 ```
 
-The output should show the three Azure environment variables used to authenticate to the service principals Entra ID tenant. account key in JSON format.
+The output should show the three Azure environment variables used to authenticate to the service principals Entra ID tenant.
 
 ```json
 ARM_CLIENT_ID=<id>
@@ -95,7 +167,7 @@ Verify that you can list the blobs in the Nymeria Azure storage account. This co
 az storage blob list --account-name $NYMERIA_STORAGE_ACCOUNT --container-name nymeria --auth-mode login
 ```
 
-The results will show you the contents of the bucket, including the *gcp-workload-identity.png*.
+The results will show you the contents of the bucket, including the *azure-workload-identity.png*.
 
 ```text
 "container": "nymeria",

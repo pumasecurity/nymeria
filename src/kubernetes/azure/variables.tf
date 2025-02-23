@@ -21,12 +21,6 @@ variable "aws_eks_cluster_issuer_url" {
   default     = ""
 }
 
-variable "aws_eks_cluster_audience" {
-  description = "Azure AKS cluster OIDC audience"
-  type        = string
-  default     = "sts.amazonaws.com"
-}
-
 variable "gcp_active" {
   description = "Enable GCP OIDC federation"
   type        = bool
@@ -39,10 +33,9 @@ variable "gcp_gke_cluster_issuer_url" {
   default     = ""
 }
 
-variable "gcp_gke_cluster_audience" {
-  description = "GKE cluster OIDC audience"
+variable "workload_identity_audience" {
+  description = "Incoming OIDC audience from external clusters"
   type        = string
-  default     = ""
 }
 
 variable "workload_identity_namespace" {

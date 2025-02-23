@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nymeria-aws
+  namespace: static-credential
+  labels:
+    app: nymeria
+    cloud: aws
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nymeria
+      cloud: aws
+  template:
+    metadata:
+      name: nymeria-aws
+      labels:
+        app: nymeria
+        cloud: aws
+    spec:
+      containers:
+        - name: awscli
+          image: amazon/aws-cli:latest
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "-c", "--"]
+          args: ["while true; do sleep 30; done;"]
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+              ephemeral-storage: 1Gi
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+              ephemeral-storage: 1Gi
+          env:
+            - name: NYMERIA_S3_BUCKET
+              value: ${nymeria_s3_bucket}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-iam-user
+                  key: aws_secret_access_key_id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-iam-user
+                  key: aws_secret_access_key
+      nodeSelector:
+        kubernetes.io/os: linux

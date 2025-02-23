@@ -1,12 +1,19 @@
 terraform {
   required_providers {
 
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.86.0"
+    }
+
     azurerm = {
-      source = "hashicorp/azurerm"
+      source  = "hashicorp/azurerm"
+      version = "4.20.0"
     }
 
     azuread = {
-      source = "hashicorp/azuread"
+      source  = "hashicorp/azuread"
+      version = "3.1.0"
     }
 
     google = {
@@ -22,6 +29,22 @@ terraform {
     null = {
       source  = "hashicorp/null"
       version = "3.2.3"
+    }
+
+    tls = {
+      source  = "hashicorp/tls"
+      version = "4.0.6"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+
+  default_tags {
+    tags = {
+      Owner      = var.tag_owner
+      CostCenter = var.tag_cost_center
     }
   }
 }

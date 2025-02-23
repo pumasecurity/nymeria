@@ -21,13 +21,6 @@ variable "aws_eks_cluster_issuer_url" {
   default     = ""
 }
 
-variable "aws_eks_cluster_audience" {
-  description = "Azure AKS cluster OIDC audience"
-  type        = string
-  default     = "sts.amazonaws.com"
-
-}
-
 variable "azure_active" {
   description = "Enable Azure OIDC federation"
   type        = bool
@@ -41,11 +34,6 @@ variable "azure_aks_cluster_issuer_url" {
   default     = ""
 }
 
-variable "azure_aks_cluster_audience" {
-  description = "Azure AKS cluster OIDC audience"
-  type        = string
-  default     = "api://AzureADTokenExchange"
-}
 
 variable "workload_identity_namespace" {
   description = "Kubernetes workload identity namespace"
@@ -54,6 +42,11 @@ variable "workload_identity_namespace" {
 
 variable "workload_identity_service_account" {
   description = "Kubernetes workload identity service account"
+  type        = string
+}
+
+variable "workload_identity_audience" {
+  description = "Kubernetes workload identity audience"
   type        = string
 }
 

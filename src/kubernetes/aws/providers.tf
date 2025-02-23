@@ -7,17 +7,11 @@ terraform {
     }
 
     random = {
-      source  = "hashicorp/random"
-      version = "3.6.3"
+      source = "hashicorp/random"
     }
 
     tls = {
-      source  = "hashicorp/tls"
-      version = "4.0.6"
+      source = "hashicorp/tls"
     }
   }
-}
-
-provider "aws" {
-  region = var.region
 }
