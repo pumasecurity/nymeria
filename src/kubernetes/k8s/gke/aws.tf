@@ -22,3 +22,17 @@ resource "kubernetes_manifest" "static_credentials_aws_deployment" {
 
   depends_on = [kubernetes_manifest.static_credentials_aws_secret]
 }
+
+resource "kubernetes_manifest" "workload_identity_aws_deployment" {
+  manifest = yamldecode(
+    templatefile("${path.module}/../manifests/workload-identity/aws-deployment.yml",
+      {
+        nymeria_s3_bucket        = var.aws_nymeria_s3_bucket_name
+        aws_nymeria_iam_role_arn = var.aws_nymeria_iam_role_arn
+        aws_oidc_audience        = var.aws_oidc_audience
+      }
+    )
+  )
+
+  depends_on = [kubernetes_manifest.workload_identity_service_account]
+}

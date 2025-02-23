@@ -10,7 +10,7 @@ output "nymeria_secret_access_key" {
   sensitive   = true
 }
 
-output "nymeria_role_arn" {
+output "nymeria_iam_role_arn" {
   description = "Nymeria IAM role arn"
   value       = aws_iam_role.nymeria.arn
 }

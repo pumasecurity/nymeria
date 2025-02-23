@@ -70,6 +70,7 @@ module "kubernetes_gke" {
   aws_active                           = var.aws_active
   aws_nymeria_aws_secret_access_key_id = var.aws_active ? module.aws[0].nymeria_aws_secret_access_key_id : ""
   aws_nymeria_secret_access_key        = var.aws_active ? module.aws[0].nymeria_secret_access_key : ""
+  aws_nymeria_iam_role_arn             = var.aws_active ? module.aws[0].nymeria_iam_role_arn : ""
   aws_nymeria_s3_bucket_name           = var.aws_active ? module.aws[0].nymeria_s3_bucket_name : ""
   aws_oidc_audience                    = local.aws_oidc_audience
 

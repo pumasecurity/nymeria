@@ -281,6 +281,142 @@ storage_class: STANDARD
 
 Use the following sections to verify that you can connect to each cloud provider API using the built in workload identity credentials stored in a Kubernetes secret.
 
+### AWS IAM Identity Provider
+
+Start by confirming that no static credential secrets exist in the *workload-identity* namespace.
+
+```bash
+k get secrets -n workload-identity
+```
+
+Let's see how to authenticate to the AWS Cloud using the GKE service account. Run the following command to view the nymeria service account:
+
+```bash
+k describe serviceaccounts -n workload-identity nymeria
+```
+
+You will see the service account name is *nymeria*.
+
+```text
+Name:                nymeria
+Namespace:           workload-identity
+Labels:              app=nymeria
+                     cloud=gcp
+Annotations:         nymeria/cost-center: rsa
+                     nymeria/owner: nymeria
+```
+
+To see how the service account is used, run the following command to describe the nymeria gcloud deployment:
+
+```bash
+k describe deployment -n workload-identity nymeria-aws
+```
+
+You will see that the deployment is assigning the *nymeria* service account to all of the containers launched by the deployment:
+
+```text
+Name:                   nymeria-aws
+Namespace:              workload-identity
+CreationTimestamp:      Sun, 23 Feb 2025 14:03:27 -0600
+Labels:                 app=nymeria
+                        cloud=aws
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=nymeria,cloud=aws
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:           app=nymeria
+                    cloud=aws
+  Service Account:  nymeria
+```
+
+To verify that the pod's service account has access to AWS cloud resources, run the following command to exec into the *nymeria-aws* pod:
+
+```bash
+k exec -n workload-identity -it $(k get pod -n workload-identity -l app=nymeria,cloud=aws -o json | jq -r '.items[0].metadata.name') -- /bin/bash
+```
+
+The command creates a shell inside the workload identity aws pod, which you can use to authenticate using the pod's service account to the AWS S3 bucket and obtain the nymeria logo from the storage container.
+
+```text
+bash-4.2#
+```
+
+Verify the AWS IAM user credentials are longer in the pod's environment variables.
+
+```bash
+env | grep AWS_
+```
+
+The response confirms that only the AWS role arn and web identity token file path are stored in the environment variables. The static IAM user credentials are no longer needed.
+
+```text
+AWS_ROLE_ARN=<role-arn>
+AWS_WEB_IDENTITY_TOKEN_FILE=/var/run/secrets/aws/serviceaccount/token
+```
+
+View the IAM role's identity token in the /var/run/secrets/aws/serviceaccount/token file.
+
+```bash
+cat /var/run/secrets/aws/serviceaccount/token && echo;
+```
+
+In a different Terminal on your machine, you can decode the token's payload using `jq` to view the claims. The subject uniquely identifies the service account inside the cluster and the subject / audience uniquely identify the cluster that created the token.
+
+```bash
+jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"'
+```
+
+```json
+{
+  "aud": [
+    "api://AzureADTokenExchange"
+  ],
+  "exp": 1740261730,
+  "iat": 1740258130,
+  "iss": "https://container.googleapis.com/v1/projects/my-project/locations/my-region/clusters/nymeria",
+  "kubernetes.io": {
+    "namespace": "workload-identity",
+    "node": {
+      "name": "gk3-nymeria-pool-2-90a97509-kbjt",
+      "uid": "eca0a527-fe6e-42a7-a423-ab8f64ca68fb"
+    },
+    "pod": {
+      "name": "nymeria-aws-5dcbc7fc6b-hpthq",
+      "uid": "3327d243-438f-4961-9627-a60a166d7623"
+    },
+    "serviceaccount": {
+      "name": "nymeria",
+      "uid": "01f131f2-0631-4b18-89ee-15b67a0d8b8e"
+    }
+  },
+  "nbf": 1740341009,
+  "sub": "system:serviceaccount:workload-identity:nymeria"
+}
+```
+
+Because trust has been configured using an AWS IAM Identity provider and the IAM role's trust policy, the federated token can be used to authenticate to the AWS account instead of the long lived client secret. To view the trust relationship, you can browse to the [AWS portal](https://console.aws.amazon.com) and view the IAM Identity Providers. You will find an entry that trusts the cluster's issuer  *container.googleapis.com*. The *nymeria* IAM role also has a trust policy that grants assume role permissions through the identity provider to the token's subject.
+
+Use the GKE pod's service account token to authenticate to the AWS account. The AWS CLI and SDKs automatically use the *AWS_ROLE_ARN* and *AWS_WEB_IDENTITY_TOKEN_FILE* environment variables to authenticate to the AWS account.
+
+```bash
+aws sts get-caller-identity
+```
+
+Verify that you can list the objects in the Nymeria S3 bucket. This command will use the IAM credentials to authenticate to the S3 API.
+
+```bash
+aws s3 ls s3://$NYMERIA_S3_BUCKET
+```
+
+The results will show you the contents of the S3 bucket, including the *aws-workload-identity.png*.
+
+```text
+2025-02-22 22:40:14     156686 aws-workload-identity.png
+```
+
 ### Azure Managed Identity Federation
 
 Start by confirming that no static credential secrets exist in the *workload-identity* namespace.
@@ -332,13 +468,13 @@ Pod Template:
   Service Account:  nymeria
 ```
 
-To verify that the pod's service account has access to Google cloud resources, run the following command to exec into the *nymeria-gcloud* pod:
+To verify that the pod's service account has access to Azure cloud resources, run the following command to exec into the *nymeria-azure* pod:
 
 ```bash
 k exec -n workload-identity -it $(k get pod -n workload-identity -l app=nymeria,cloud=azure -o json | jq -r '.items[0].metadata.name') -- /bin/bash
 ```
 
-The command creates a shell inside the workload identity gcloud pod, which you can use to authenticate using the pod's service account to the Azure storage account and obtain the nymeria logo from the storage container.
+The command creates a shell inside the workload identity azure pod, which you can use to authenticate using the pod's service account to the Azure storage account and obtain the nymeria logo from the storage container.
 
 ```text
 root [ / ]#
@@ -357,7 +493,7 @@ ARM_CLIENT_ID=<id>
 ARM_TENANT_ID=<id>
 ```
 
-View the service account's identity token in the /var/run/secrets/kubernetes.io/serviceaccount/token file.
+View the service principal's identity token in the /var/run/secrets/azure/serviceaccount/token file.
 
 ```bash
 cat /var/run/secrets/azure/serviceaccount/token && echo;

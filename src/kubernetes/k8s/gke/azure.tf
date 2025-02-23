@@ -24,7 +24,6 @@ resource "kubernetes_manifest" "static_credentials_azure_deployment" {
   depends_on = [kubernetes_manifest.static_credentials_azure_secret]
 }
 
-
 resource "kubernetes_manifest" "workload_identity_azure_deployment" {
   manifest = yamldecode(
     templatefile("${path.module}/../manifests/workload-identity/azure-deployment.yml",

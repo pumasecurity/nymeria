@@ -14,6 +14,11 @@ variable "aws_nymeria_secret_access_key" {
   type        = string
 }
 
+variable "aws_nymeria_iam_role_arn" {
+  description = "Nymeria AWS IAM Role ARN"
+  type        = string
+}
+
 variable "aws_nymeria_s3_bucket_name" {
   description = "Nymeria AWS S3 bucket"
   type        = string
