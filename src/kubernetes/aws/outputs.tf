@@ -15,6 +15,10 @@ output "nymeria_iam_role_arn" {
   value       = aws_iam_role.nymeria.arn
 }
 
+output "nymeria_cluster_name" {
+  value = aws_eks_cluster.nymeria.name
+}
+
 output "nymeria_cluster_endpoint" {
   value = aws_eks_cluster.nymeria.endpoint
 }

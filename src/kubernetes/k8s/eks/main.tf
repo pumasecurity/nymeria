@@ -7,7 +7,13 @@ resource "kubernetes_manifest" "workload_identity_ns" {
 }
 
 resource "kubernetes_manifest" "workload_identity_service_account" {
-  manifest = yamldecode(file("${path.module}/../manifests/workload-identity/gke/sa.yml"))
+  manifest = yamldecode(
+    templatefile("${path.module}/../manifests/workload-identity/eks/sa.yml",
+      {
+        aws_iam_role_arn = var.aws_nymeria_iam_role_arn
+      }
+    )
+  )
 
   depends_on = [kubernetes_manifest.workload_identity_ns]
 }

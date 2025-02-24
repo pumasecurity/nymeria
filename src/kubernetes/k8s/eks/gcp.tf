@@ -10,7 +10,6 @@ resource "kubernetes_manifest" "static_credentials_gcp_secret" {
   depends_on = [kubernetes_manifest.static_credentials_ns]
 }
 
-
 resource "kubernetes_manifest" "static_credentials_gcp_deployment" {
   manifest = yamldecode(
     templatefile("${path.module}/../manifests/static-credentials/gcp-deployment.yml",
@@ -23,14 +22,14 @@ resource "kubernetes_manifest" "static_credentials_gcp_deployment" {
   depends_on = [kubernetes_manifest.static_credentials_gcp_secret]
 }
 
-resource "kubernetes_manifest" "workload_identity_gcp_deployment" {
-  manifest = yamldecode(
-    templatefile("${path.module}/../manifests/workload-identity/gke/gcp-deployment.yml",
-      {
-        nymeria_storage_bucket = var.gcp_nymeria_storage_bucket
-      }
-    )
-  )
+# resource "kubernetes_manifest" "workload_identity_gcp_deployment" {
+#   manifest = yamldecode(
+#     templatefile("${path.module}/../manifests/workload-identity/gcp-deployment.yml",
+#       {
+#         nymeria_storage_bucket = var.gcp_nymeria_storage_bucket
+#       }
+#     )
+#   )
 
-  depends_on = [kubernetes_manifest.workload_identity_service_account]
-}
+#   depends_on = [kubernetes_manifest.workload_identity_service_account]
+# }

@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    nymeria/owner: "nymeria"
+    nymeria/cost-center: "rsa"
+    eks.amazonaws.com/role-arn: ${aws_iam_role_arn}
+  name: "nymeria"
+  namespace: workload-identity
+  labels:
+    app: nymeria
+    cloud: aws

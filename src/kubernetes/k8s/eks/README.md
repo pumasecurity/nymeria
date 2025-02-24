@@ -1,13 +1,13 @@
-# Nymeria GKE Instructions
+# Nymeria EKS Instructions
 
 The following steps and commands show how to verify a pods authentication to each cloud provider API.
 
-## GKE Cluster Authentication
+## EKS Cluster Authentication
 
 Run the following command to authenticate to the GKE clusters in your proj
 
 ```bash
-gcloud container clusters get-credentials nymeria --region $TF_VAR_gcp_region --project $TF_VAR_gcp_project_id
+aws eks update-kubeconfig --name nymeria-eks-cluster --region $TF_VAR_aws_region
 ```
 
 List the namespaces to verify you have successfully authenticated to the cluster.
@@ -71,7 +71,7 @@ bash-4.2#
 Verify the AWS IAM credentials properly populated into the container's environment variables.
 
 ```bash
-env | grep AWS
+env | grep AWS_
 ```
 
 The output should show the two AWS environment variables used to authenticate to the AWS account.
@@ -289,20 +289,21 @@ Start by confirming that no static credential secrets exist in the *workload-ide
 k get secrets -n workload-identity
 ```
 
-Let's see how to authenticate to the AWS Cloud using the GKE service account. Run the following command to view the nymeria service account:
+Let's see how to authenticate to the AWS Cloud using the EKS service account. Run the following command to view the nymeria service account:
 
 ```bash
 k describe serviceaccounts -n workload-identity nymeria
 ```
 
-You will see the service account name is *nymeria*.
+You will see the service account name is *nymeria*, with a special annotation used by the IRSA admission controller to set environment variables for the AWS IAM Role and federated identity token.
 
 ```text
 Name:                nymeria
 Namespace:           workload-identity
 Labels:              app=nymeria
-                     cloud=gcp
-Annotations:         nymeria/cost-center: rsa
+                     cloud=aws
+Annotations:         eks.amazonaws.com/role-arn: arn:aws:iam::192792859965:role/nymeria-0206cb87
+                     nymeria/cost-center: rsa
                      nymeria/owner: nymeria
 ```
 
@@ -317,7 +318,7 @@ You will see that the deployment is assigning the *nymeria* service account to a
 ```text
 Name:                   nymeria-aws
 Namespace:              workload-identity
-CreationTimestamp:      Sun, 23 Feb 2025 14:03:27 -0600
+CreationTimestamp:      Sun, 23 Feb 2025 18:11:51 -0600
 Labels:                 app=nymeria
                         cloud=aws
 Annotations:            deployment.kubernetes.io/revision: 1
@@ -354,13 +355,13 @@ The response confirms that only the AWS role arn and web identity token file pat
 
 ```text
 AWS_ROLE_ARN=<role-arn>
-AWS_WEB_IDENTITY_TOKEN_FILE=/var/run/secrets/aws/serviceaccount/token
+AWS_WEB_IDENTITY_TOKEN_FILE=/var/run/secrets/eks.amazonaws.com/serviceaccount/token
 ```
 
-View the IAM role's identity token in the /var/run/secrets/aws/serviceaccount/token file.
+View the IAM role's identity token in the /var/run/secrets/eks.amazonaws.com/serviceaccount/token file.
 
 ```bash
-cat /var/run/secrets/aws/serviceaccount/token && echo;
+cat /var/run/secrets/eks.amazonaws.com/serviceaccount/token && echo;
 ```
 
 In a different Terminal on your machine, you can decode the token's payload using `jq` to view the claims. The subject uniquely identifies the service account inside the cluster and the subject / audience uniquely identify the cluster that created the token.
@@ -372,27 +373,28 @@ jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"'
 ```json
 {
   "aud": [
-    "api://AzureADTokenExchange"
+    "sts.amazonaws.com"
   ],
-  "exp": 1740261730,
-  "iat": 1740258130,
-  "iss": "https://container.googleapis.com/v1/projects/my-project/locations/my-region/clusters/nymeria",
+  "exp": 1740449012,
+  "iat": 1740362612,
+  "iss": "https://oidc.eks.your-region.amazonaws.com/id/clsuter-id",
+  "jti": "94e51a0e-eacb-4a9e-b6ed-4d99c2791080",
   "kubernetes.io": {
     "namespace": "workload-identity",
     "node": {
-      "name": "gk3-nymeria-pool-2-90a97509-kbjt",
-      "uid": "eca0a527-fe6e-42a7-a423-ab8f64ca68fb"
+      "name": "ip-10-60-154-42.your-region.compute.internal",
+      "uid": "daea6176-a5c1-4b9b-8fab-cb3bcd934aa2"
     },
     "pod": {
-      "name": "nymeria-aws-5dcbc7fc6b-hpthq",
-      "uid": "3327d243-438f-4961-9627-a60a166d7623"
+      "name": "nymeria-aws-f59569bbf-x26fj",
+      "uid": "daee848d-d996-42cb-b0ac-4de714d52679"
     },
     "serviceaccount": {
       "name": "nymeria",
-      "uid": "01f131f2-0631-4b18-89ee-15b67a0d8b8e"
+      "uid": "4731e49d-30ab-4afe-a372-7be1441d1284"
     }
   },
-  "nbf": 1740341009,
+  "nbf": 1740362612,
   "sub": "system:serviceaccount:workload-identity:nymeria"
 }
 ```

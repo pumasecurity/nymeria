@@ -49,10 +49,6 @@ resource "aws_iam_role" "eks_node" {
   path               = "/"
   description        = "IAM role for ${local.eks.cluster_name} EKS cluster nodes"
   assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
-
-  tags = {
-    Product = local.eks.cluster_name
-  }
 }
 
 resource "aws_iam_role_policy_attachment" "eks_node_worker" {
