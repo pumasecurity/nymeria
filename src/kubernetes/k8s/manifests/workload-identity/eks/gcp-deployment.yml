@@ -1,36 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nymeria-azure
+  name: nymeria-gcloud
   namespace: workload-identity
   labels:
     app: nymeria
-    cloud: azure
+    cloud: gcp
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: nymeria
-      cloud: azure
+      cloud: gcp
   template:
     metadata:
-      name: nymeria-azure
+      name: nymeria-gcloud
       labels:
         app: nymeria
-        cloud: azure
+        cloud: gcp
     spec:
       serviceAccountName: nymeria
       volumes:
-        - name: azure-token
+        - name: gcp-token
           projected:
             sources:
               - serviceAccountToken:
                   path: token
                   expirationSeconds: 3600
-                  audience: ${azure_oidc_audience}
+                  audience: ${gcp_oidc_audience}
+        - name: gcloud-client-configuration
+          configMap:
+            name: gcloud-client-configuration
       containers:
-        - name: azcli
-          image: mcr.microsoft.com/azure-cli:latest
+        - name: gcloud
+          image: gcr.io/google.com/cloudsdktool/google-cloud-cli:latest
           imagePullPolicy: IfNotPresent
           command: ["/bin/bash", "-c", "--"]
           args: ["while true; do sleep 30; done;"]
@@ -45,13 +48,11 @@ spec:
               ephemeral-storage: 1Gi
           volumeMounts:
             - mountPath: ${identity_token_mount_path}
-              name: azure-token
+              name: gcp-token
+            - mountPath: ${identity_token_mount_path}/config
+              name: gcloud-client-configuration
           env:
-            - name: NYMERIA_STORAGE_ACCOUNT
-              value: ${nymeria_storage_account}
-            - name: ARM_TENANT_ID
-              value: ${tenant_id}
-            - name: ARM_CLIENT_ID
-              value: ${client_id}
+            - name: NYMERIA_STORAGE_BUCKET
+              value: ${nymeria_storage_bucket}
       nodeSelector:
         kubernetes.io/os: linux

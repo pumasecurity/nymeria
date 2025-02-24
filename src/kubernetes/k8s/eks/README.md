@@ -583,6 +583,31 @@ Start by confirming that no static credential secrets exist in the *workload-ide
 k get secrets -n workload-identity
 ```
 
+Google Cloud workload identity federation does use a client configuration file for the *gcloud* CLI and SDKs to authenticate to the Google Cloud APIs. The client configuration file is stored in a Kubernetes ConfigMap object.
+
+```
+k get configmaps -n workload-identity -o json gcloud-client-configuration | jq -r '.data."client.json"' | jq
+```
+
+You will see the client configuration file in JSON format that contains the audience, token type, STS endpoint, and the location of the identity token inside the pod. This files does not contain any static credentials or secret values.
+
+```json
+{
+  "audience": "//iam.googleapis.com/projects/project-number/locations/global/workloadIdentityPools/nymeria-k8s-id/providers/aws-eks-id",
+  "credential_source": {
+    "file": "/var/run/secrets/aws/serviceaccount/token",
+    "format": {
+      "subject_token_field_name": "sub",
+      "type": "json"
+    }
+  },
+  "subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
+  "token_url": "https://sts.googleapis.com/v1/token",
+  "type": "external_account",
+  "universe_domain": "googleapis.com"
+}
+```
+
 Let's see how to authenticate to the Google Cloud using a Kubernetes service account. Run the following command to view the nymeria service account:
 
 ```bash
@@ -595,8 +620,10 @@ You will see the service account name is *nymeria*.
 Name:                nymeria
 Namespace:           workload-identity
 Labels:              app=nymeria
-                     cloud=gcp
-Annotations:         nymeria/cost-center: rsa
+                     cloud=aws
+Annotations:         eks.amazonaws.com/role-arn: arn:aws:iam::192792859965:role/nymeria-0206cb87
+                     eks.amazonaws.com/token-expiration: 3600
+                     nymeria/cost-center: rsa
                      nymeria/owner: nymeria
 ```
 
@@ -611,10 +638,10 @@ You will see that the deployment is assigning the *nymeria* service account to a
 ```text
 Name:                   nymeria-gcloud
 Namespace:              workload-identity
-CreationTimestamp:      Thu, 20 Feb 2025 13:08:10 -0600
+CreationTimestamp:      Mon, 24 Feb 2025 13:27:28 -0600
 Labels:                 app=nymeria
                         cloud=gcp
-Annotations:            deployment.kubernetes.io/revision: 3
+Annotations:            deployment.kubernetes.io/revision: 1
 Selector:               app=nymeria,cloud=gcp
 Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
 StrategyType:           RollingUpdate
@@ -650,10 +677,16 @@ The response confirms that the pod does not have a static service account key.
 cat: /mnt/service-account/credentials.json: No such file or directory
 ```
 
-View the service account's identity token in the /var/run/secrets/kubernetes.io/serviceaccount/token file.
+View the gcloud client configuration file. This file includes the audience, token type, STS endpoint, and the location of the identity token inside the pod.
 
 ```bash
-cat /var/run/secrets/kubernetes.io/serviceaccount/token && echo;
+cat /var/run/secrets/gcp/serviceaccount/config/client.json
+```
+
+View the service account's identity token in the /var/run/secrets/gcp/serviceaccount/token file.
+
+```bash
+cat /var/run/secrets/gcp/serviceaccount/token && echo;
 ```
 
 In a different Terminal on your machine, you can decode the token's payload using `jq` to view the claims. The subject uniquely identifies the service account inside the cluster and the subject / audience uniquely identify the cluster that created the token.
@@ -665,34 +698,37 @@ jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"'
 ```json
 {
   "aud": [
-    "https://container.googleapis.com/v1/projects/my-project/locations/my-region/clusters/nymeria"
+    "sts.googleapis.com"
   ],
-  "exp": 1771634149,
-  "iat": 1740098149,
-  "iss": "https://container.googleapis.com/v1/projects/my-project/locations/my-region/clusters/nymeria",
-  "jti": "640e2e5c-e26b-45ca-852c-48cb2245dce7",
+  "exp": 1740431771,
+  "iat": 1740428171,
+  "iss": "https://oidc.eks.your-region.amazonaws.com/id/cluster-id",
+  "jti": "f1a449db-7262-4320-ad93-f6a74d89892e",
   "kubernetes.io": {
     "namespace": "workload-identity",
     "node": {
-      "name": "gk3-nymeria-pool-2-28ce4262-f5td",
-      "uid": "3a2f7d84-7e6d-4d58-9941-7e22d4ed6c1a"
+      "name": "ip-10-60-154-42.your-region.compute.internal",
+      "uid": "daea6176-a5c1-4b9b-8fab-cb3bcd934aa2"
     },
     "pod": {
-      "name": "nymeria-gcloud-76c868946-w2h64",
-      "uid": "eaf4279d-e70b-40f8-8001-f3dd81f0c8f3"
+      "name": "nymeria-gcloud-6dfb695769-r596w",
+      "uid": "8fbb2292-002b-40bb-8568-e77c75b33265"
     },
     "serviceaccount": {
       "name": "nymeria",
-      "uid": "01f131f2-0631-4b18-89ee-15b67a0d8b8e"
-    },
-    "warnafter": 1740101756
+      "uid": "4731e49d-30ab-4afe-a372-7be1441d1284"
+    }
   },
-  "nbf": 1740098149,
+  "nbf": 1740428171,
   "sub": "system:serviceaccount:workload-identity:nymeria"
 }
 ```
 
-This token is automatically read by the `gcloud` CLI and used to authenticate to the Google Cloud APIs. Run the following command to authenticate to your GCP project using the service account token and obtain the nymeria logo from the GCS bucket.
+The client configuration points the `gcloud` CLI to the workload identity pool and service account token being used to authenticate to the Google Cloud APIs. Run the following command to authenticate to your GCP project.
+
+```bash
+gcloud auth login --cred-file=/var/run/secrets/gcp/serviceaccount/config/client.json
+```
 
 ```bash
 gcloud storage objects list gs://${NYMERIA_STORAGE_BUCKET}

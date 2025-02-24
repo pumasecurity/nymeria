@@ -27,9 +27,10 @@ resource "kubernetes_manifest" "workload_identity_aws_deployment" {
   manifest = yamldecode(
     templatefile("${path.module}/../manifests/workload-identity/gke/aws-deployment.yml",
       {
-        nymeria_s3_bucket        = var.aws_nymeria_s3_bucket_name
-        aws_nymeria_iam_role_arn = var.aws_nymeria_iam_role_arn
-        aws_oidc_audience        = var.aws_oidc_audience
+        nymeria_s3_bucket         = var.aws_nymeria_s3_bucket_name
+        aws_nymeria_iam_role_arn  = var.aws_nymeria_iam_role_arn
+        aws_oidc_audience         = var.aws_oidc_audience
+        identity_token_mount_path = var.aws_identity_token_mount_path
       }
     )
   )

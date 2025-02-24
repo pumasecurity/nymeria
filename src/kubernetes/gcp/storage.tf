@@ -25,7 +25,7 @@ resource "google_storage_bucket_iam_member" "nymeria_sa" {
 }
 
 # GKE pod permissions
-resource "google_storage_bucket_iam_member" "nymeria_pod" {
+resource "google_storage_bucket_iam_member" "nymeria_gke_pod" {
   bucket = google_storage_bucket.nymeria.name
   role   = "roles/storage.objectViewer"
   member = "principal://iam.googleapis.com/projects/${data.google_project.this.number}/locations/global/workloadIdentityPools/${var.project_id}.svc.id.goog/subject/ns/${var.workload_identity_namespace}/sa/${var.workload_identity_service_account}"

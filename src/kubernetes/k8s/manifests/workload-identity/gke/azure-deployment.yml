@@ -44,7 +44,7 @@ spec:
               cpu: "250m"
               ephemeral-storage: 1Gi
           volumeMounts:
-            - mountPath: /var/run/secrets/azure/serviceaccount
+            - mountPath: ${identity_token_mount_path}
               name: azure-token
           env:
             - name: NYMERIA_STORAGE_ACCOUNT

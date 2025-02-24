@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gcloud-client-configuration
+  namespace: workload-identity
+  labels:
+    app: nymeria
+    cloud: gcp
+data:
+  client.json: |
+    ${workload_identity_client_configuration}

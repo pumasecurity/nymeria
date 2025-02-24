@@ -29,6 +29,12 @@ variable "aws_oidc_audience" {
   type        = string
 }
 
+variable "aws_identity_token_mount_path" {
+  description = "AWS identity token mount path"
+  type        = string
+  default     = ""
+}
+
 variable "azure_active" {
   description = "Enable Azure pod resources"
   type        = bool
@@ -63,6 +69,12 @@ variable "azure_nymeria_storage_account_name" {
 variable "azure_oidc_audience" {
   description = "Azure service account token audience"
   type        = string
+}
+
+variable "azure_identity_token_mount_path" {
+  description = "Azure identity token mount path"
+  type        = string
+  default     = ""
 }
 
 variable "gcp_nymeria_service_account_key" {

@@ -22,14 +22,29 @@ resource "kubernetes_manifest" "static_credentials_gcp_deployment" {
   depends_on = [kubernetes_manifest.static_credentials_gcp_secret]
 }
 
-# resource "kubernetes_manifest" "workload_identity_gcp_deployment" {
-#   manifest = yamldecode(
-#     templatefile("${path.module}/../manifests/workload-identity/gcp-deployment.yml",
-#       {
-#         nymeria_storage_bucket = var.gcp_nymeria_storage_bucket
-#       }
-#     )
-#   )
+resource "kubernetes_manifest" "workload_identity_gcp_config_map" {
+  manifest = yamldecode(
+    templatefile("${path.module}/../manifests/workload-identity/eks/gcp-configmap.yml",
+      {
+        workload_identity_client_configuration = jsonencode(jsondecode(var.gcp_workload_identity_client_configuration))
+      }
+    )
+  )
+}
 
-#   depends_on = [kubernetes_manifest.workload_identity_service_account]
-# }
+resource "kubernetes_manifest" "workload_identity_gcp_deployment" {
+  manifest = yamldecode(
+    templatefile("${path.module}/../manifests/workload-identity/eks/gcp-deployment.yml",
+      {
+        gcp_oidc_audience         = var.gcp_oidc_audience
+        identity_token_mount_path = var.gcp_identity_token_mount_path
+        nymeria_storage_bucket    = var.gcp_nymeria_storage_bucket
+      }
+    )
+  )
+
+  depends_on = [
+    kubernetes_manifest.workload_identity_service_account,
+    kubernetes_manifest.workload_identity_gcp_config_map,
+  ]
+}

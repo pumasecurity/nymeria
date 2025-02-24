@@ -44,7 +44,7 @@ spec:
               cpu: "250m"
               ephemeral-storage: 1Gi
           volumeMounts:
-            - mountPath: /var/run/secrets/aws/serviceaccount
+            - mountPath: ${identity_token_mount_path}
               name: aws-token
           env:
             - name: NYMERIA_S3_BUCKET
@@ -52,6 +52,6 @@ spec:
             - name: AWS_ROLE_ARN
               value: ${aws_nymeria_iam_role_arn}
             - name: AWS_WEB_IDENTITY_TOKEN_FILE
-              value: /var/run/secrets/aws/serviceaccount/token
+              value: ${identity_token_mount_path}/token
       nodeSelector:
         kubernetes.io/os: linux

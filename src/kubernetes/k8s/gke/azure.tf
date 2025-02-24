@@ -28,10 +28,11 @@ resource "kubernetes_manifest" "workload_identity_azure_deployment" {
   manifest = yamldecode(
     templatefile("${path.module}/../manifests/workload-identity/gke/azure-deployment.yml",
       {
-        nymeria_storage_account = var.azure_nymeria_storage_account_name
-        tenant_id               = var.azure_nymeria_tenant_id
-        client_id               = var.azure_nymeria_workload_identity_client_id
-        azure_oidc_audience     = var.azure_oidc_audience
+        nymeria_storage_account   = var.azure_nymeria_storage_account_name
+        tenant_id                 = var.azure_nymeria_tenant_id
+        client_id                 = var.azure_nymeria_workload_identity_client_id
+        azure_oidc_audience       = var.azure_oidc_audience
+        identity_token_mount_path = var.azure_identity_token_mount_path
       }
     )
   )

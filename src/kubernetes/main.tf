@@ -33,11 +33,14 @@ module "kubernetes_eks" {
   azure_nymeria_workload_identity_client_id     = var.azure_active ? module.azure[0].nymeria_workload_identity_client_id : ""
   azure_nymeria_storage_account_name            = var.azure_active ? module.azure[0].nymeria_storage_account_name : ""
   azure_oidc_audience                           = local.azure_oidc_audience
+  azure_identity_token_mount_path               = local.azure_identity_token_mount_path
 
-  gcp_active                      = var.gcp_active
-  gcp_nymeria_service_account_key = var.gcp_active ? module.gcp[0].nymeria_service_account_key : ""
-  gcp_nymeria_storage_bucket      = var.gcp_active ? module.gcp[0].nymeria_storage_bucket : ""
-  gcp_oidc_audience               = local.gcp_oidc_audience
+  gcp_active                                 = var.gcp_active
+  gcp_nymeria_service_account_key            = var.gcp_active ? module.gcp[0].nymeria_service_account_key : ""
+  gcp_workload_identity_client_configuration = var.gcp_active ? module.gcp[0].nymeria_aws_workload_identity_client_configuration : ""
+  gcp_nymeria_storage_bucket                 = var.gcp_active ? module.gcp[0].nymeria_storage_bucket : ""
+  gcp_oidc_audience                          = local.gcp_oidc_audience
+  gcp_identity_token_mount_path              = local.gcp_identity_token_mount_path
 
   providers = {
     kubernetes = kubernetes.eks
@@ -82,9 +85,10 @@ module "gcp" {
   azure_aks_cluster_issuer_url = var.azure_active ? module.azure[0].nymeria_cluster_issuer : ""
 
   # workload identity configuration
-  workload_identity_namespace       = local.kubernetes_workload_identity_namespace
-  workload_identity_service_account = local.kubernetes_workload_identity_service_account
-  workload_identity_audience        = local.gcp_oidc_audience
+  workload_identity_namespace                 = local.kubernetes_workload_identity_namespace
+  workload_identity_service_account           = local.kubernetes_workload_identity_service_account
+  workload_identity_audience                  = local.gcp_oidc_audience
+  workload_identity_identity_token_mount_path = local.gcp_identity_token_mount_path
 
   providers = {
     google = google
@@ -101,6 +105,7 @@ module "kubernetes_gke" {
   aws_nymeria_iam_role_arn             = var.aws_active ? module.aws[0].nymeria_iam_role_arn : ""
   aws_nymeria_s3_bucket_name           = var.aws_active ? module.aws[0].nymeria_s3_bucket_name : ""
   aws_oidc_audience                    = local.aws_oidc_audience
+  aws_identity_token_mount_path        = local.aws_identity_token_mount_path
 
   azure_active                                  = var.azure_active
   azure_nymeria_tenant_id                       = var.azure_active ? module.azure[0].nymeria_tenant_id : ""
@@ -109,6 +114,7 @@ module "kubernetes_gke" {
   azure_nymeria_workload_identity_client_id     = var.azure_active ? module.azure[0].nymeria_workload_identity_client_id : ""
   azure_nymeria_storage_account_name            = var.azure_active ? module.azure[0].nymeria_storage_account_name : ""
   azure_oidc_audience                           = local.azure_oidc_audience
+  azure_identity_token_mount_path               = local.azure_identity_token_mount_path
 
   gcp_nymeria_service_account_key = var.gcp_active ? module.gcp[0].nymeria_service_account_key : ""
   gcp_nymeria_storage_bucket      = var.gcp_active ? module.gcp[0].nymeria_storage_bucket : ""

@@ -34,7 +34,6 @@ variable "azure_aks_cluster_issuer_url" {
   default     = ""
 }
 
-
 variable "workload_identity_namespace" {
   description = "Kubernetes workload identity namespace"
   type        = string
@@ -48,6 +47,12 @@ variable "workload_identity_service_account" {
 variable "workload_identity_audience" {
   description = "Kubernetes workload identity audience"
   type        = string
+}
+
+variable "workload_identity_identity_token_mount_path" {
+  description = "Kubernetes workload identity token mount path"
+  type        = string
+  default     = ""
 }
 
 variable "tag_owner" {

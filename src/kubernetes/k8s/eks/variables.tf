@@ -49,6 +49,12 @@ variable "azure_nymeria_storage_account_name" {
   type        = string
 }
 
+variable "azure_identity_token_mount_path" {
+  description = "Azure identity token mount path"
+  type        = string
+  default     = ""
+}
+
 variable "azure_oidc_audience" {
   description = "Azure service account token audience"
   type        = string
@@ -65,6 +71,11 @@ variable "gcp_nymeria_service_account_key" {
   type        = string
 }
 
+variable "gcp_workload_identity_client_configuration" {
+  description = "Nymeria workload identity client configuration file"
+  type        = string
+}
+
 variable "gcp_nymeria_storage_bucket" {
   description = "Nymeria GCS storage bucket"
   type        = string
@@ -73,4 +84,10 @@ variable "gcp_nymeria_storage_bucket" {
 variable "gcp_oidc_audience" {
   description = "GCP service account token audience"
   type        = string
+}
+
+variable "gcp_identity_token_mount_path" {
+  description = "GCP identity token mount path"
+  type        = string
+  default     = ""
 }

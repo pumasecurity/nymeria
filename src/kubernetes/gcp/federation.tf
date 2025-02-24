@@ -8,10 +8,10 @@ resource "google_iam_workload_identity_pool" "nymeria" {
   ]
 }
 
-resource "google_service_account_iam_member" "nymeria" {
-  service_account_id = google_service_account.nymeria.name
-  member             = "principal://iam.googleapis.com/${google_iam_workload_identity_pool.nymeria.name}/subject/system:serviceaccount:${var.workload_identity_namespace}:${var.workload_identity_service_account}"
-  role               = "roles/iam.workloadIdentityUser"
+resource "google_storage_bucket_iam_member" "nymeria_external_pod" {
+  bucket = google_storage_bucket.nymeria.name
+  role   = "roles/storage.objectViewer"
+  member = "principal://iam.googleapis.com/${google_iam_workload_identity_pool.nymeria.name}/subject/system:serviceaccount:${var.workload_identity_namespace}:${var.workload_identity_service_account}"
 }
 
 resource "google_iam_workload_identity_pool_provider" "azure_aks_cluster" {
@@ -53,4 +53,3 @@ resource "google_iam_workload_identity_pool_provider" "aws_eks_cluster" {
     ]
   }
 }
-
