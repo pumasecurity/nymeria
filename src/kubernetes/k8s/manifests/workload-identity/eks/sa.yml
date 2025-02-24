@@ -6,6 +6,7 @@ metadata:
     nymeria/owner: "nymeria"
     nymeria/cost-center: "rsa"
     eks.amazonaws.com/role-arn: ${aws_iam_role_arn}
+    eks.amazonaws.com/token-expiration: "3600"
   name: "nymeria"
   namespace: workload-identity
   labels:

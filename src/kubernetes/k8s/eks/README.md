@@ -303,6 +303,7 @@ Namespace:           workload-identity
 Labels:              app=nymeria
                      cloud=aws
 Annotations:         eks.amazonaws.com/role-arn: arn:aws:iam::192792859965:role/nymeria-0206cb87
+                     eks.amazonaws.com/token-expiration: 3600
                      nymeria/cost-center: rsa
                      nymeria/owner: nymeria
 ```
@@ -439,8 +440,10 @@ You will see the service account name is *nymeria*.
 Name:                nymeria
 Namespace:           workload-identity
 Labels:              app=nymeria
-                     cloud=gcp
-Annotations:         nymeria/cost-center: rsa
+                     cloud=aws
+Annotations:         eks.amazonaws.com/role-arn: arn:aws:iam::192792859965:role/nymeria-0206cb87
+                     eks.amazonaws.com/token-expiration: 3600
+                     nymeria/cost-center: rsa
                      nymeria/owner: nymeria
 ```
 
@@ -512,33 +515,33 @@ jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"'
   "aud": [
     "api://AzureADTokenExchange"
   ],
-  "exp": 1740261730,
-  "iat": 1740258130,
-  "iss": "https://container.googleapis.com/v1/projects/my-project/locations/my-region/clusters/nymeria",
-  "jti": "d7c222bf-2872-4002-89d9-2737c94f18fa",
+  "exp": 1740408944,
+  "iat": 1740405344,
+  "iss": "https://oidc.eks.your-region.amazonaws.com/id/custer-id",
+  "jti": "ffd1c8ca-1344-4d24-a2d2-3dc5738c2e7a",
   "kubernetes.io": {
     "namespace": "workload-identity",
     "node": {
-      "name": "gk3-nymeria-pool-2-90a97509-kbjt",
-      "uid": "eca0a527-fe6e-42a7-a423-ab8f64ca68fb"
+      "name": "ip-10-60-154-42.your-region.compute.internal",
+      "uid": "daea6176-a5c1-4b9b-8fab-cb3bcd934aa2"
     },
     "pod": {
-      "name": "nymeria-azure-5dff96b78d-x54dk",
-      "uid": "bc493859-da99-47f0-984d-da5a6353731c"
+      "name": "nymeria-azure-9d9f94746-ccjv9",
+      "uid": "f9531ebd-7da7-43d3-b98e-0ecb079c2bf0"
     },
     "serviceaccount": {
       "name": "nymeria",
-      "uid": "01f131f2-0631-4b18-89ee-15b67a0d8b8e"
+      "uid": "4731e49d-30ab-4afe-a372-7be1441d1284"
     }
   },
-  "nbf": 1740258130,
+  "nbf": 1740405344,
   "sub": "system:serviceaccount:workload-identity:nymeria"
 }
 ```
 
-Because trust has been configured for the Azure managed identity, the federated token can be used to authenticate to the Azure tenant instead of the long lived client secret. To view the trust relationship, you can browse to the [Azure portal](https://portal.azure.com/) and view the *nymeria* managed identity. The federated credential settings will show an entry called *gcp-gke* that trusts the GKE cluster's issuer, audience, and subject values.
+Because trust has been configured for the Azure managed identity, the federated token can be used to authenticate to the Azure tenant instead of the long lived client secret. To view the trust relationship, you can browse to the [Azure portal](https://portal.azure.com/) and view the *nymeria* managed identity. The federated credential settings will show an entry called *aws-eks* that trusts the GKE cluster's issuer, audience, and subject values.
 
-Use the GKE pod's service account token to authenticate to the Entra ID tenant.
+Use the AWS pod's service account token to authenticate to the Entra ID tenant.
 
 ```bash
 az login --service-principal --tenant ${ARM_TENANT_ID} -u ${ARM_CLIENT_ID} --federated-token $(cat /var/run/secrets/azure/serviceaccount/token)
