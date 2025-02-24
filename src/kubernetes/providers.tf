@@ -78,21 +78,34 @@ provider "kubernetes" {
 
   host                   = module.aws[0].nymeria_cluster_endpoint
   cluster_ca_certificate = base64decode(module.aws[0].nymeria_cluster_ca_certificate)
+
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
-    args        = ["eks", "get-token", "--cluster-name", module.aws[0].nymeria_cluster_name]
     command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", module.aws[0].nymeria_cluster_name]
+  }
+}
+
+provider "kubernetes" {
+  alias = "aks"
+
+  host                   = module.azure[0].nymeria_cluster_endpoint
+  cluster_ca_certificate = base64decode(module.azure[0].nymeria_cluster_ca_certificate)
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "kubelogin"
+    args        = ["get-token", "--login", "azurecli", "--server-id", module.azure[0].azure_aks_entra_id_client_id]
   }
 }
 
 provider "kubernetes" {
   alias = "gke"
 
-  host  = "https://${module.gcp[0].nymeria_cluster_endpoint}"
-  token = module.gcp[0].gcp_client_config_access_token
-  cluster_ca_certificate = base64decode(
-    module.gcp[0].nymeria_cluster_ca_certificate
-  )
+  host                   = "https://${module.gcp[0].nymeria_cluster_endpoint}"
+  cluster_ca_certificate = base64decode(module.gcp[0].nymeria_cluster_ca_certificate)
+  token                  = module.gcp[0].gcp_client_config_access_token
+
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "gke-gcloud-auth-plugin"

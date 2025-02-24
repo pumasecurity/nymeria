@@ -2,6 +2,10 @@ output "nymeria_tenant_id" {
   value = data.azurerm_client_config.this.tenant_id
 }
 
+output "azure_aks_entra_id_client_id" {
+  value = data.azuread_service_principal.aks.client_id
+}
+
 output "nymeria_service_principal_client_id" {
   description = "Nymeria service principal client id"
   value       = azuread_service_principal.nymeria.client_id

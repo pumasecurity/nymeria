@@ -1,13 +1,14 @@
-# Nymeria GKE Instructions
+# Nymeria AKS Instructions
 
 The following steps and commands show how to verify a pods authentication to each cloud provider API.
 
-## GKE Cluster Authentication
+## AKS Cluster Authentication
 
-Run the following command to authenticate to the GKE cluster in your project.
+Run the following command to authenticate to the GKE clusters in your subscription.
 
 ```bash
-gcloud container clusters get-credentials nymeria --region $TF_VAR_gcp_region --project $TF_VAR_gcp_project_id
+az aks get-credentials -g "nymeria" -n "nymeria" --context "nymeria-aks"
+kubelogin convert-kubeconfig -l azurecli --context "nymeria-aks"
 ```
 
 List the namespaces to verify you have successfully authenticated to the cluster.
@@ -71,7 +72,7 @@ bash-4.2#
 Verify the AWS IAM credentials properly populated into the container's environment variables.
 
 ```bash
-env | grep AWS
+env | grep AWS_
 ```
 
 The output should show the two AWS environment variables used to authenticate to the AWS account.
@@ -158,7 +159,7 @@ ARM_CLIENT_SECRET=<secret>
 Use the service principal client secret to authenticate to the Entra ID tenant.
 
 ```bash
-az login --service-principal --tenant ${ARM_TENANT_ID} -u ${ARM_CLIENT_ID} -p="${ARM_CLIENT_SECRET}" 
+az login --service-principal --tenant ${ARM_TENANT_ID} -u ${ARM_CLIENT_ID} -p="${ARM_CLIENT_SECRET}"
 ```
 
 Verify that you can list the blobs in the Nymeria Azure storage account. This command will use the static service principal credentials to authenticate to the Azure storage API.
@@ -289,20 +290,23 @@ Start by confirming that no static credential secrets exist in the *workload-ide
 k get secrets -n workload-identity
 ```
 
-Let's see how to authenticate to the AWS Cloud using the GKE service account. Run the following command to view the nymeria service account:
+Let's see how to authenticate to the AWS Cloud using the EKS service account. Run the following command to view the nymeria service account:
 
 ```bash
 k describe serviceaccounts -n workload-identity nymeria
 ```
 
-You will see the service account name is *nymeria*.
+You will see the service account name is *nymeria*, with a special annotation used by the IRSA admission controller to set environment variables for the AWS IAM Role and federated identity token.
 
 ```text
 Name:                nymeria
 Namespace:           workload-identity
 Labels:              app=nymeria
-                     cloud=gcp
-Annotations:         nymeria/cost-center: rsa
+                     cloud=aws
+Annotations:         azure.workload.identity/client-id: client-id
+                     azure.workload.identity/service-account-token-expiration: 3600
+                     azure.workload.identity/tenant-id: tenant-id
+                     nymeria/cost-center: rsa
                      nymeria/owner: nymeria
 ```
 
@@ -317,7 +321,7 @@ You will see that the deployment is assigning the *nymeria* service account to a
 ```text
 Name:                   nymeria-aws
 Namespace:              workload-identity
-CreationTimestamp:      Sun, 23 Feb 2025 14:03:27 -0600
+CreationTimestamp:      Mon, 24 Feb 2025 16:34:48 -0600
 Labels:                 app=nymeria
                         cloud=aws
 Annotations:            deployment.kubernetes.io/revision: 1
@@ -354,7 +358,7 @@ The response confirms that only the AWS role arn and web identity token file pat
 
 ```text
 AWS_ROLE_ARN=<role-arn>
-AWS_WEB_IDENTITY_TOKEN_FILE=/var/run/secrets/aws/serviceaccount/token
+AWS_WEB_IDENTITY_TOKEN_FILE=/var/run/secrets/eks.amazonaws.com/serviceaccount/token
 ```
 
 View the IAM role's identity token in the /var/run/secrets/aws/serviceaccount/token file.
@@ -372,34 +376,35 @@ jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"'
 ```json
 {
   "aud": [
-    "api://AzureADTokenExchange"
+    "sts.amazonaws.com"
   ],
-  "exp": 1740261730,
-  "iat": 1740258130,
-  "iss": "https://container.googleapis.com/v1/projects/my-project/locations/my-region/clusters/nymeria",
+  "exp": 1740440088,
+  "iat": 1740436488,
+  "iss": "https://location.oic.prod-aks.azure.com/tenant-id/cluster-id/",
+  "jti": "8c39a029-dce8-41b6-8609-b9aa4cc0f962",
   "kubernetes.io": {
     "namespace": "workload-identity",
     "node": {
-      "name": "gk3-nymeria-pool-2-90a97509-kbjt",
-      "uid": "eca0a527-fe6e-42a7-a423-ab8f64ca68fb"
+      "name": "aks-system-23652759-vmss000000",
+      "uid": "14475141-4095-45bc-b7ec-1f787c4888ac"
     },
     "pod": {
-      "name": "nymeria-aws-5dcbc7fc6b-hpthq",
-      "uid": "3327d243-438f-4961-9627-a60a166d7623"
+      "name": "nymeria-aws-6648b8b656-jgmnt",
+      "uid": "94a220e8-388b-41a3-991a-7a069b0cfa75"
     },
     "serviceaccount": {
       "name": "nymeria",
-      "uid": "01f131f2-0631-4b18-89ee-15b67a0d8b8e"
+      "uid": "fdf28768-09e9-4f54-b748-a6cf3b2bfc67"
     }
   },
-  "nbf": 1740341009,
+  "nbf": 1740436488,
   "sub": "system:serviceaccount:workload-identity:nymeria"
 }
 ```
 
-Because trust has been configured using an AWS IAM Identity provider and the IAM role's trust policy, the federated token can be used to authenticate to the AWS account instead of the long lived client secret. To view the trust relationship, you can browse to the [AWS portal](https://console.aws.amazon.com) and view the IAM Identity Providers. You will find an entry that trusts the cluster's issuer  *container.googleapis.com*. The *nymeria* IAM role also has a trust policy that grants assume role permissions through the identity provider to the token's subject.
+Because trust has been configured using an AWS IAM Identity provider and the IAM role's trust policy, the federated token can be used to authenticate to the AWS account instead of the long lived client secret. To view the trust relationship, you can browse to the [AWS portal](https://console.aws.amazon.com) and view the IAM Identity Providers. You will find an entry that trusts the cluster's issuer  *prod-aks.azure.com*. The *nymeria* IAM role also has a trust policy that grants assume role permissions through the identity provider to the token's subject.
 
-Use the GKE pod's service account token to authenticate to the AWS account. The AWS CLI and SDKs automatically use the *AWS_ROLE_ARN* and *AWS_WEB_IDENTITY_TOKEN_FILE* environment variables to authenticate to the AWS account.
+Use the Azure pod's service account token to authenticate to the AWS account. The AWS CLI and SDKs automatically use the *AWS_ROLE_ARN* and *AWS_WEB_IDENTITY_TOKEN_FILE* environment variables to authenticate to the AWS account.
 
 ```bash
 aws sts get-caller-identity
@@ -437,8 +442,11 @@ You will see the service account name is *nymeria*.
 Name:                nymeria
 Namespace:           workload-identity
 Labels:              app=nymeria
-                     cloud=gcp
-Annotations:         nymeria/cost-center: rsa
+                     cloud=aws
+Annotations:         azure.workload.identity/client-id: client-id
+                     azure.workload.identity/service-account-token-expiration: 3600
+                     azure.workload.identity/tenant-id: tenant-id
+                     nymeria/cost-center: rsa
                      nymeria/owner: nymeria
 ```
 
@@ -448,12 +456,12 @@ To see how the service account is used, run the following command to describe th
 k describe deployment -n workload-identity nymeria-azure
 ```
 
-You will see that the deployment is assigning the *nymeria* service account to all of the containers launched by the deployment:
+You will see that the deployment is assigning the *nymeria* service account to all of the containers launched by the deployment. One additional label is added to the pod to indicate that the pod is using the Azure managed identity webhook to inject the Azure federation configuration.
 
 ```text
 Name:                   nymeria-azure
 Namespace:              workload-identity
-CreationTimestamp:      Sat, 22 Feb 2025 10:42:42 -0600
+CreationTimestamp:      Mon, 24 Feb 2025 15:42:07 -0600
 Labels:                 app=nymeria
                         cloud=azure
 Annotations:            deployment.kubernetes.io/revision: 1
@@ -464,6 +472,7 @@ MinReadySeconds:        0
 RollingUpdateStrategy:  25% max unavailable, 25% max surge
 Pod Template:
   Labels:           app=nymeria
+                    azure.workload.identity/use=true
                     cloud=azure
   Service Account:  nymeria
 ```
@@ -480,23 +489,29 @@ The command creates a shell inside the workload identity azure pod, which you ca
 root [ / ]#
 ```
 
-Verify the Azure service principal client secret is no longer in the pod's environment variables.
+Verify the Azure service principal client secret is no longer in the pod's environment variables. The response confirms that the service principal values are no longer inside the pod.
 
 ```bash
 env | grep ARM_
 ```
 
-The response confirms that only the tenant id and client id values are stored in the environment variables. The static service principal client secret is not needed.
-
-```text
-ARM_CLIENT_ID=<id>
-ARM_TENANT_ID=<id>
-```
-
-View the service principal's identity token in the /var/run/secrets/azure/serviceaccount/token file.
+Search the environment variables again for *AZURE_*. You will see the Azure workload identity webhook has injected the service account's annotation values and federated token location into new environment variables.
 
 ```bash
-cat /var/run/secrets/azure/serviceaccount/token && echo;
+env | grep AZURE_
+```
+
+```text
+AZURE_TENANT_ID=tenant-id
+AZURE_FEDERATED_TOKEN_FILE=/var/run/secrets/azure/tokens/azure-identity-token
+AZURE_AUTHORITY_HOST=https://login.microsoftonline.com/
+AZURE_CLIENT_ID=client-id
+```
+
+View the service principal's identity token in the /var/run/secrets/azure/tokens/azure-identity-token file.
+
+```bash
+cat /var/run/secrets/azure/tokens/azure-identity-token && echo;
 ```
 
 In a different Terminal on your machine, you can decode the token's payload using `jq` to view the claims. The subject uniquely identifies the service account inside the cluster and the subject / audience uniquely identify the cluster that created the token.
@@ -510,36 +525,36 @@ jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"'
   "aud": [
     "api://AzureADTokenExchange"
   ],
-  "exp": 1740261730,
-  "iat": 1740258130,
-  "iss": "https://container.googleapis.com/v1/projects/my-project/locations/my-region/clusters/nymeria",
-  "jti": "d7c222bf-2872-4002-89d9-2737c94f18fa",
+  "exp": 1740436927,
+  "iat": 1740433327,
+  "iss": "https://location.oic.prod-aks.azure.com/tenant-id/cluster-id/",
+  "jti": "14ec8318-9ea6-44a2-85bc-66a2ef4de1d8",
   "kubernetes.io": {
     "namespace": "workload-identity",
     "node": {
-      "name": "gk3-nymeria-pool-2-90a97509-kbjt",
-      "uid": "eca0a527-fe6e-42a7-a423-ab8f64ca68fb"
+      "name": "aks-system-23652759-vmss000000",
+      "uid": "14475141-4095-45bc-b7ec-1f787c4888ac"
     },
     "pod": {
-      "name": "nymeria-azure-5dff96b78d-x54dk",
-      "uid": "bc493859-da99-47f0-984d-da5a6353731c"
+      "name": "nymeria-azure-5d54645785-5g5wh",
+      "uid": "e56e0a30-54df-45c9-9a78-d640b611972f"
     },
     "serviceaccount": {
       "name": "nymeria",
-      "uid": "01f131f2-0631-4b18-89ee-15b67a0d8b8e"
+      "uid": "fdf28768-09e9-4f54-b748-a6cf3b2bfc67"
     }
   },
-  "nbf": 1740258130,
+  "nbf": 1740433327,
   "sub": "system:serviceaccount:workload-identity:nymeria"
 }
 ```
 
-Because trust has been configured for the Azure managed identity, the federated token can be used to authenticate to the Azure tenant instead of the long lived client secret. To view the trust relationship, you can browse to the [Azure portal](https://portal.azure.com/) and view the *nymeria* managed identity. The federated credential settings will show an entry called *gcp-gke* that trusts the GKE cluster's issuer, audience, and subject values.
+Because trust has been configured for the Azure managed identity, the federated token can be used to authenticate to the Azure tenant instead of the long lived client secret. To view the trust relationship, you can browse to the [Azure portal](https://portal.azure.com/) and view the *nymeria* managed identity. The federated credential settings will show an entry called *azure-aks* that trusts the GKE cluster's issuer, audience, and subject values.
 
-Use the GKE pod's service account token to authenticate to the Entra ID tenant.
+Use the AWS pod's service account token to authenticate to the Entra ID tenant.
 
 ```bash
-az login --service-principal --tenant ${ARM_TENANT_ID} -u ${ARM_CLIENT_ID} --federated-token $(cat /var/run/secrets/azure/serviceaccount/token)
+az login --service-principal --tenant ${AZURE_TENANT_ID} -u ${AZURE_CLIENT_ID} --federated-token $(cat /var/run/secrets/azure/tokens/azure-identity-token)
 ```
 
 Verify that you can list the blobs in the Nymeria Azure storage account. This command will use the static service principal credentials to authenticate to the Azure storage API.
@@ -578,6 +593,31 @@ Start by confirming that no static credential secrets exist in the *workload-ide
 k get secrets -n workload-identity
 ```
 
+Google Cloud workload identity federation does use a client configuration file for the *gcloud* CLI and SDKs to authenticate to the Google Cloud APIs. The client configuration file is stored in a Kubernetes ConfigMap object.
+
+```
+k get configmaps -n workload-identity -o json gcloud-client-configuration | jq -r '.data."client.json"' | jq
+```
+
+You will see the client configuration file in JSON format that contains the audience, token type, STS endpoint, and the location of the identity token inside the pod. This files does not contain any static credentials or secret values.
+
+```json
+{
+  "audience": "//iam.googleapis.com/projects/project-number/locations/global/workloadIdentityPools/nymeria-k8s-id/providers/azure-aks-id",
+  "credential_source": {
+    "file": "/var/run/secrets/aws/serviceaccount/token",
+    "format": {
+      "subject_token_field_name": "sub",
+      "type": "json"
+    }
+  },
+  "subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
+  "token_url": "https://sts.googleapis.com/v1/token",
+  "type": "external_account",
+  "universe_domain": "googleapis.com"
+}
+```
+
 Let's see how to authenticate to the Google Cloud using a Kubernetes service account. Run the following command to view the nymeria service account:
 
 ```bash
@@ -590,8 +630,11 @@ You will see the service account name is *nymeria*.
 Name:                nymeria
 Namespace:           workload-identity
 Labels:              app=nymeria
-                     cloud=gcp
-Annotations:         nymeria/cost-center: rsa
+                     cloud=aws
+Annotations:         azure.workload.identity/client-id: client-id
+                     azure.workload.identity/service-account-token-expiration: 3600
+                     azure.workload.identity/tenant-id: tenant-id
+                     nymeria/cost-center: rsa
                      nymeria/owner: nymeria
 ```
 
@@ -606,10 +649,10 @@ You will see that the deployment is assigning the *nymeria* service account to a
 ```text
 Name:                   nymeria-gcloud
 Namespace:              workload-identity
-CreationTimestamp:      Thu, 20 Feb 2025 13:08:10 -0600
+CreationTimestamp:      Mon, 24 Feb 2025 16:01:30 -0600
 Labels:                 app=nymeria
                         cloud=gcp
-Annotations:            deployment.kubernetes.io/revision: 3
+Annotations:            deployment.kubernetes.io/revision: 1
 Selector:               app=nymeria,cloud=gcp
 Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
 StrategyType:           RollingUpdate
@@ -645,10 +688,16 @@ The response confirms that the pod does not have a static service account key.
 cat: /mnt/service-account/credentials.json: No such file or directory
 ```
 
-View the service account's identity token in the /var/run/secrets/kubernetes.io/serviceaccount/token file.
+View the gcloud client configuration file. This file includes the audience, token type, STS endpoint, and the location of the identity token inside the pod.
 
 ```bash
-cat /var/run/secrets/kubernetes.io/serviceaccount/token && echo;
+cat /var/run/secrets/gcp/serviceaccount/config/client.json
+```
+
+View the service account's identity token in the /var/run/secrets/gcp/serviceaccount/token file.
+
+```bash
+cat /var/run/secrets/gcp/serviceaccount/token && echo;
 ```
 
 In a different Terminal on your machine, you can decode the token's payload using `jq` to view the claims. The subject uniquely identifies the service account inside the cluster and the subject / audience uniquely identify the cluster that created the token.
@@ -660,34 +709,37 @@ jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"'
 ```json
 {
   "aud": [
-    "https://container.googleapis.com/v1/projects/my-project/locations/my-region/clusters/nymeria"
+    "sts.googleapis.com"
   ],
-  "exp": 1771634149,
-  "iat": 1740098149,
-  "iss": "https://container.googleapis.com/v1/projects/my-project/locations/my-region/clusters/nymeria",
-  "jti": "640e2e5c-e26b-45ca-852c-48cb2245dce7",
+  "exp": 1740438090,
+  "iat": 1740434490,
+  "iss": "https://location.oic.prod-aks.azure.com/tenant-id/cluster-id/",
+  "jti": "6fe8f92d-6d75-4e68-9920-f7b6f1435d26",
   "kubernetes.io": {
     "namespace": "workload-identity",
     "node": {
-      "name": "gk3-nymeria-pool-2-28ce4262-f5td",
-      "uid": "3a2f7d84-7e6d-4d58-9941-7e22d4ed6c1a"
+      "name": "aks-system-23652759-vmss000000",
+      "uid": "14475141-4095-45bc-b7ec-1f787c4888ac"
     },
     "pod": {
-      "name": "nymeria-gcloud-76c868946-w2h64",
-      "uid": "eaf4279d-e70b-40f8-8001-f3dd81f0c8f3"
+      "name": "nymeria-gcloud-574f555599-g6s2g",
+      "uid": "82e68e38-1bc3-437b-a197-71cec78453fd"
     },
     "serviceaccount": {
       "name": "nymeria",
-      "uid": "01f131f2-0631-4b18-89ee-15b67a0d8b8e"
-    },
-    "warnafter": 1740101756
+      "uid": "fdf28768-09e9-4f54-b748-a6cf3b2bfc67"
+    }
   },
-  "nbf": 1740098149,
+  "nbf": 1740434490,
   "sub": "system:serviceaccount:workload-identity:nymeria"
 }
 ```
 
-This token is automatically read by the `gcloud` CLI and used to authenticate to the Google Cloud APIs. Run the following command to authenticate to your GCP project using the service account token and obtain the nymeria logo from the GCS bucket.
+The client configuration points the `gcloud` CLI to the workload identity pool and service account token being used to authenticate to the Google Cloud APIs. Run the following command to authenticate to your GCP project.
+
+```bash
+gcloud auth login --cred-file=/var/run/secrets/gcp/serviceaccount/config/client.json
+```
 
 ```bash
 gcloud storage objects list gs://${NYMERIA_STORAGE_BUCKET}

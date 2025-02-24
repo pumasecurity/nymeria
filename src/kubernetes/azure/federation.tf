@@ -4,6 +4,16 @@ resource "azurerm_user_assigned_identity" "nymeria" {
   resource_group_name = azurerm_resource_group.this.name
 }
 
+resource "azurerm_federated_identity_credential" "azure_aks" {
+  name                = "azure-aks"
+  parent_id           = azurerm_user_assigned_identity.nymeria.id
+  resource_group_name = azurerm_resource_group.this.name
+
+  audience = [var.workload_identity_audience]
+  issuer   = azurerm_kubernetes_cluster.nymeria.oidc_issuer_url
+  subject  = "system:serviceaccount:${var.workload_identity_namespace}:${var.workload_identity_service_account}"
+}
+
 resource "azurerm_federated_identity_credential" "aws_eks" {
   count = var.aws_active ? 1 : 0
 

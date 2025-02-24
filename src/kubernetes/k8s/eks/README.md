@@ -4,7 +4,7 @@ The following steps and commands show how to verify a pods authentication to eac
 
 ## EKS Cluster Authentication
 
-Run the following command to authenticate to the GKE clusters in your proj
+Run the following command to authenticate to the EKS cluster in your account.
 
 ```bash
 aws eks update-kubeconfig --name nymeria-eks-cluster --region $TF_VAR_aws_region
@@ -41,7 +41,7 @@ You will see a secret called *aws-iam-user* that contains the static credentials
 aws-iam-user              Opaque   2      28m
 ```
 
-To see where the service account key is used, run the following command to describe the nymeria gcloud deployment:
+To see where the service account key is used, run the following command to describe the nymeria aws deployment:
 
 ```bash
 k describe deployment -n static-credential nymeria-aws
@@ -113,7 +113,7 @@ You will see a secret called *azure-service-principal* that contains the static 
 azure-service-principal   Opaque   3      18m
 ```
 
-To see where the service account key is used, run the following command to describe the nymeria gcloud deployment:
+To see where the service account key is used, run the following command to describe the nymeria azure deployment:
 
 ```bash
 k describe deployment -n static-credential nymeria-azure
