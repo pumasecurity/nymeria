@@ -691,7 +691,7 @@ cat: /mnt/service-account/credentials.json: No such file or directory
 View the gcloud client configuration file. This file includes the audience, token type, STS endpoint, and the location of the identity token inside the pod.
 
 ```bash
-cat /var/run/secrets/gcp/serviceaccount/config/client.json
+cat /var/run/secrets/gcp/serviceaccount/client-config.json
 ```
 
 View the service account's identity token in the /var/run/secrets/gcp/serviceaccount/token file.
@@ -738,7 +738,7 @@ jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"'
 The client configuration points the `gcloud` CLI to the workload identity pool and service account token being used to authenticate to the Google Cloud APIs. Run the following command to authenticate to your GCP project.
 
 ```bash
-gcloud auth login --cred-file=/var/run/secrets/gcp/serviceaccount/config/client.json
+gcloud auth login --cred-file=/var/run/secrets/gcp/serviceaccount/client-config.json
 ```
 
 ```bash

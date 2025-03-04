@@ -28,9 +28,11 @@ spec:
                   path: token
                   expirationSeconds: 3600
                   audience: ${gcp_oidc_audience}
-        - name: gcloud-client-configuration
-          configMap:
-            name: gcloud-client-configuration
+              - configMap:
+                  name: gcloud-client-configuration
+                  items:
+                    - key: client.json
+                      path: client-config.json
       containers:
         - name: gcloud
           image: gcr.io/google.com/cloudsdktool/google-cloud-cli:latest
@@ -49,8 +51,6 @@ spec:
           volumeMounts:
             - mountPath: ${identity_token_mount_path}
               name: gcp-token
-            - mountPath: ${identity_token_mount_path}/config
-              name: gcloud-client-configuration
           env:
             - name: NYMERIA_STORAGE_BUCKET
               value: ${nymeria_storage_bucket}
