@@ -26,7 +26,7 @@ resource "kubernetes_manifest" "workload_identity_gcp_config_map" {
   manifest = yamldecode(
     templatefile("${path.module}/../manifests/workload-identity/eks/gcp-configmap.yml",
       {
-        workload_identity_client_configuration = jsonencode(jsondecode(var.gcp_workload_identity_client_configuration))
+        workload_identity_client_configuration = length(var.gcp_workload_identity_client_configuration) > 0 ? jsonencode(jsondecode(var.gcp_workload_identity_client_configuration)) : ""
       }
     )
   )
