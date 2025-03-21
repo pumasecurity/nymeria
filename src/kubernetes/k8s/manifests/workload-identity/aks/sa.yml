@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    nymeria/owner: "nymeria"
+    nymeria/cost-center: "rsa"
+    azure.workload.identity/client-id: ${managed_identity_client_id}
+    azure.workload.identity/tenant-id: ${managed_identity_tenant_id}
+    azure.workload.identity/service-account-token-expiration: "3600"
+  name: "nymeria"
+  namespace: workload-identity
+  labels:
+    app: nymeria
+    cloud: aws

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nymeria-azure
+  namespace: workload-identity
+  labels:
+    app: nymeria
+    cloud: azure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nymeria
+      cloud: azure
+  template:
+    metadata:
+      name: nymeria-azure
+      labels:
+        app: nymeria
+        cloud: azure
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: nymeria
+      containers:
+        - name: azcli
+          image: mcr.microsoft.com/azure-cli:latest
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "-c", "--"]
+          args: ["while true; do sleep 30; done;"]
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+              ephemeral-storage: 1Gi
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+              ephemeral-storage: 1Gi
+          env:
+            - name: NYMERIA_STORAGE_ACCOUNT
+              value: ${nymeria_storage_account}
+      nodeSelector:
+        kubernetes.io/os: linux

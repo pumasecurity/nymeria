@@ -4,35 +4,43 @@
 
 Welcome to Puma Security's Workload Identity Federation repository. Nymeria's goal is to help cloud identity and security teams to eliminate long-lived credentials from their cloud estate. The Cloud Infrastructure as Code (IaC) configuration in this repository includes the following resources:
 
-* Azure Service Principal Client Id / Secret for authenticating to an Azure AD Tenant from the *Long Lived Credentials* GitHub Action.
+* [Kubernetes](./src/kubernetes/README.md)
 
-* Azure Service Principal Federated Identity configuration for authenticating to an Azure AD Tenant using a GitHub Action's built-in OpenID Connect (OIDC) JWT.
+* [Cloud Functions](./src/cloud_functions/README.md)
 
-* Azure Virtual Machine for authenticating to the AWS S3 API and Google Cloud Storage (GCS) API.
-
-* AWS IAM User Access Keys for authenticating to the AWS S3 API from the Azure Virtual Machine using a long-lived credential.
-
-* AWS Identity Provider configuration for authenticating to the AWS S3 API using the Azure Virtual Machine's built-in OpenID Connect JWT.
-
-* Google Cloud Service Account Key for authenticating to the GCS API from the Azure Virtual Machine using a long-lived credential.
-
-* Google Cloud Workload Identity Pool for authenticating to the GCS API using the Azure Virtual Machine's built-in OpenID Connect JWT.
+* [Virtual Machines](./src/virtual_machines/README.md)
 
 ## Documentation
 
-Documentation, including step by step instructions for deploying the workshop and inspecting the resource configuration, can be found in the [Nymeria GitHub Pages](https://pumasecurity.github.io/nymeria/).
+Documentation, including step by step instructions for deploying the workshops and inspecting the resource configuration, can be found in the [Nymeria GitHub Pages](https://pumasecurity.github.io/nymeria/).
 
 ## Learning More
 
 ### Featured At
 
+#### RSA Conference 2025
+
+Coming soon: The latest Nymeria enhancement being presented cross-cloud workload identity at RSA Conference 2025
+
+[![Securing Cloud Access with Kubernetes Workload Identity - Eric Johnson](./docs/docs/img/rsac2025.png)](https://path.rsaconference.com/flow/rsac/us25/FullAgenda/page/catalog/session/1726588498978001GFSF)
+
 #### RSA Conference 2023
+
+The original Nymeria workshop focused on cross-cloud authentication between GitHub Actions and the Microsoft Azure cloud, then from an Azure virtual machine to both AWS S3 and Google Cloud Storage.
 
 [![Destroying Long-Lived Cloud Credentials with Workload Identity Federation - Eric Johnson](https://pumasecurity.github.io/nymeria/img/destroying-long-lived-credentials-workload-identity-federation.png)](https://youtu.be/Loj4eOIu-zo)
 
 [Presentation Slides](https://pumasecurity.github.io/nymeria/assets/2023_USA23_CSCO-M05_01_Destroying_Long-Lived_Cloud_Credentials_with_Workload_Identity_Federation.pdf)
 
 ## Source Code
+
+### Kubernetes
+
+* [Long-Lived Credential GitHub Action](./.github/workflows/long-lived-credentials.yaml)
+* [Federated Identity GitHub Action](./.github/workflows/federated-identity.yaml)
+* [Terraform Configuration](./src/)
+
+### Virtual Machines
 
 * [Long-Lived Credential GitHub Action](./.github/workflows/long-lived-credentials.yaml)
 * [Federated Identity GitHub Action](./.github/workflows/federated-identity.yaml)

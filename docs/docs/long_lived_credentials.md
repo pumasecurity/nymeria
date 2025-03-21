@@ -145,10 +145,10 @@ Start hunting for long-lived AWS and Google cloud credentials on the Nymeria vir
 1. Run the following commands in the Azure Cloud Shell to authenticate to the Terraform state storage account.
 
     ```bash
-    cd ~/clouddrive/nymeria/src/workshop/01_azure_init/
+    cd ~/clouddrive/nymeria/src/virtual_machines/01_azure_init/
     ARM_RESOURCE_GROUP_NAME=$(terraform output --json | jq -r '.resource_group_name.value')
     ARM_STORAGE_ACCOUNT_NAME=$(terraform output --json | jq -r '.terraform_state_storage_account_name.value')
-    cd ~/clouddrive/nymeria/src/workshop/04_gh_action/
+    cd ~/clouddrive/nymeria/src/virtual_machines/04_gh_action/
     terraform init --backend-config="storage_account_name=$ARM_STORAGE_ACCOUNT_NAME" --backend-config="resource_group_name=$ARM_RESOURCE_GROUP_NAME"
     ```
 

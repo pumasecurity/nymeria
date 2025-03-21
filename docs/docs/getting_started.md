@@ -47,7 +47,7 @@ Complete the following steps to create the resources required to authenticate th
 1. Change the directory to the `~/clouddrive/nymeria/src/01_azure_init` directory.
 
     ```bash
-    cd ~/clouddrive/nymeria/src/workshop/01_azure_init/
+    cd ~/clouddrive/nymeria/src/virtual_machines/01_azure_init/
     ```
 
 1. Apply the Terraform configuration to bootstrap your Azure subscription with both long-lived credentials and the workload identity resources.
@@ -186,10 +186,10 @@ Complete the following steps to create the resources required for the Azure virt
     git clone [ENTER_YOUR_CLONE_URL]
     ```
 
-1. Change the directory to the `~/nymeria/src/workshop/02_aws_init/` directory.
+1. Change the directory to the `~/nymeria/src/virtual_machines/02_aws_init/` directory.
 
     ```bash
-    cd ~/nymeria/src/workshop/02_aws_init/
+    cd ~/nymeria/src/virtual_machines/02_aws_init/
     ```
 
 1. Apply the Terraform configuration to bootstrap your AWS account with both long-lived credentials and the workload identity resources.
@@ -296,7 +296,7 @@ Complete the following steps to create the resources required for the Azure virt
 1. Change the directory to the `~/clouddrive/nymeria/src/03_gcp_init` directory.
 
     ```bash
-    cd ~/nymeria/src/workshop/03_gcp_init/
+    cd ~/nymeria/src/virtual_machines/03_gcp_init/
     ```
 
 1. Apply the Terraform configuration to bootstrap your Google Cloud project with both long-lived credentials and the workload identity resources.

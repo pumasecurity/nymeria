@@ -13,9 +13,9 @@ Complete the following steps to destroy the resources created in your Azure subs
 1. Run the following commands to destroy the resources created by the *Federated Identity* GitHub action.
 
     ```bash
-    cd ~/clouddrive/nymeria/src/workshop/01_azure_init/
+    cd ~/clouddrive/nymeria/src/virtual_machines/01_azure_init/
     export TF_VAR_resource_group_name=$(terraform output --json | jq -r '.resource_group_name.value')
-    cd ~/clouddrive/nymeria/src/workshop/04_gh_action/
+    cd ~/clouddrive/nymeria/src/virtual_machines/04_gh_action/
     export TF_VAR_aws_default_region="us-east-2"
     export TF_VAR_aws_access_key_id="AKIAEXAMPLE"
     export TF_VAR_aws_secret_access_key="EXAMPLESECRETACCESSKEY"
@@ -37,7 +37,7 @@ Complete the following steps to destroy the resources created in your Azure subs
 1. Run the following commands to destroy the resources created by the configuration in the `~/clouddrive/nymeria/src/01_azure_init` directory.
 
     ```bash
-    cd ~/clouddrive/nymeria/src/workshop/01_azure_init/
+    cd ~/clouddrive/nymeria/src/virtual_machines/01_azure_init/
     export TF_VAR_github_organization=pumasecurity
     export TF_VAR_github_repository=nymeria
     terraform destroy -auto-approve
@@ -63,7 +63,7 @@ Complete the following steps to destroy the resources created in your AWS accoun
 1. Run the following commands to destroy the resources created by the configuration in the `~/clouddrive/nymeria/src/02_aws_init` directory.
 
     ```bash
-    cd ~/nymeria/src/workshop/02_aws_init/
+    cd ~/nymeria/src/virtual_machines/02_aws_init/
     export TF_VAR_azure_tenant_id="EXAMPLE-TENANT-ID"
     export TF_VAR_azure_virtual_machine_managed_identity_principal_id="EXAMPLE-PRINCIPAL-ID"
     terraform destroy -auto-approve
@@ -86,10 +86,10 @@ Complete the following steps to destroy the resources created in your Google Clo
 
     ![](./img/gcp-project.png)
 
-1. Run the following commands to destroy the resources created by the configuration in the `~/nymeria/src/workshop/03_gcp_init/` directory. You will need to **Authorize** the Cloud Shell to access your Google Cloud project.
+1. Run the following commands to destroy the resources created by the configuration in the `~/nymeria/src/virtual_machines/03_gcp_init/` directory. You will need to **Authorize** the Cloud Shell to access your Google Cloud project.
 
     ```bash
-    cd ~/nymeria/src/workshop/03_gcp_init/
+    cd ~/nymeria/src/virtual_machines/03_gcp_init/
     export TF_VAR_project_id=$(terraform output --json | jq -r '.gcp_project_id.value')
     export TF_VAR_azure_tenant_id="EXAMPLE-TENANT-ID"
     export TF_VAR_azure_virtual_machine_managed_identity_principal_id="EXAMPLE-PRINCIPAL-ID"

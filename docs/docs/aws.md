@@ -13,7 +13,7 @@ Connect to the Nymeria virtual machine and request an OpenID Connect identity to
 1. Run the following command to connect to the Nymeria virtual machine over SSH.
 
     ```bash
-    cd ~/clouddrive/nymeria/src/workshop/04_gh_action/
+    cd ~/clouddrive/nymeria/src/virtual_machines/04_gh_action/
     NYMERIA_FQDN=$(terraform output --json | jq -r '.azure_virtual_machine_fqdn.value')
     ssh -i ~/.ssh/nymeria.pem ubuntu@$NYMERIA_FQDN
     ```
@@ -145,7 +145,7 @@ Use the Nymeria virtual machine's OpenID Connect token to assume the AWS IAM rol
 1. Run the following command to connect to the Nymeria virtual machine over SSH.
 
     ```bash
-    cd ~/clouddrive/nymeria/src/workshop/04_gh_action/
+    cd ~/clouddrive/nymeria/src/virtual_machines/04_gh_action/
     NYMERIA_FQDN=$(terraform output --json | jq -r '.azure_virtual_machine_fqdn.value')
     ssh -i ~/.ssh/nymeria.pem ubuntu@$NYMERIA_FQDN
     ```

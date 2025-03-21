@@ -1,4 +1,4 @@
-# Upload to Big 3 Storage Services
+# Cloud Functions
 
 This directory contains a minimally-viable codebase for cloud functions that upload files to the cloud storage services of the other providers using the following Workload Identity Federation integrations:
 
