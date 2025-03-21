@@ -13,7 +13,7 @@ gcloud container clusters get-credentials nymeria --region $TF_VAR_gcp_region --
 List the namespaces to verify you have successfully authenticated to the cluster.
 
 ```bash
-k get ns
+kubectl get ns
 ```
 
 The output should confirm you have created namespaces for testing connectivity using both *static credentials* and *workload identity*.
@@ -32,7 +32,7 @@ Use the following sections to verify that you can connect to each cloud provider
 Find the static credentials for AWS Cloud by running the following command:
 
 ```bash
-k get secrets -n static-credential
+kubectl get secrets -n static-credential
 ```
 
 You will see a secret called *aws-iam-user* that contains the static credentials to the *nymeria* IAM User in your AWS account.
@@ -44,7 +44,7 @@ aws-iam-user              Opaque   2      28m
 To see where the service account key is used, run the following command to describe the nymeria aws deployment:
 
 ```bash
-k describe deployment -n static-credential nymeria-aws
+kubectl describe deployment -n static-credential nymeria-aws
 ```
 
 You will see that the deployment is mounting the IAM credentials into environment variables containing the access key and secret key.
@@ -59,7 +59,7 @@ Environment:
 To verify that the IAM credentials grant access to AWS cloud resources, run the following command to exec into the nymeria-aws pod:
 
 ```bash
-k exec -n static-credential -it $(k get pod -n static-credential -l app=nymeria,cloud=aws -o json | jq -r '.items[0].metadata.name') -- /bin/bash
+kubectl exec -n static-credential -it $(kubectl get pod -n static-credential -l app=nymeria,cloud=aws -o json | jq -r '.items[0].metadata.name') -- /bin/bash
 ```
 
 The command creates a shell inside the aws pod, which you can use to authenticate to your project and obtain the nymeria logo from the GCS bucket.
@@ -104,7 +104,7 @@ The results will show you the contents of the S3 bucket, including the *aws-work
 Find the static credentials for Azure Cloud by running the following command:
 
 ```bash
-k get secrets -n static-credential
+kubectl get secrets -n static-credential
 ```
 
 You will see a secret called *azure-service-principal* that contains the static service principal client id and client secret for the *nymeria* service principal in Entra ID.
@@ -116,7 +116,7 @@ azure-service-principal   Opaque   3      18m
 To see where the service account key is used, run the following command to describe the nymeria azure deployment:
 
 ```bash
-k describe deployment -n static-credential nymeria-azure
+kubectl describe deployment -n static-credential nymeria-azure
 ```
 
 You will see that the deployment is reading the service principal credentials into a environment variables containing the client id, client secret, and tenant id.
@@ -132,7 +132,7 @@ Environment:
 To verify that the service principal credentials grants access to Azure cloud resources, run the following command to exec into the nymeria-azure pod:
 
 ```bash
-k exec -n static-credential -it $(k get pod -n static-credential -l app=nymeria,cloud=azure -o json | jq -r '.items[0].metadata.name') -- /bin/bash
+kubectl exec -n static-credential -it $(kubectl get pod -n static-credential -l app=nymeria,cloud=azure -o json | jq -r '.items[0].metadata.name') -- /bin/bash
 ```
 
 The command creates a shell inside the azure pod, which you can use to authenticate to your tenant and obtain the nymeria logo from the Azure storage account.
@@ -194,7 +194,7 @@ The results will show you the contents of the bucket, including the *azure-workl
 Find the static credentials for Google Cloud by running the following command:
 
 ```bash
-k get secrets -n static-credential
+kubectl get secrets -n static-credential
 ```
 
 You will see a secret called *gcp-service-account-key* that contains the static service account key for the *nymeria* service account inside of your GCP project's IAM & Admin console.
@@ -206,7 +206,7 @@ gcp-service-account-key
 To see where the service account key is used, run the following command to describe the nymeria gcloud deployment:
 
 ```bash
-k describe deployment -n static-credential nymeria-gcloud
+kubectl describe deployment -n static-credential nymeria-gcloud
 ```
 
 You will see that the deployment is mounting the service account key as into a volume called *gcp-service-account-key*. The service account key will be located in the `/mnt/service-account/` directory.
@@ -224,7 +224,7 @@ Volumes:
 To verify that the service account key grants access to Google cloud resources, run the following command to exec into the nymeria-gcloud pod:
 
 ```bash
-k exec -n static-credential -it $(k get pod -n static-credential -l app=nymeria,cloud=gcp -o json | jq -r '.items[0].metadata.name') -- /bin/bash
+kubectl exec -n static-credential -it $(kubectl get pod -n static-credential -l app=nymeria,cloud=gcp -o json | jq -r '.items[0].metadata.name') -- /bin/bash
 ```
 
 The command creates a shell inside the gcloud pod, which you can use to authenticate to your project and obtain the nymeria logo from the GCS bucket.
@@ -286,13 +286,13 @@ Use the following sections to verify that you can connect to each cloud provider
 Start by confirming that no static credential secrets exist in the *workload-identity* namespace.
 
 ```bash
-k get secrets -n workload-identity
+kubectl get secrets -n workload-identity
 ```
 
 Let's see how to authenticate to the AWS Cloud using the GKE service account. Run the following command to view the nymeria service account:
 
 ```bash
-k describe serviceaccounts -n workload-identity nymeria
+kubectl describe serviceaccounts -n workload-identity nymeria
 ```
 
 You will see the service account name is *nymeria*.
@@ -309,7 +309,7 @@ Annotations:         nymeria/cost-center: rsa
 To see how the service account is used, run the following command to describe the nymeria gcloud deployment:
 
 ```bash
-k describe deployment -n workload-identity nymeria-aws
+kubectl describe deployment -n workload-identity nymeria-aws
 ```
 
 You will see that the deployment is assigning the *nymeria* service account to all of the containers launched by the deployment:
@@ -335,7 +335,7 @@ Pod Template:
 To verify that the pod's service account has access to AWS cloud resources, run the following command to exec into the *nymeria-aws* pod:
 
 ```bash
-k exec -n workload-identity -it $(k get pod -n workload-identity -l app=nymeria,cloud=aws -o json | jq -r '.items[0].metadata.name') -- /bin/bash
+kubectl exec -n workload-identity -it $(kubectl get pod -n workload-identity -l app=nymeria,cloud=aws -o json | jq -r '.items[0].metadata.name') -- /bin/bash
 ```
 
 The command creates a shell inside the workload identity aws pod, which you can use to authenticate using the pod's service account to the AWS S3 bucket and obtain the nymeria logo from the storage container.
@@ -366,7 +366,7 @@ cat /var/run/secrets/aws/serviceaccount/token && echo;
 In a different Terminal on your machine, you can decode the token's payload using `jq` to view the claims. The subject uniquely identifies the service account inside the cluster and the subject / audience uniquely identify the cluster that created the token.
 
 ```bash
-jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"'
+jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"
 ```
 
 ```json
@@ -422,13 +422,13 @@ The results will show you the contents of the S3 bucket, including the *aws-work
 Start by confirming that no static credential secrets exist in the *workload-identity* namespace.
 
 ```bash
-k get secrets -n workload-identity
+kubectl get secrets -n workload-identity
 ```
 
 Let's see how to authenticate to the Azure Cloud using the GKE service account. Run the following command to view the nymeria service account:
 
 ```bash
-k describe serviceaccounts -n workload-identity nymeria
+kubectl describe serviceaccounts -n workload-identity nymeria
 ```
 
 You will see the service account name is *nymeria*.
@@ -445,7 +445,7 @@ Annotations:         nymeria/cost-center: rsa
 To see how the service account is used, run the following command to describe the nymeria gcloud deployment:
 
 ```bash
-k describe deployment -n workload-identity nymeria-azure
+kubectl describe deployment -n workload-identity nymeria-azure
 ```
 
 You will see that the deployment is assigning the *nymeria* service account to all of the containers launched by the deployment:
@@ -471,7 +471,7 @@ Pod Template:
 To verify that the pod's service account has access to Azure cloud resources, run the following command to exec into the *nymeria-azure* pod:
 
 ```bash
-k exec -n workload-identity -it $(k get pod -n workload-identity -l app=nymeria,cloud=azure -o json | jq -r '.items[0].metadata.name') -- /bin/bash
+kubectl exec -n workload-identity -it $(kubectl get pod -n workload-identity -l app=nymeria,cloud=azure -o json | jq -r '.items[0].metadata.name') -- /bin/bash
 ```
 
 The command creates a shell inside the workload identity azure pod, which you can use to authenticate using the pod's service account to the Azure storage account and obtain the nymeria logo from the storage container.
@@ -496,13 +496,13 @@ ARM_TENANT_ID=<id>
 View the service principal's identity token in the /var/run/secrets/azure/serviceaccount/token file.
 
 ```bash
-cat /var/run/secrets/azure/serviceaccount/token && echo;
+cat $AZURE_FEDERATED_TOKEN_FILE && echo;
 ```
 
 In a different Terminal on your machine, you can decode the token's payload using `jq` to view the claims. The subject uniquely identifies the service account inside the cluster and the subject / audience uniquely identify the cluster that created the token.
 
 ```bash
-jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"'
+jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"
 ```
 
 ```json
@@ -539,7 +539,7 @@ Because trust has been configured for the Azure managed identity, the federated 
 Use the GKE pod's service account token to authenticate to the Entra ID tenant.
 
 ```bash
-az login --service-principal --tenant ${ARM_TENANT_ID} -u ${ARM_CLIENT_ID} --federated-token $(cat /var/run/secrets/azure/serviceaccount/token)
+az login --service-principal --tenant ${ARM_TENANT_ID} -u ${ARM_CLIENT_ID} --federated-token $(cat $AZURE_FEDERATED_TOKEN_FILE)
 ```
 
 Verify that you can list the blobs in the Nymeria Azure storage account. This command will use the static service principal credentials to authenticate to the Azure storage API.
@@ -575,13 +575,13 @@ The results will show you the contents of the bucket, including the *gcp-workloa
 Start by confirming that no static credential secrets exist in the *workload-identity* namespace.
 
 ```bash
-k get secrets -n workload-identity
+kubectl get secrets -n workload-identity
 ```
 
 Let's see how to authenticate to the Google Cloud using a Kubernetes service account. Run the following command to view the nymeria service account:
 
 ```bash
-k describe serviceaccounts -n workload-identity nymeria
+kubectl describe serviceaccounts -n workload-identity nymeria
 ```
 
 You will see the service account name is *nymeria*.
@@ -598,7 +598,7 @@ Annotations:         nymeria/cost-center: rsa
 To see how the service account is used, run the following command to describe the nymeria gcloud deployment:
 
 ```bash
-k describe deployment -n workload-identity nymeria-gcloud
+kubectl describe deployment -n workload-identity nymeria-gcloud
 ```
 
 You will see that the deployment is assigning the *nymeria* service account to all of the containers launched by the deployment:
@@ -624,7 +624,7 @@ Pod Template:
 To verify that the pod's service account has access to Google cloud resources, run the following command to exec into the *nymeria-gcloud* pod:
 
 ```bash
-k exec -n workload-identity -it $(k get pod -n workload-identity -l app=nymeria,cloud=gcp -o json | jq -r '.items[0].metadata.name') -- /bin/bash
+kubectl exec -n workload-identity -it $(kubectl get pod -n workload-identity -l app=nymeria,cloud=gcp -o json | jq -r '.items[0].metadata.name') -- /bin/bash
 ```
 
 The command creates a shell inside the workload identity gcloud pod, which you can use to authenticate using the pod's service account to your project and obtain the nymeria logo from the GCS bucket.
@@ -654,7 +654,7 @@ cat /var/run/secrets/kubernetes.io/serviceaccount/token && echo;
 In a different Terminal on your machine, you can decode the token's payload using `jq` to view the claims. The subject uniquely identifies the service account inside the cluster and the subject / audience uniquely identify the cluster that created the token.
 
 ```bash
-jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"'
+jq -R 'split(".") | .[1] | @base64d | fromjson' <<<"$TOKEN"
 ```
 
 ```json

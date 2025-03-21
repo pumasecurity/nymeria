@@ -53,5 +53,7 @@ spec:
               value: ${tenant_id}
             - name: ARM_CLIENT_ID
               value: ${client_id}
+            - name: AZURE_FEDERATED_TOKEN_FILE
+              value: ${identity_token_mount_path}/token
       nodeSelector:
         kubernetes.io/os: linux

@@ -501,7 +501,7 @@ ARM_TENANT_ID=<id>
 View the service principal's identity token in the /var/run/secrets/azure/serviceaccount/token file.
 
 ```bash
-cat /var/run/secrets/azure/serviceaccount/token && echo;
+cat $AZURE_FEDERATED_TOKEN_FILE && echo;
 ```
 
 In a different Terminal on your machine, you can decode the token's payload using `jq` to view the claims. The subject uniquely identifies the service account inside the cluster and the subject / audience uniquely identify the cluster that created the token.
