@@ -20,6 +20,10 @@ Documentation, including step by step instructions for deploying the workshops a
 
 #### RSA Conference 2025
 
+Coming soon: The latest Nymeria enhancement being presented cross-cloud workload identity at RSA Conference 2025
+
+[![Securing Cloud Access with Kubernetes Workload Identity - Eric Johnson](./docs/docs/img/rsac2025.png)](https://path.rsaconference.com/flow/rsac/us25/FullAgenda/page/catalog/session/1726588498978001GFSF)
+
 #### RSA Conference 2023
 
 The original Nymeria workshop focused on cross-cloud authentication between GitHub Actions and the Microsoft Azure cloud, then from an Azure virtual machine to both AWS S3 and Google Cloud Storage.
