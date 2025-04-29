@@ -1,0 +1,1110 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Puma Security's Nymeria Cloud Workload Identity Configuration">
+      
+      
+        <meta name="author" content="Eric Johnson">
+      
+      
+      
+        <link rel="prev" href="../getting_started/">
+      
+      
+        <link rel="next" href="../azure/">
+      
+      
+      <link rel="icon" href="../img/nymeria.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+    
+    
+      
+        <title>Long Lived Credentials - Nymeria Cloud Workload Identity</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="orange" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#long-lived-credentials" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Nymeria Cloud Workload Identity" class="md-header__button md-logo" aria-label="Nymeria Cloud Workload Identity" data-md-component="logo">
+      
+  <img src="../img/nymeria.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nymeria Cloud Workload Identity
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Long Lived Credentials
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Nymeria Cloud Workload Identity" class="md-nav__button md-logo" aria-label="Nymeria Cloud Workload Identity" data-md-component="logo">
+      
+  <img src="../img/nymeria.png" alt="logo">
+
+    </a>
+    Nymeria Cloud Workload Identity
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Workshops
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Workshops
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Virtual Machines
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Virtual Machines
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prerequisites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Prerequisites
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Long Lived Credentials
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Long Lived Credentials
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#github-action-credentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub Action Credentials
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GitHub Action Credentials">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#azure-service-principal-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      Azure Service Principal Secret
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nymeria-virtual-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nymeria Virtual Machine
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nymeria Virtual Machine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-access-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS Access Key
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#google-cloud-service-account-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      Google Cloud Service Account Key
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../azure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Azure Federation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    AWS Federation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gcp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Google Cloud Federation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../teardown/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Teardown
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#github-action-credentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub Action Credentials
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GitHub Action Credentials">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#azure-service-principal-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      Azure Service Principal Secret
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nymeria-virtual-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nymeria Virtual Machine
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nymeria Virtual Machine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-access-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS Access Key
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#google-cloud-service-account-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      Google Cloud Service Account Key
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="long-lived-credentials">Long Lived Credentials</h1>
+<p>Explore Nymeria's long lived credentials for each cloud provider: Azure, AWS, and Google Cloud. Use each long lived credential to access resources in each cloud provider.</p>
+<h2 id="github-action-credentials">GitHub Action Credentials</h2>
+<p>From the GitHub Action called <em>Long Lived Credentials</em>, find the Azure tenant id, client id, and client secret values in the log output.</p>
+<div class="admonition warning">
+<p class="admonition-title">Stolen Credentials</p>
+<p>Running the <code>long-lived-credentials</code> action will purposely expose an Azure client id and client secret in the GitHub Actions logs. The service principal  permissions only have the <em>Reader</em> role on the <code>nymeria-workshop</code> resource group, which currently has no data to exfiltrate. However, these credentials are real and should be immediately deleted at the end of this to prevent exposure. You can skip this section if you are not comfortable with this risk.</p>
+</div>
+<ol>
+<li>
+<p>In your GitHub repository, navigate to the <em>Actions</em> tab. Then, click on the <em>I understand my workflows, go ahead and enable them.</em> button.</p>
+<p><img alt="" src="../img/gh-actions.png" /></p>
+</li>
+<li>
+<p>Click on the <em>Long Lived Credentials</em> workflow. Then, click on the <em>Run workflow</em> button to start the workflow on the <code>main</code> branch.</p>
+<p><img alt="" src="../img/gh-action-ll.png" /></p>
+</li>
+<li>
+<p>Select the completed run of the <em>Long Lived Credentials</em> action to view the jobs.</p>
+<p><img alt="" src="../img/gh-action-ll-jobs.png" /></p>
+</li>
+<li>
+<p>Select the <em>Apply Terraform</em> job to view the steps.</p>
+<p><img alt="" src="../img/gh-action-ll-tf.png" /></p>
+</li>
+<li>
+<p>Expand the <em>Azure Login</em> step to find the Azure tenant id, client id, and client secret values in the log output.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Console Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Run<span class="w"> </span>azure/login@v1.4.6
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>with:
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>creds:<span class="w"> </span>***<span class="s2">&quot;clientId&quot;</span>:<span class="s2">&quot;[your-client-id]&quot;</span>,<span class="s2">&quot;clientSecret&quot;</span>:<span class="s2">&quot;[your-client-secret]&quot;</span>,<span class="s2">&quot;subscriptionId&quot;</span>:<span class="s2">&quot;[your-subscription-id]&quot;</span>,<span class="s2">&quot;tenantId&quot;</span>:<span class="s2">&quot;[your-tenant-id]&quot;</span>***
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>enable-AzPSSession:<span class="w"> </span><span class="nb">false</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span>environment:<span class="w"> </span>azurecloud
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span>allow-no-subscriptions:<span class="w"> </span><span class="nb">false</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span>audience:<span class="w"> </span>api://AzureADTokenExchange
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>These long-lived credentials are being used to authenticate to the Azure subscription. Observe the GitHub Action also shows a <em>Note</em> suggesting that we use a a federated credential to use OIDC based authentication.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Console Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Note:<span class="w"> </span>Azure/login<span class="w"> </span>action<span class="w"> </span>also<span class="w"> </span>supports<span class="w"> </span>OIDC<span class="w"> </span>login<span class="w"> </span>mechanism.<span class="w"> </span>Refer<span class="w"> </span>https://github.com/azure/login#configure-a-service-principal-with-a-federated-credential-to-use-oidc-based-authentication<span class="w"> </span><span class="k">for</span><span class="w"> </span>more<span class="w"> </span>details.
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Login<span class="w"> </span>successful.
+</span></code></pre></div>
+</div>
+</li>
+</ol>
+<h3 id="azure-service-principal-secret">Azure Service Principal Secret</h3>
+<p>Use the long-lived stolen client id and secret values to authenticate to the Azure tenant.</p>
+<ol>
+<li>
+<p>Browse to the <a href="https://portal.azure.com/" rel="noopener" target="_blank">Azure Portal</a> open <strong>Cloud Shell</strong> again.</p>
+<p><img alt="" src="../img/az-portal.png" /></p>
+</li>
+<li>
+<p>Start by running the <code>az ad signed-in-user show</code> command. Observe you are signed into the Terminal under your personal account.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>az<span class="w"> </span>ad<span class="w"> </span>signed-in-user<span class="w"> </span>show
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="o">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="s2">&quot;@odata.context&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://graph.microsoft.com/v1.0/</span><span class="nv">$metadata</span><span class="s2">#users/</span><span class="nv">$entity</span><span class="s2">&quot;</span>,
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="s2">&quot;businessPhones&quot;</span>:<span class="w"> </span><span class="o">[]</span>,
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="s2">&quot;displayName&quot;</span>:<span class="w"> </span><span class="s2">&quot;Last Name, First Name,</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="s2">  &quot;</span>givenName<span class="s2">&quot;: &quot;</span>First<span class="w"> </span>Name<span class="s2">&quot;,</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="s2">  &quot;</span>id<span class="s2">&quot;: &quot;</span>2e164a5a-1ebd-4f3e-ab84-18165db3e826<span class="s2">&quot;,</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="s2">  &quot;</span>jobTitle<span class="s2">&quot;: &quot;</span>Hacker<span class="s2">&quot;,</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="s2">  &quot;</span>mail<span class="s2">&quot;: &quot;</span>user@pumasecurity.io<span class="s2">&quot;,</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="s2">  &quot;</span>mobilePhone<span class="s2">&quot;: null,</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="s2">  &quot;</span>officeLocation<span class="s2">&quot;: null,</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="s2">  &quot;</span>preferredLanguage<span class="s2">&quot;: null,</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="s2">  &quot;</span>surname<span class="s2">&quot;: &quot;</span>Last<span class="w"> </span>Name<span class="s2">&quot;,</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="s2">  &quot;</span>userPrincipalName<span class="s2">&quot;: &quot;</span>user@pumasecurity.io<span class="s2">&quot;</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="s2">}</span>
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Set the following environment variables to the stolen service principal credentials.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">ARM_TENANT_ID</span><span class="o">=[</span>STOLEN_TENANT_ID<span class="o">]</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">ARM_CLIENT_ID</span><span class="o">=[</span>STOLEN_CLIENT_ID<span class="o">]</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nv">ARM_CLIENT_SECRET</span><span class="o">=[</span>STOLEN_CLIENT_SECRET<span class="o">]</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nv">ARM_SUBSCRIPTION_ID</span><span class="o">=[</span>STOLEN_SUBSCRIPTION_ID<span class="o">]</span>
+</span></code></pre></div>
+</li>
+<li>
+<p>Use the stolen service principal credentials to authenticate to the Azure tenant and set the subscription.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>az<span class="w"> </span>login<span class="w"> </span>--service-principal<span class="w"> </span>-u<span class="w"> </span><span class="nv">$ARM_CLIENT_ID</span><span class="w"> </span>-p<span class="w"> </span><span class="nv">$ARM_CLIENT_SECRET</span><span class="w"> </span>--tenant<span class="w"> </span><span class="nv">$ARM_TENANT_ID</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>az<span class="w"> </span>account<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--subscription<span class="w"> </span><span class="nv">$ARM_SUBSCRIPTION_ID</span>
+</span></code></pre></div>
+</li>
+<li>
+<p>The following command will list the resource groups that the service principal has access to: <code>nymeria-workshop</code>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>az<span class="w"> </span>group<span class="w"> </span>list<span class="w"> </span>-o<span class="w"> </span>table
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Name<span class="w">              </span>Location<span class="w">    </span>Status
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>----------------<span class="w">  </span>----------<span class="w">  </span>---------
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>nymeria-workshop<span class="w">  </span>eastus<span class="w">      </span>Succeeded
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>The following command will list the storage accounts in the <code>nymeria-workshop</code> resource group. The output will confirm you are able to view the storage account containing the Nymeria Terraform state data.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>az<span class="w"> </span>storage<span class="w"> </span>account<span class="w"> </span>list<span class="w"> </span>-g<span class="w"> </span>nymeria-workshop<span class="w"> </span>-o<span class="w"> </span>table<span class="w"> </span>--query<span class="w"> </span><span class="s2">&quot;[].{resourceGroup:resourceGroup, name:name}&quot;</span>
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>ResourceGroup<span class="w">     </span>Name
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>----------------<span class="w">  </span>-----------------
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>nymeria-workshop<span class="w">  </span>terraform9s6ogn1e
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Now that we have proven the stolen credentials work, restart the Azure Cloud Shell to re-authenticate under your personal account.</p>
+<p><img alt="" src="../img/az-cloudshell-restart.png" /></p>
+</li>
+<li>
+<p>Run the following command to delete the compromised service principal from your Azure subscription.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nv">LONG_LIVED_APP_ID</span><span class="o">=</span><span class="k">$(</span>az<span class="w"> </span>ad<span class="w"> </span>app<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.[] | select(.displayName==&quot;github-creds-ad-app&quot;).id&#39;</span><span class="k">)</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>az<span class="w"> </span>ad<span class="w"> </span>app<span class="w"> </span>delete<span class="w"> </span>--id<span class="w"> </span><span class="nv">$LONG_LIVED_APP_ID</span>
+</span></code></pre></div>
+</li>
+<li>
+<p>Go back to the GitHub repository and delete the run that contained the stolen credentials.</p>
+<p><img alt="" src="../img/gh-action-ll-delete.png" /></p>
+</li>
+</ol>
+<div class="admonition success">
+<p class="admonition-title">Credential Containment</p>
+<p>Congratulations, you have successfully contained the stolen Azure credentials. Imagine doing this at scale across an enterprise each time a credential is accidentally leaked. Workload identity federation is powerful way to avoid the need for long lived credentials.</p>
+</div>
+<h2 id="nymeria-virtual-machine">Nymeria Virtual Machine</h2>
+<p>Start hunting for long-lived AWS and Google cloud credentials on the Nymeria virtual machine. To do this, you will first need to connect to the Nymeria virtual machine over SSH. The private SSH key is stored in a Terraform output parameter called <code>ssh_private_key</code> from the <code>04_gh_action</code> deployment. Using the Azure Cloud Shell, store this output in the <code>~/.ssh/nymeria.pem</code> file.</p>
+<ol>
+<li>
+<p>Run the following commands in the Azure Cloud Shell to authenticate to the Terraform state storage account.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nb">cd</span><span class="w"> </span>~/clouddrive/nymeria/src/virtual_machines/01_azure_init/
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nv">ARM_RESOURCE_GROUP_NAME</span><span class="o">=</span><span class="k">$(</span>terraform<span class="w"> </span>output<span class="w"> </span>--json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.resource_group_name.value&#39;</span><span class="k">)</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nv">ARM_STORAGE_ACCOUNT_NAME</span><span class="o">=</span><span class="k">$(</span>terraform<span class="w"> </span>output<span class="w"> </span>--json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.terraform_state_storage_account_name.value&#39;</span><span class="k">)</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="nb">cd</span><span class="w"> </span>~/clouddrive/nymeria/src/virtual_machines/04_gh_action/
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>terraform<span class="w"> </span>init<span class="w"> </span>--backend-config<span class="o">=</span><span class="s2">&quot;storage_account_name=</span><span class="nv">$ARM_STORAGE_ACCOUNT_NAME</span><span class="s2">&quot;</span><span class="w"> </span>--backend-config<span class="o">=</span><span class="s2">&quot;resource_group_name=</span><span class="nv">$ARM_RESOURCE_GROUP_NAME</span><span class="s2">&quot;</span>
+</span></code></pre></div>
+</li>
+<li>
+<p>Read the <code>ssh_private_key</code> output parameter and store the private key in the <code>~/clouddrive/.ssh/nymeria.pem</code> file.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.ssh
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>terraform<span class="w"> </span>output<span class="w"> </span>--json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.ssh_private_key.value&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>~/.ssh/nymeria.pem
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>chmod<span class="w"> </span><span class="m">400</span><span class="w"> </span>~/.ssh/nymeria.pem
+</span></code></pre></div>
+</li>
+<li>
+<p>Use the <code>ssh_private_key</code> output parameter to connect to the Nymeria virtual machine over SSH.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nv">NYMERIA_FQDN</span><span class="o">=</span><span class="k">$(</span>terraform<span class="w"> </span>output<span class="w"> </span>--json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.azure_virtual_machine_fqdn.value&#39;</span><span class="k">)</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>ssh<span class="w"> </span>-i<span class="w"> </span>~/.ssh/nymeria.pem<span class="w"> </span>ubuntu@<span class="nv">$NYMERIA_FQDN</span>
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<p>If you have successfully connected to the Nymeria virtual machine. The prompt should look like the following:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>Welcome<span class="w"> </span>to<span class="w"> </span>Ubuntu<span class="w"> </span><span class="m">22</span>.04.3<span class="w"> </span>LTS<span class="w"> </span><span class="o">(</span>GNU/Linux<span class="w"> </span><span class="m">6</span>.2.0-1012-azure<span class="w"> </span>x86_64<span class="o">)</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>...
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>ubuntu@nymeria:~$
+</span></code></pre></div>
+</div>
+</li>
+</ol>
+<h3 id="aws-access-key">AWS Access Key</h3>
+<p>Inspect the <code>~/.aws/</code> directory for configuration files containing long-lived AWS credentials.</p>
+<ol>
+<li>
+<p>List the files in the <code>~/.aws/</code> directory. Do you see a file that might contain long-lived credentials?</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>ls<span class="w"> </span>-la<span class="w"> </span>~/.aws/
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>total<span class="w"> </span><span class="m">20</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>drwxr-xr-x<span class="w"> </span><span class="m">2</span><span class="w"> </span>ubuntu<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">4096</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">19</span><span class="w"> </span><span class="m">22</span>:38<span class="w"> </span>.
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>drwxr-x---<span class="w"> </span><span class="m">6</span><span class="w"> </span>ubuntu<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">4096</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="m">16</span>:49<span class="w"> </span>..
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w">   </span>root<span class="w">     </span><span class="m">67</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">19</span><span class="w"> </span><span class="m">22</span>:38<span class="w"> </span>config
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w">   </span>root<span class="w">    </span><span class="m">121</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">19</span><span class="w"> </span><span class="m">22</span>:38<span class="w"> </span>credentials
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w">   </span>root<span class="w">    </span><span class="m">174</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">19</span><span class="w"> </span><span class="m">22</span>:38<span class="w"> </span>get-resources.sh
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Use the <code>cat</code> command to view the long-lived AWS credentials.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>cat<span class="w"> </span>~/.aws/credentials
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="o">[</span>cross-cloud<span class="o">]</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="nv">aws_access_key_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>STOLEN_AWS_ACCESS_KEY_ID<span class="o">]</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="nv">aws_secret_access_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>STOLEN_AWS_SECRET_ACCESS_KEY<span class="o">]</span>
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Set the <code>AWS_PROFILE</code> environment variable to <code>cross-cloud</code> and use the <code>aws sts get-caller-identity</code> command to test the credentials validity.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_PROFILE</span><span class="o">=</span>cross-cloud
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>aws<span class="w"> </span>sts<span class="w"> </span>get-caller-identity
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="o">{</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">    </span><span class="s2">&quot;UserId&quot;</span>:<span class="w"> </span><span class="s2">&quot;AIDAEXAMPLEID&quot;</span>,
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">    </span><span class="s2">&quot;Account&quot;</span>:<span class="w"> </span><span class="s2">&quot;123456789012&quot;</span>,
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">    </span><span class="s2">&quot;Arn&quot;</span>:<span class="w"> </span><span class="s2">&quot;arn:aws:iam::123456789012:user/nymeria-azure-vm&quot;</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="o">}</span>
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Review the environment variables pre-populated into the <code>~/.aws/get-resources.sh</code> script. The values include the unique AWS S3 bucket with a Nymeria image.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>cat<span class="w"> </span>~/.aws/get-resources.sh
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_S3_BUCKET_ID</span><span class="o">=</span>nymeria-cross-cloud-abc123
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_CROSS_CLOUD_ROLE_ARN</span><span class="o">=</span>arn:aws:iam::123456789012:role/nymeria-azure-vm-role
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_DEFAULT_REGION</span><span class="o">=</span>us-east-2
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Source the environment variables in the <code>~/.aws/get-resources.sh</code> script and verify the bucket name is populated in the <code>AWS_S3_BUCKET_ID</code> environment variable.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nb">source</span><span class="w"> </span>~/.aws/get-resources.sh<span class="w"> </span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$AWS_S3_BUCKET_ID</span>
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>nymeria-cross-cloud-abc123
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Run the <code>aws s3 cp</code> command to download the Nymeria image from the S3 bucket using the stolen long-lived credentials.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>aws<span class="w"> </span>s3<span class="w"> </span>cp<span class="w"> </span>s3://<span class="nv">$AWS_S3_BUCKET_ID</span>/aws-workload-identity.png<span class="w"> </span>~/aws-long-lived-credentials.png
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>ls<span class="w"> </span>-la<span class="w"> </span>~/aws-long-lived-credentials.png
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>download:<span class="w"> </span>s3://nymeria-cross-cloud-iulqhgnx/aws-workload-identity.png<span class="w"> </span>to<span class="w"> </span>./aws-long-lived-credentials.png
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>-rw-rw-r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>ubuntu<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">156686</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">19</span><span class="w"> </span><span class="m">00</span>:25<span class="w"> </span>/home/ubuntu/aws-long-lived-credentials.png
+</span></code></pre></div>
+</div>
+</li>
+</ol>
+<h3 id="google-cloud-service-account-key">Google Cloud Service Account Key</h3>
+<p>Inspect the <code>~/.config/gcloud/</code> directory for configuration files containing long-lived Google Cloud credentials.</p>
+<ol>
+<li>
+<p>List the files in the <code>~/.config/gcloud/</code> directory. Do you see a file that might contain long-lived credentials?</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>ls<span class="w"> </span>-la<span class="w"> </span>~/.config/gcloud/
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>total<span class="w"> </span><span class="m">20</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>drwxr-xr-x<span class="w"> </span><span class="m">2</span><span class="w"> </span>ubuntu<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">4096</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">19</span><span class="w"> </span><span class="m">22</span>:38<span class="w"> </span>.
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>drwxr-xr-x<span class="w"> </span><span class="m">3</span><span class="w"> </span>root<span class="w">   </span>root<span class="w">   </span><span class="m">4096</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">19</span><span class="w"> </span><span class="m">22</span>:38<span class="w"> </span>..
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w">   </span>root<span class="w">    </span><span class="m">799</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">19</span><span class="w"> </span><span class="m">22</span>:38<span class="w"> </span>cross-cloud-client-config.json
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w">   </span>root<span class="w">   </span><span class="m">2387</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">19</span><span class="w"> </span><span class="m">22</span>:38<span class="w"> </span>cross-cloud-key.json
+</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w">   </span>root<span class="w">     </span><span class="m">89</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">19</span><span class="w"> </span><span class="m">22</span>:38<span class="w"> </span>get-resources.sh
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Use the <code>cat</code> command to view the long-lived GCP service account key.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>cat<span class="w"> </span>~/.config/gcloud/cross-cloud-key.json
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="p">{</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;service_account&quot;</span><span class="p">,</span>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="w">    </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[YOUR_GOOGLE_PROJECT_ID]&quot;</span><span class="p">,</span>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a><span class="w">    </span><span class="nt">&quot;private_key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;662b8b4b471ac0b823d5b0a8206a185f6203cf55&quot;</span><span class="p">,</span>
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a><span class="w">    </span><span class="nt">&quot;private_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&quot;-----BEGIN PRIVATE KEY-----</span>
+</span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a><span class="err">    ...[snipped for brevity]</span>
+</span><span id="__span-30-7"><a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a><span class="err">}</span>
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Review the environment variables pre-populated into the <code>~/.config/gcloud/get-resources.sh</code> script. The values include the unique GCS bucket with a Nymeria image.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>cat<span class="w"> </span>~/.config/gcloud/get-resources.sh
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GCS_BUCKET_ID</span><span class="o">=</span>nymeria-cross-cloud-abc123
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GCP_PROJECT_ID</span><span class="o">=[</span>YOUR_GCP_PROJECT_ID<span class="o">]</span>
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Source the environment variables in the <code>~/.config/gcloud/get-resources.sh</code> script and verify the bucket name is populated in the <code>AWS_S3_BUCKET_ID</code> environment variable.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="nb">source</span><span class="w"> </span>~/.config/gcloud/get-resources.sh
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$GCS_BUCKET_ID</span>
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>nymeria-cross-cloud-abc123
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Run the <code>gcloud auth activate-service-account</code> command to configure the <code>gcloud</code> CLI to use the stolen long-lived credentials.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>gcloud<span class="w"> </span>auth<span class="w"> </span>activate-service-account<span class="w"> </span>--key-file<span class="o">=</span>/home/ubuntu/.config/gcloud/cross-cloud-key.json
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>Activated<span class="w"> </span>service<span class="w"> </span>account<span class="w"> </span>credentials<span class="w"> </span><span class="k">for</span>:<span class="w"> </span><span class="o">[</span>nymeria-cross-cloud-sa@<span class="o">[</span>YOUR_GOOGLE_PROJECT_ID<span class="o">]</span>.iam.gserviceaccount.com<span class="o">]</span>
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Run the <code>gsutil</code> command to download the Nymeria image from the GCS bucket using the stolen long-lived credentials.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>gsutil<span class="w"> </span>cp<span class="w"> </span>gs://<span class="nv">$GCS_BUCKET_ID</span>/gcp-workload-identity.png<span class="w"> </span>~/gcp-long-lived-credential.png
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>ls<span class="w"> </span>-la<span class="w"> </span>~/gcp-long-lived-credential.png
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>Copying<span class="w"> </span>gs://nymeria-cross-cloud-e9zwi7h7/gcp-workload-identity.png...
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>/<span class="w"> </span><span class="o">[</span><span class="m">1</span><span class="w"> </span>files<span class="o">][</span><span class="m">155</span>.7<span class="w"> </span>KiB/155.7<span class="w"> </span>KiB<span class="o">]</span>
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>-rw-rw-r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>ubuntu<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">159450</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="m">18</span>:02<span class="w"> </span>/home/ubuntu/gcp-long-lived-credential.png
+</span></code></pre></div>
+</div>
+</li>
+</ol>
+<h2 id="next-steps">Next Steps</h2>
+<div class="admonition danger">
+<p class="admonition-title">Long-Lived Credential Exploitation</p>
+<p>Congratulations, you have successfully stolen and used long-lived credentials to gain access to Azure, AWS, and GCP resources. These long-lived credentials will be destroyed using the <a href="../teardown/">Nymeria Teardown</a> steps at the end of the workshop.</p>
+</div>
+<p>Next, move on to the <a href="../azure/">Azure Federation</a> section to learn how to use Azure Workload Identity Federation to avoid the need for long-lived client secrets.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      ©2023 Puma Security, LLC. All rights reserved.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.indexes", "content.code.annotate", "content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>

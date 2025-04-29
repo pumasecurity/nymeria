@@ -1,0 +1,940 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Puma Security's Nymeria Cloud Workload Identity Configuration">
+      
+      
+        <meta name="author" content="Eric Johnson">
+      
+      
+      
+        <link rel="prev" href="../azure/">
+      
+      
+        <link rel="next" href="../gcp/">
+      
+      
+      <link rel="icon" href="../img/nymeria.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+    
+    
+      
+        <title>AWS Federation - Nymeria Cloud Workload Identity</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="orange" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#aws-identity-federation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Nymeria Cloud Workload Identity" class="md-header__button md-logo" aria-label="Nymeria Cloud Workload Identity" data-md-component="logo">
+      
+  <img src="../img/nymeria.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nymeria Cloud Workload Identity
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              AWS Federation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Nymeria Cloud Workload Identity" class="md-nav__button md-logo" aria-label="Nymeria Cloud Workload Identity" data-md-component="logo">
+      
+  <img src="../img/nymeria.png" alt="logo">
+
+    </a>
+    Nymeria Cloud Workload Identity
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Workshops
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Workshops
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Virtual Machines
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Virtual Machines
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prerequisites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Prerequisites
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../long_lived_credentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Long Lived Credentials
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../azure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Azure Federation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    AWS Federation
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    AWS Federation
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#nymeria-virtual-machine-identity-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nymeria Virtual Machine Identity Token
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-identity-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS Identity Provider
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-workload-identity-federation" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS Workload Identity Federation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gcp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Google Cloud Federation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../teardown/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Teardown
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#nymeria-virtual-machine-identity-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nymeria Virtual Machine Identity Token
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-identity-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS Identity Provider
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-workload-identity-federation" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS Workload Identity Federation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="aws-identity-federation">AWS Identity Federation</h1>
+<p>During the <a href="../getting_started/">Getting Started</a> section, you deployed the <em>02_aws_init</em> Terraform configuration to your AWS account. The AWS configuration includes an AWS Identity Provider resource that trusts your Azure Entra ID tenant and an IAM role with permissions to read data from the Nymeria S3 bucket. In this section, we will explore how the AWS Identity Provider configuration trusts the Nymeria virtual machine and confirm the virtual machine can assume the IAM role.</p>
+<h2 id="nymeria-virtual-machine-identity-token">Nymeria Virtual Machine Identity Token</h2>
+<p>Connect to the Nymeria virtual machine and request an OpenID Connect identity token from Instance Metadata Service (IMDS) with the audience set to <code>api://nymeria-workshop</code>. Then, decode the JWT to view the subject, issuer, and audience claims.</p>
+<ol>
+<li>
+<p>Browse to the <a href="https://portal.azure.com/" rel="noopener" target="_blank">Azure Portal</a> open <strong>Cloud Shell</strong> again.</p>
+<p><img alt="" src="../img/az-portal.png" /></p>
+</li>
+<li>
+<p>Run the following command to connect to the Nymeria virtual machine over SSH.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>~/clouddrive/nymeria/src/virtual_machines/04_gh_action/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">NYMERIA_FQDN</span><span class="o">=</span><span class="k">$(</span>terraform<span class="w"> </span>output<span class="w"> </span>--json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.azure_virtual_machine_fqdn.value&#39;</span><span class="k">)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>ssh<span class="w"> </span>-i<span class="w"> </span>~/.ssh/nymeria.pem<span class="w"> </span>ubuntu@<span class="nv">$NYMERIA_FQDN</span>
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<p>If you have successfully connected to the Nymeria virtual machine. The prompt should look like the following:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Welcome<span class="w"> </span>to<span class="w"> </span>Ubuntu<span class="w"> </span><span class="m">22</span>.04.3<span class="w"> </span>LTS<span class="w"> </span><span class="o">(</span>GNU/Linux<span class="w"> </span><span class="m">6</span>.2.0-1012-azure<span class="w"> </span>x86_64<span class="o">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>...
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>ubuntu@nymeria:~$
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Run the following command in the Nymeria virtual machine to request an OpenID Connect JSON Web Token (JWT) with the audience set to <code>api://nymeria-workshop</code>. The return value will be stored in the <code>AZURE_JWT</code> environment variable.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">AZURE_JWT</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;resource=api://nymeria-workshop&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Metadata: true&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.access_token&#39;</span><span class="k">)</span>
+</span></code></pre></div>
+</li>
+<li>
+<p>Run the following command to decode the JWT.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>jq<span class="w"> </span>-R<span class="w"> </span><span class="s1">&#39;split(&quot;.&quot;) | .[1] | @base64d | fromjson&#39;</span><span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$AZURE_JWT</span><span class="s2">&quot;</span>
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&quot;aud&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api://nymeria-workshop&quot;</span><span class="p">,</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&quot;iss&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://sts.windows.net/[YOUR_AZURE_TENANT_ID]/&quot;</span><span class="p">,</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">&quot;iat&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1695248707</span><span class="p">,</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="nt">&quot;nbf&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1695248707</span><span class="p">,</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="nt">&quot;exp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1695335407</span><span class="p">,</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span><span class="nt">&quot;aio&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;E2FgYBGc6rGGA2rdd8+4T5srd345DDD=&quot;</span><span class="p">,</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">  </span><span class="nt">&quot;appid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;e925f5a3-240b-464c-b44b-f2ba753231be&quot;</span><span class="p">,</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span><span class="nt">&quot;appidacr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2&quot;</span><span class="p">,</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">  </span><span class="nt">&quot;idp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://sts.windows.net/[YOUR_AZURE_TENANT_ID]/&quot;</span><span class="p">,</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">  </span><span class="nt">&quot;oid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1a3b54b3-2812-4c44-bb40-9e4fe51760a3&quot;</span><span class="p">,</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">  </span><span class="nt">&quot;rh&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.AVgAaMf7MCTi0EaQ92P3QneTKEpwXyZXB19Jo9CxYRO9mM9YAAA.&quot;</span><span class="p">,</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">  </span><span class="nt">&quot;sub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[YOUR_NYMERIA_VM_SUBJECT_ID]&quot;</span><span class="p">,</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">  </span><span class="nt">&quot;tid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[YOUR_AZURE_TENANT_ID]&quot;</span><span class="p">,</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">  </span><span class="nt">&quot;uti&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gN-9UtHAXUCaxbGiix6uAQ&quot;</span><span class="p">,</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">  </span><span class="nt">&quot;ver&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="p">}</span>
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>The Nymeria virtual machine's claims in the decoded JWT are as follows:</p>
+<ul>
+<li>
+<p>The identity token's <code>iss</code> claim is set to <code>https://sts.windows.net/[YOUR_AZURE_TENANT_ID]/</code>.</p>
+</li>
+<li>
+<p>The identity token's <code>aud</code> claim is set to <code>api://nymeria-workshop</code>.</p>
+</li>
+<li>
+<p>The identity token's <code>sub</code> uniquely identifies the Nymeria virtual machine. The unique identifier is the Azure virtual machine's managed identity object id in the Entra ID tenant.</p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="aws-identity-provider">AWS Identity Provider</h2>
+<p>Inspect the AWS Identity Provider and IAM Role configuration. Confirm the OpenID Connect token's subject, issuer, and audience claims match the values found in the Nymeria Virtual Machine Identity Token.</p>
+<ol>
+<li>
+<p>Sign into the <a href="https://console.aws.amazon.com/" rel="noopener" target="_blank">AWS Web Console</a> again.</p>
+</li>
+<li>
+<p>Set the region (top right-hand corner) to <code>us-east-2 (Ohio)</code>.</p>
+</li>
+<li>
+<p>Navigate to the <a href="https://console.aws.amazon.com/iam/home?region=us-east-2#/home" rel="noopener" target="_blank">IAM</a> service.</p>
+</li>
+<li>
+<p>Select the <em>Identity providers</em> menu item from the left-hand menu.</p>
+<p><img alt="" src="../img/aws-identity-providers.png" /></p>
+</li>
+<li>
+<p>Select the <em>sts.windows.net/[YOUR_AZURE_TENANT_ID]</em> identity provider to view the details.</p>
+</li>
+<li>
+<p>Confirm the following configuration matches the Nymeria virtual machine's identity token. The configuration grants any identity token issued by the Azure Entra ID tenant access to the AWS account's identity provider resource.</p>
+<ul>
+<li>
+<p>The <strong>Provider</strong> matches the Nymeria virtual machine's identity token's <code>iss</code> claim: <code>https://sts.windows.net/[YOUR_AZURE_TENANT_ID]/</code>.</p>
+</li>
+<li>
+<p>The <strong>Audience</strong> matches the Nymeria virtual machine's identity token's <code>aud</code> claim: <code>api://nymeria-workshop</code>.</p>
+</li>
+</ul>
+<p><img alt="" src="../img/aws-windows-idp.png" /></p>
+</li>
+<li>
+<p>The AWS identity provider resource does not inherently grant access to IAM permissions. Permissions are granted using an IAM Role's trust policy. To view the Nymeria IAM Role's trust policy, select the <em>Roles</em> menu item from the left-hand menu. Search for the <code>nymeria-azure-vm-role</code> role and open the details.</p>
+<p><img alt="" src="../img/aws-iam-role.png" /></p>
+</li>
+<li>
+<p>On the <code>nymeria-azure-vm-role</code> role's details page, select the <em>Trust relationships</em> tab.</p>
+<p><img alt="" src="../img/aws-iam-role-trust.png" /></p>
+</li>
+<li>
+<p>Inspect the <code>nymeria-azure-vm-role</code> role's trust policy granting the assume role permission to the Nymeria virtual machine's managed identity.</p>
+<div class="admonition abstract">
+<p class="admonition-title">IAM Role Trust Policy </p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&quot;Version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2012-10-17&quot;</span><span class="p">,</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">&quot;Statement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">      </span><span class="nt">&quot;Sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Allow&quot;</span><span class="p">,</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">      </span><span class="nt">&quot;Principal&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">        </span><span class="nt">&quot;Federated&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;arn:aws:iam::123456789012:oidc-provider/sts.windows.net/[YOUR_AZURE_TENANT_ID]}/&quot;</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">      </span><span class="p">},</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">      </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sts:AssumeRoleWithWebIdentity&quot;</span><span class="p">,</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">      </span><span class="nt">&quot;Condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">        </span><span class="nt">&quot;StringEquals&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">            </span><span class="nt">&quot;sts.windows.net/[YOUR_AZURE_TENANT_ID]/:aud&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api://nymeria-workload-identity&quot;</span><span class="p">,</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">            </span><span class="nt">&quot;sts.windows.net/[YOUR_AZURE_TENANT_ID]/:sub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[YOUR_NYMERIA_VM_SUBJECT_ID]&quot;</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">      </span><span class="p">}</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="p">}</span>
+</span></code></pre></div>
+<ul>
+<li>
+<p>The <em>Principal</em> element trusts tokens issued by the Entra ID tenant.</p>
+</li>
+<li>
+<p>The <code>aud</code> condition validates the token's audience claim is equal to <code>api://nymeria-workload-identity</code>.</p>
+</li>
+<li>
+<p>The <code>sub</code> condition validates the token's subject claim is equal to the Nymeria virtual machine's managed identity object id.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+<div class="admonition danger">
+<p class="admonition-title">Privilege Escalation Path</p>
+<p>Misconfigured identity federation IAM trust policies can allow privilege escalation vulnerabilities. Researchers have identified several instances with <a href="https://www.wiz.io/blog/a-security-community-success-story-of-mitigating-a-misconfiguration" rel="noopener" target="_blank">misconfigured GitHub action trust policies</a>. The root cause is forgetting to apply the <code>sub</code> condition restricting access to a specific principal.</p>
+</div>
+<h2 id="aws-workload-identity-federation">AWS Workload Identity Federation</h2>
+<p>Use the Nymeria virtual machine's OpenID Connect token to assume the AWS IAM role. Then, use the temporary credentials to access data in AWS S3.</p>
+<ol>
+<li>
+<p>Browse to the <a href="https://portal.azure.com/" rel="noopener" target="_blank">Azure Portal</a> open <strong>Cloud Shell</strong> again.</p>
+<p><img alt="" src="../img/az-portal.png" /></p>
+</li>
+<li>
+<p>Run the following command to connect to the Nymeria virtual machine over SSH.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">cd</span><span class="w"> </span>~/clouddrive/nymeria/src/virtual_machines/04_gh_action/
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nv">NYMERIA_FQDN</span><span class="o">=</span><span class="k">$(</span>terraform<span class="w"> </span>output<span class="w"> </span>--json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.azure_virtual_machine_fqdn.value&#39;</span><span class="k">)</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>ssh<span class="w"> </span>-i<span class="w"> </span>~/.ssh/nymeria.pem<span class="w"> </span>ubuntu@<span class="nv">$NYMERIA_FQDN</span>
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<p>If you have successfully connected to the Nymeria virtual machine. The prompt should look like the following:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Welcome<span class="w"> </span>to<span class="w"> </span>Ubuntu<span class="w"> </span><span class="m">22</span>.04.3<span class="w"> </span>LTS<span class="w"> </span><span class="o">(</span>GNU/Linux<span class="w"> </span><span class="m">6</span>.2.0-1012-azure<span class="w"> </span>x86_64<span class="o">)</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>...
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>ubuntu@nymeria:~$
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Run the following command in the Nymeria virtual machine to request an OpenID Connect JSON Web Token (JWT) with the audience set to <code>api://nymeria-workshop</code>. The return value will be stored in the <code>AZURE_JWT</code> environment variable.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">AZURE_JWT</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;resource=api://nymeria-workshop&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Metadata: true&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.access_token&#39;</span><span class="k">)</span>
+</span></code></pre></div>
+</li>
+<li>
+<p>Source the environment variables in the <code>~/.aws/get-resources.sh</code> script and verify the role ARN is populated in the <code>AWS_CROSS_CLOUD_ROLE_ARN</code> environment variable.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">source</span><span class="w"> </span>~/.aws/get-resources.sh<span class="w"> </span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$AWS_CROSS_CLOUD_ROLE_ARN</span>
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>arn:aws:iam::123456789012:role/nymeria-azure-vm-role
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Run the following command to assume the <code>nymeria-azure-vm-role</code> AWS IAM role using the Nymeria virtual machine's OpenID Connect token.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nb">export</span><span class="w"> </span><span class="k">$(</span>aws<span class="w"> </span>sts<span class="w"> </span>assume-role-with-web-identity<span class="w"> </span>--role-arn<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$AWS_CROSS_CLOUD_ROLE_ARN</span><span class="s2">&quot;</span><span class="w"> </span>--role-session-name<span class="w"> </span><span class="s2">&quot;nymeria-demo&quot;</span><span class="w"> </span>--web-identity-token<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$AZURE_JWT</span><span class="s2">&quot;</span><span class="w"> </span>--duration-seconds<span class="w"> </span><span class="m">3600</span><span class="w"> </span>--output<span class="w"> </span>text<span class="w"> </span>--query<span class="w"> </span><span class="s2">&quot;[[&#39;AWS_ACCESS_KEY_ID&#39;,Credentials.AccessKeyId],[&#39;AWS_SECRET_ACCESS_KEY&#39;,Credentials.SecretAccessKey],[&#39;AWS_SESSION_TOKEN&#39;,Credentials.SessionToken]][*].join(\`=\`,@)&quot;</span><span class="k">)</span>
+</span></code></pre></div>
+</li>
+<li>
+<p>Verify the AWS IAM role was successfully assumed by running the following command.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>aws<span class="w"> </span>sts<span class="w"> </span>get-caller-identity
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="o">{</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="s2">&quot;UserId&quot;</span>:<span class="w"> </span><span class="s2">&quot;AROAEXAMPLE:nymeria-demo&quot;</span>,
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">  </span><span class="s2">&quot;Account&quot;</span>:<span class="w"> </span><span class="s2">&quot;123456789012&quot;</span>,
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">  </span><span class="s2">&quot;Arn&quot;</span>:<span class="w"> </span><span class="s2">&quot;arn:aws:sts::123456789012:assumed-role/nymeria-azure-vm-role/nymeria-demo&quot;</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="o">}</span>
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Run the <code>aws s3 cp</code> command to download the Nymeria image from the S3 bucket using the stolen long-lived credentials.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>aws<span class="w"> </span>s3<span class="w"> </span>cp<span class="w"> </span>s3://<span class="nv">$AWS_S3_BUCKET_ID</span>/aws-workload-identity.png<span class="w"> </span>~/aws-workload-identity.png
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>ls<span class="w"> </span>-la<span class="w"> </span>~/aws-workload-identity.png
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>download:<span class="w"> </span>s3://nymeria-cross-cloud-iulqhgnx/aws-workload-identity.png<span class="w"> </span>to<span class="w"> </span>./aws-workload-identity.png
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>-rw-rw-r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>ubuntu<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">156686</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">19</span><span class="w"> </span><span class="m">00</span>:25<span class="w"> </span>/home/ubuntu/aws-workload-identity.png
+</span></code></pre></div>
+</div>
+</li>
+</ol>
+<h2 id="next-steps">Next Steps</h2>
+<div class="admonition success">
+<p class="admonition-title">AWS Workload Identity</p>
+<p>With this configuration, we have successfully killed the AWS long-lived access keys. The Nymeria virtual machine is now using its native identity token (JWT) to assume the AWS IAM Role and access the AWS S3 API.</p>
+</div>
+<p>Next, move on to the <a href="../gcp/">Google Workload Identity Federation</a> section to learn how to authenticate the Nymeria virtual machine using AWS Identity Federation.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      ©2023 Puma Security, LLC. All rights reserved.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.indexes", "content.code.annotate", "content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>

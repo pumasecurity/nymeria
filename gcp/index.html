@@ -1,0 +1,863 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Puma Security's Nymeria Cloud Workload Identity Configuration">
+      
+      
+        <meta name="author" content="Eric Johnson">
+      
+      
+      
+        <link rel="prev" href="../aws/">
+      
+      
+        <link rel="next" href="../teardown/">
+      
+      
+      <link rel="icon" href="../img/nymeria.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+    
+    
+      
+        <title>Google Cloud Federation - Nymeria Cloud Workload Identity</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="orange" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#google-cloud-workload-identity-federation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Nymeria Cloud Workload Identity" class="md-header__button md-logo" aria-label="Nymeria Cloud Workload Identity" data-md-component="logo">
+      
+  <img src="../img/nymeria.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nymeria Cloud Workload Identity
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Google Cloud Federation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Nymeria Cloud Workload Identity" class="md-nav__button md-logo" aria-label="Nymeria Cloud Workload Identity" data-md-component="logo">
+      
+  <img src="../img/nymeria.png" alt="logo">
+
+    </a>
+    Nymeria Cloud Workload Identity
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Workshops
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Workshops
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Virtual Machines
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Virtual Machines
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prerequisites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Prerequisites
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../long_lived_credentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Long Lived Credentials
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../azure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Azure Federation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    AWS Federation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Google Cloud Federation
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Google Cloud Federation
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#google-cloud-workload-identity-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      Google Cloud Workload Identity Provider
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#google-cloud-workload-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Google Cloud Workload Identity
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../teardown/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Teardown
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#google-cloud-workload-identity-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      Google Cloud Workload Identity Provider
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#google-cloud-workload-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Google Cloud Workload Identity
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="google-cloud-workload-identity-federation">Google Cloud Workload Identity Federation</h1>
+<p>During the <a href="../getting_started/">Getting Started</a> section, you deployed the <em>03_gcp_init</em> Terraform configuration to your Google Cloud project. The Google configuration includes an Workload Identity Provider resource that trusts your Azure Entra ID tenant and a service account with permissions to read data from the Nymeria GCS bucket. In this section, we will explore how the Workload Identity Provider configuration trusts the Nymeria virtual machine and confirm the virtual machine can impersonate the Google Cloud service account.</p>
+<h2 id="google-cloud-workload-identity-provider">Google Cloud Workload Identity Provider</h2>
+<p>Inspect the Google Cloud Workload Identity Provider and Service Account configuration. Confirm the OpenID Connect token's subject, issuer, and audience claims match the values found in the Nymeria Virtual Machine Identity Token.</p>
+<ol>
+<li>
+<p>Sign into the <a href="https://console.cloud.google.com/" rel="noopener" target="_blank">Google Cloud Web Console</a> again.</p>
+</li>
+<li>
+<p>Navigate to the <a href="https://console.cloud.google.com/iam-admin/iam" rel="noopener" target="_blank">IAM</a> service.</p>
+</li>
+<li>
+<p>Select the <em>Workload Identity Federation</em> menu item from the left-hand menu. Then, open the <em>Azure Cross Cloud IdP</em> identity pool to view the details.</p>
+<p><img alt="" src="../img/gcp-workload-identity-federation.png" /></p>
+</li>
+<li>
+<p>In the right window, Select the <em>Azure VM</em> identity provider to view the details.</p>
+<p><img alt="" src="../img/gcp-workload-identity-pool.png" /></p>
+</li>
+<li>
+<p>Confirm the following configuration matches the Nymeria virtual machine's identity token. The configuration grants any identity token issued by the Azure Entra ID tenant to authenticate to the workload identity pool.</p>
+<ul>
+<li>
+<p>The <strong>Issuer (URL)</strong> matches the Nymeria virtual machine's identity token's <code>iss</code> claim: <code>https://sts.windows.net/[YOUR_AZURE_TENANT_ID]/</code>.</p>
+</li>
+<li>
+<p>The <strong>Allowed Audiences</strong> includes one entry matching the Nymeria virtual machine's identity token's <code>aud</code> claim: <code>api://nymeria-workshop</code>.</p>
+</li>
+</ul>
+<p><img alt="" src="../img/gcp-azure-pool.png" /></p>
+</li>
+<li>
+<p>The Workload Identity Pool and Provider resources do not inherently grant access to impersonate a service account. Permissions are granted by connecting a service account to the identity pool. Press the back button to navigate back to the workload identity pool. Then, select the <em>Connected Service Accounts</em> tab in the right window. Expand the <em>nymeria-cross-cloud-sa</em> service account to view the identity pool principals with access to impersonate the service account.</p>
+<p><img alt="" src="../img/gcp-azure-sa.png" /></p>
+</li>
+<li>
+<p>Confirm the <code>google.subject</code> filter restricts <em>nymeria-cross-cloud-sa</em> service account impersonation to the Nymeria virtual machine's managed identity.</p>
+</li>
+</ol>
+<div class="admonition danger">
+<p class="admonition-title">Privilege Escalation Path</p>
+<p>Misconfigured service account impersonation filters can allow privilege escalation vulnerabilities. Failing to apply a filter for a <code>principal</code> or <code>principalSet</code> can grant the entire workload identity pool service account impersonation.</p>
+</div>
+<h2 id="google-cloud-workload-identity">Google Cloud Workload Identity</h2>
+<p>Use the Nymeria virtual machine's OpenID Connect token to impersonate the Google Cloud service account. Then, use the temporary credentials to access data in Google Cloud Storage (GCS).</p>
+<ol>
+<li>
+<p>Browse to the <a href="https://portal.azure.com/" rel="noopener" target="_blank">Azure Portal</a> open <strong>Cloud Shell</strong> again.</p>
+<p><img alt="" src="../img/az-portal.png" /></p>
+</li>
+<li>
+<p>Run the following command to connect to the Nymeria virtual machine over SSH.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>~/clouddrive/nymeria/src/virtual_machines/04_gh_action/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">NYMERIA_FQDN</span><span class="o">=</span><span class="k">$(</span>terraform<span class="w"> </span>output<span class="w"> </span>--json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.azure_virtual_machine_fqdn.value&#39;</span><span class="k">)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>ssh<span class="w"> </span>-i<span class="w"> </span>~/.ssh/nymeria.pem<span class="w"> </span>ubuntu@<span class="nv">$NYMERIA_FQDN</span>
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<p>If you have successfully connected to the Nymeria virtual machine. The prompt should look like the following:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Welcome<span class="w"> </span>to<span class="w"> </span>Ubuntu<span class="w"> </span><span class="m">22</span>.04.3<span class="w"> </span>LTS<span class="w"> </span><span class="o">(</span>GNU/Linux<span class="w"> </span><span class="m">6</span>.2.0-1012-azure<span class="w"> </span>x86_64<span class="o">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>...
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>ubuntu@nymeria:~$
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Source the environment variables in the <code>~/.config/gcloud/get-resources.sh</code> script and verify the project and bucket names are populated in the <code>GCS_BUCKET_ID</code> and <code>GCP_PROJECT_ID</code> environment variables.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">source</span><span class="w"> </span>~/.config/gcloud/get-resources.sh
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$GCS_BUCKET_ID</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$GCP_PROJECT_ID</span>
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>nymeria-cross-cloud-abc123
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="o">[</span>YOUR_GOOGLE_PROJECT_ID<span class="o">]</span>
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Inspect the Google Cloud Workload Identity Federation client configuration file. Observe the following configuration values:</p>
+<ul>
+<li>
+<p>The <code>token_url</code> instructs the <code>gcloud</code> command line interface to obtain an authentication token from the Google Cloud STS API.</p>
+</li>
+<li>
+<p>The <code>audience</code> attribute instructs the <code>gcloud</code> command line interface to authenticate to the Nymeria workload identity pool's <code>azure-vm</code> provider.</p>
+</li>
+<li>
+<p>The <code>credential_source</code> attribute instructs the <code>gcloud</code> command line interface to obtain an OpenID Connect token from the Nymeria virtual machine's metadata service with the audience set to <code>api://nymeria-workshop</code>.</p>
+</li>
+<li>
+<p>The <code>service_account_impersonation_url</code> attribute instructs the <code>gcloud</code> command line interface to use the workload identity pool's authentication token to impersonate the <code>nymeria-cross-cloud-sa</code> service account.</p>
+</li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>cat<span class="w"> </span>~/.config/gcloud/cross-cloud-client-config.json
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;external_account&quot;</span><span class="p">,</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">&quot;audience&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;//iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/nymeria-identity-pool-e9zwi7h7/providers/azure-vm-e9zwi7h7&quot;</span><span class="p">,</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nt">&quot;subject_token_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:ietf:params:oauth:token-type:jwt&quot;</span><span class="p">,</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="nt">&quot;token_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://sts.googleapis.com/v1/token&quot;</span><span class="p">,</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="nt">&quot;service_account_impersonation_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/nymeria-cross-cloud-sa@[YOUR_GOOGLE_PROJECT_ID].iam.gserviceaccount.com:generateAccessToken&quot;</span><span class="p">,</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="nt">&quot;credential_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">        </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;resource=api://nymeria-workshop&quot;</span><span class="p">,</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">        </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">          </span><span class="nt">&quot;Metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;True&quot;</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">        </span><span class="p">},</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">        </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;json&quot;</span><span class="p">,</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">          </span><span class="nt">&quot;subject_token_field_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;access_token&quot;</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="p">}</span>
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Run the following command to authenticate to the Google Cloud Workload Identity Pool using the client configuration file. Enter <code>Y</code> to overwrite the existing credential configuration.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>gcloud<span class="w"> </span>auth<span class="w"> </span>login<span class="w"> </span>--cred-file<span class="o">=</span>/home/ubuntu/.config/gcloud/cross-cloud-client-config.json
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>You<span class="w"> </span>are<span class="w"> </span>already<span class="w"> </span>authenticated<span class="w"> </span>with<span class="w"> </span><span class="s1">&#39;nymeria-cross-cloud-sa@[YOUR_GOOGLE_PROJECT_ID].iam.gserviceaccount.com&#39;</span>.<span class="w"> </span>Do<span class="w"> </span>you<span class="w"> </span>wish<span class="w"> </span>to<span class="w"> </span>proceed<span class="w"> </span>and<span class="w"> </span>overwrite<span class="w"> </span>existing<span class="w"> </span>credentials?
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>Do<span class="w"> </span>you<span class="w"> </span>want<span class="w"> </span>to<span class="w"> </span><span class="k">continue</span><span class="w"> </span><span class="o">(</span>Y/n<span class="o">)</span>?<span class="w"> </span>Y
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>Authenticated<span class="w"> </span>with<span class="w"> </span>external<span class="w"> </span>account<span class="w"> </span>credentials<span class="w"> </span><span class="k">for</span>:<span class="w"> </span><span class="o">[</span>nymeria-cross-cloud-sa@<span class="o">[</span>YOUR_GOOGLE_PROJECT_ID<span class="o">]</span>.iam.gserviceaccount.com<span class="o">]</span>.
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Run the following command to configure the <code>gcloud</code> command line interface to use your Google Cloud project. Enter <code>Y</code> to overwrite the existing project configuration.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>gcloud<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span>project<span class="w"> </span><span class="nv">$GCP_PROJECT_ID</span>
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>WARNING:<span class="w"> </span>You<span class="w"> </span><span class="k">do</span><span class="w"> </span>not<span class="w"> </span>appear<span class="w"> </span>to<span class="w"> </span>have<span class="w"> </span>access<span class="w"> </span>to<span class="w"> </span>project<span class="w"> </span><span class="o">[</span>YOUR_GOOGLE_PROJECT_ID<span class="o">]</span><span class="w"> </span>or<span class="w"> </span>it<span class="w"> </span>does<span class="w"> </span>not<span class="w"> </span>exist.<span class="w"> </span>Are<span class="w"> </span>you<span class="w"> </span>sure<span class="w"> </span>you<span class="w"> </span>wish<span class="w"> </span>to<span class="w"> </span><span class="nb">set</span><span class="w"> </span>property<span class="w"> </span><span class="o">[</span>core/project<span class="o">]</span><span class="w"> </span>to<span class="w"> </span><span class="o">[</span>YOUR_GOOGLE_PROJECT_ID<span class="o">]</span>?
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>Do<span class="w"> </span>you<span class="w"> </span>want<span class="w"> </span>to<span class="w"> </span><span class="k">continue</span><span class="w"> </span><span class="o">(</span>Y/n<span class="o">)</span>?<span class="w">  </span>Y
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>Updated<span class="w"> </span>property<span class="w"> </span><span class="o">[</span>core/project<span class="o">]</span>.
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>Run the following <code>gsutil</code> command to access the GCS API. This command will automatically use the <code>cross-cloud-client-config.json</code> to authenticate to the workload identity pool, impersonate the <code>nymeria-cross-cloud-sa</code> service account, and download the object from the bucket.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>gsutil<span class="w"> </span>cp<span class="w"> </span>gs://<span class="nv">$GCS_BUCKET_ID</span>/gcp-workload-identity.png<span class="w"> </span>~/gcp-workload-identity.png
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>ls<span class="w"> </span>-la<span class="w"> </span>~/gcp-workload-identity.png
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Terminal Output</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Copying<span class="w"> </span>gs://nymeria-cross-cloud-e9zwi7h7/gcp-workload-identity.png...
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>/<span class="w"> </span><span class="o">[</span><span class="m">1</span><span class="w"> </span>files<span class="o">][</span><span class="m">155</span>.7<span class="w"> </span>KiB/155.7<span class="w"> </span>KiB<span class="o">]</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>Operation<span class="w"> </span>completed<span class="w"> </span>over<span class="w"> </span><span class="m">1</span><span class="w"> </span>objects/155.7<span class="w"> </span>KiB.
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>-rw-rw-r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>ubuntu<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">159450</span><span class="w"> </span>Sep<span class="w"> </span><span class="m">21</span><span class="w"> </span><span class="m">17</span>:43<span class="w"> </span>/home/ubuntu/gcp-workload-identity.png
+</span></code></pre></div>
+</div>
+</li>
+</ol>
+<h2 id="next-steps">Next Steps</h2>
+<div class="admonition success">
+<p class="admonition-title">Google Cloud Workload Identity</p>
+<p>With this configuration, we have successfully killed the Google cloud long-lived service account key. The Nymeria virtual machine is now using its native identity token (JWT) to impersonate the Google Cloud service account and access to the GCS API.</p>
+</div>
+<p>Congratulations, you have completed the Nymeria workshop. Next, move on to the <a href="../teardown/">Teardown</a> section to destroy the resources you created during the workshop.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      ©2023 Puma Security, LLC. All rights reserved.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.indexes", "content.code.annotate", "content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>
