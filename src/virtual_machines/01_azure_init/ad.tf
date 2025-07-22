@@ -24,10 +24,6 @@ resource "azuread_application" "github_federation" {
   display_name    = "github-federation-ad-app"
   identifier_uris = ["api://nymeria-workshop"]
 
-  api {
-    requested_access_token_version = 2
-  }
-
   web {
     implicit_grant {
       access_token_issuance_enabled = true
