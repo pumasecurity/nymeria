@@ -4,10 +4,6 @@ resource "azuread_application" "google" {
   display_name    = "upload-to-big3-storage-google"
   identifier_uris = [var.allowed_jwt_audience]
 
-  api {
-    requested_access_token_version = 2
-  }
-
   web {
     implicit_grant {
       access_token_issuance_enabled = true
