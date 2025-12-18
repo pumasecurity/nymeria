@@ -61,5 +61,5 @@ Query the storage data account and download the file.
 ```bash
 sh-5.2$ az storage blob list --auth-mode login --account-name $AZURE_STORAGE_ACCOUNT --container-name assets | jq '.[].name'
 az storage blob download --auth-mode login --account-name $AZURE_STORAGE_ACCOUNT --container-name assets --name azure-workload-identity.png --file azure-workload-identity.png
-cat downloaded-sample-data.txt
+cat azure-workload-identity.png
 ```
