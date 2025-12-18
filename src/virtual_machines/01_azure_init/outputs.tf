@@ -12,7 +12,7 @@ output "github_creds_client_secret" {
 
 output "github_federation_client_id" {
   description = "GH Action application (client) id"
-  value       = azuread_application.github_federation.application_id
+  value       = azurerm_user_assigned_identity.github.client_id
   sensitive   = true
 }
 
@@ -33,9 +33,9 @@ output "resource_group_name" {
   value       = azurerm_resource_group.federated_identity.name
 }
 
-output "terraform_state_storage_account_name" {
+output "terraform_storage_account_name" {
   description = "Storage account name for the Terraform state"
-  value       = azurerm_storage_account.state.name
+  value       = azurerm_storage_account.cross_cloud.name
 }
 
 output "azure_virtual_machine_user_identity_principal_id" {
@@ -46,4 +46,9 @@ output "azure_virtual_machine_user_identity_principal_id" {
 output "azure_virtual_machine_user_identity_id" {
   description = "User assigned identity id for the cross cloud virtual machine"
   value       = azurerm_user_assigned_identity.cross_cloud.id
+}
+
+output "azure_virtual_machine_user_identity_client_id" {
+  description = "User assigned identity client ID for the cross cloud virtual machine"
+  value       = azurerm_user_assigned_identity.cross_cloud.client_id
 }
