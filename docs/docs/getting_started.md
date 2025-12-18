@@ -74,7 +74,7 @@ Complete the following steps to create the resources required to authenticate th
         github_service_principal_client_id = <sensitive>
         github_service_principal_client_secret = <sensitive>
         resource_group_name = "nymeria-federated-identity"
-        terraform_state_storage_account_name = "terraformmlgxt9hl"
+        terraform_storage_account_name = "terraformmlgxt9hl"
         ```
 
 ### Azure GitHub Secret
@@ -124,7 +124,7 @@ Configure the required GitHub Action secret for the Nymeria repository to deploy
             "type": "string",
             "value": "nymeria-federated-identity"
           },
-          "terraform_state_storage_account_name": {
+          "terraform_storage_account_name": {
             "sensitive": false,
             "type": "string",
             "value": "terraformznoypqbp"
