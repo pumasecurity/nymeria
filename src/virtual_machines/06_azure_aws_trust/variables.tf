@@ -9,11 +9,11 @@ variable "azure_managed_identity_id" {
 }
 
 variable "aws_account_issuer" {
-  description = "The AWS Account ID to establish trust with."
+  description = "The AWS Account issuer to establish trust with."
   type        = string
 }
 
 variable "aws_iam_role_arn" {
-  description = "The AWS Role ARN to assume from Azure."
+  description = "The AWS Role ARN allowed to login with the managed identity."
   type        = string
 }
