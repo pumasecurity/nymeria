@@ -1,17 +1,29 @@
 const AWS = require('aws-sdk')
+const { STSClient, GetWebIdentityTokenCommand } = require('@aws-sdk/client-sts')
 const google = require('./google')
+const { ClientAssertionCredential } = require('@azure/identity')
 const GoogleCloudStorage = require('@google-cloud/storage').Storage
 const { ExternalAccountClient } = require('google-auth-library')
 
 const uniqueIdentifier = process.env.UNIQUE_IDENTIFIER
+const azureTenantId = process.env.AZURE_TENANT_ID
+const azureClientId = process.env.AZURE_CLIENT_ID
 const googleConfig = process.env.GOOGLE_CLOUD_FEDERATION_CONFIGURATION
 const durationSeconds = 3600
 let s3
+let sts
+let azureIdentity
 let gcs
 
 const initializeS3Client = () => {
   if (!s3) {
     s3 = new AWS.S3()
+  }
+}
+
+const initializeStsClient = () => {
+  if (!sts) {
+    sts = new STSClient({ region: process.env.AWS_REGION })
   }
 }
 
@@ -58,6 +70,31 @@ const uploadFileToS3 = async (filename, content, client) => new Promise((resolve
   })
 })
 
+const getAwsIdentityToken = async audience => {
+  initializeStsClient()
+
+  const command = new GetWebIdentityTokenCommand({
+    Audience: [audience],
+    DurationSeconds: durationSeconds,
+    SigningAlgorithm: 'RS256'
+  })
+
+  const data = await sts.send(command)
+  return data.WebIdentityToken
+}
+
+const initializeAzureIdentity = (tenantId, clientId) => {
+  if (azureIdentity) {
+    return
+  }
+
+  azureIdentity = new ClientAssertionCredential(
+    tenantId,
+    clientId,
+    async () => await getAwsIdentityToken(`api://${azureConfig.tenant_id}/sec510-nimbus-${uniqueStringAzure}`)
+  )
+}
+
 const initializeGcsClient = async googleConfig => {
   if (gcs) {
     return
@@ -83,6 +120,16 @@ module.exports.uploadFile = async (filename, content) => {
 
   const storagePlatformsUploadedTo = ['AWS S3']
   const promises = [uploadFileToS3(filename, content, s3)]
+
+  if (azureTenantId && azureClientId) {
+    storagePlatformsUploadedTo.push('Azure')
+
+    initializeAzureIdentity(azureTenantId, azureClientId)
+
+    promises.push(
+      azure.uploadDocumentToAzureStorage(filename, content, azureIdentity)
+    )
+  }
 
   if (googleConfig) {
     await initializeGcsClient(

@@ -51,6 +51,11 @@ variable "azure_tenant_id" {
   type        = string
 }
 
+variable "azure_aws_service_principal_client_id" {
+  description = "AWS service principal client id from Azure"
+  type        = string
+}
+
 variable "google_service_account_id" {
   description = "The ID of the Google Cloud Service Account used for federation"
   type        = string

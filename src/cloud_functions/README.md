@@ -1,14 +1,6 @@
 # Cloud Functions
 
-This directory contains a minimally-viable codebase for cloud functions that upload files to the cloud storage services of the other providers using the following Workload Identity Federation integrations:
-
-- Azure uploading files to AWS S3 (by establishing trust via JWTs)
-- Azure uploading files to Google Cloud Storage (by establishing trust via JWTs)
-- Google Cloud uploading files to AWS S3 (by establishing trust via JWTs)
-- Google Cloud uploading files to Azure Storage (by establishing trust via JWTs)
-- AWS uploading files to Google Cloud Storage ([by creating a Version 4 AWS Signature, sending it to the Google Cloud Security Token Service, and exchanging it for a short-lived OIDC token](https://cloud.google.com/iam/docs/workload-identity-federation-with-other-clouds#rest))
-
-As Azure does not support an AWS Sigv4 exchange process like Google Cloud does, this codebase does not provide a solution for AWS uploading files to Azure Storage.
+This directory contains a minimally-viable codebase for cloud functions that upload files to the all of the Big 3 cloud storage services using the Workload Identity Federation.
 
 ## Usage
 
@@ -57,6 +49,21 @@ cd ./terraform
 export GOOGLE_FUNCTION_URL=$(terraform output --json | jq -r '.google_function_url.value')
 export API_KEY=$(terraform output --json | jq -r '.api_key.value')
 curl -H "X-API-Key: $API_KEY" "$GOOGLE_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "from_google", "content": "test"}'
+```
+
+### Verify Successful Uploads
+
+```bash
+cd ./terraform
+export UNIQUE_IDENTIFIER=$(terraform output --json | jq -r '.unique_identifier.value')
+
+aws s3 cp s3://upload-to-big3-$UNIQUE_IDENTIFIER/$(aws s3api list-objects --bucket upload-to-big3-$UNIQUE_IDENTIFIER --query 'sort_by(Contents,&LastModified)[-1].Key' --output text) /tmp/aws_document.png
+
+az storage blob download --only-show-errors --account-name uploadtobig3$UNIQUE_IDENTIFIER --container-name upload-to-big3 --name $(az storage blob list --only-show-errors --account-name uploadtobig3$UNIQUE_IDENTIFIER --container-name upload-to-big3 | jq -r 'sort_by(.properties.creationTime)[-1].name') --file /tmp/azure_document.png
+
+gcloud storage cp $(gcloud storage ls -l gs://upload-to-big3-$UNIQUE_IDENTIFIER | grep 'gs://' | sort -k 2 | tail -1 | tr -s ' ' | cut -d" " -f4) /tmp/gcp_document.png
+
+md5sum /tmp/aws_document.png /tmp/azure_document.png /tmp/gcp_document.png # All of the sums should match.
 ```
 
 ### Teardown

@@ -18,7 +18,7 @@ resource "google_storage_bucket_object" "upload_to_big3_storage_function" {
 
 resource "google_cloudfunctions_function" "upload_to_big3_storage" {
   name                  = "upload-to-big3"
-  runtime               = var.runtime == "nodejs" ? "nodejs18" : ""
+  runtime               = var.runtime == "nodejs" ? "nodejs20" : ""
 
   source_archive_bucket = google_storage_bucket.upload_to_big3_storage_function.name
   source_archive_object = google_storage_bucket_object.upload_to_big3_storage_function.name

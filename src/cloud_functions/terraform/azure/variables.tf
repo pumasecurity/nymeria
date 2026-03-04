@@ -30,8 +30,24 @@ variable "azure_location" {
   default     = "centralus"
 }
 
+variable "aws_iam_role_name" {
+  description = "The name of the AWS IAM Role used for federation"
+  type        = string
+}
+
+variable "aws_iam_outbound_issuer" {
+  description = "Workload identity aws lambda OIDC issuer."
+  type        = string
+  default     = "null"
+}
+
 variable "aws_iam_role_arn" {
   description = "The ARN of the AWS IAM Role used for federation"
+  type        = string
+}
+
+variable "aws_account_id" {
+  description = "AWS Account ID from which to federate"
   type        = string
 }
 

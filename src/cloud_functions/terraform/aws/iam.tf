@@ -25,6 +25,12 @@ data "aws_iam_policy_document" "upload" {
     resources = ["${aws_s3_bucket.upload_to_big3_storage.arn}/*"]
     effect    = "Allow"
   }
+
+  statement {
+    actions   = ["sts:GetWebIdentityToken"]
+    resources = ["*"]
+    effect    = "Allow"
+  }
 }
 
 data "aws_iam_policy_document" "lambda_cloudwatch" {
@@ -86,3 +92,5 @@ resource "aws_iam_role_policy_attachment" "upload_to_big3_storage_google" {
   role       = aws_iam_role.google.name
   policy_arn = aws_iam_policy.upload.arn
 }
+
+resource "aws_iam_outbound_web_identity_federation" "sec510" {}

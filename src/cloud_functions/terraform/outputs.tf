@@ -17,3 +17,8 @@ output "api_key" {
   description = "The API key used to invoke the functions."
   value       = random_string.api_key.result
 }
+
+output "unique_identifier" {
+  description = "The random string used in resource identifiers."
+  value       = random_string.unique_identifier.result
+}
