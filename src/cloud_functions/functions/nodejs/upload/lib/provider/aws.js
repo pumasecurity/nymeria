@@ -7,7 +7,7 @@ const GoogleCloudStorage = require('@google-cloud/storage').Storage
 const { ExternalAccountClient } = require('google-auth-library')
 
 const uniqueIdentifier = process.env.UNIQUE_IDENTIFIER
-const allowedJwtAudience = `${process.env.ALLOWED_JWT_AUDIENCE}-aws`
+const allowedJwtAudience = process.env.ALLOWED_JWT_AUDIENCE
 const azureTenantId = process.env.AZURE_TENANT_ID
 const azureClientId = process.env.AZURE_CLIENT_ID
 const googleConfig = process.env.GOOGLE_CLOUD_FEDERATION_CONFIGURATION
@@ -93,7 +93,7 @@ const initializeAzureIdentity = (tenantId, clientId) => {
   azureIdentity = new ClientAssertionCredential(
     tenantId,
     clientId,
-    async () => await getAwsIdentityToken(allowedJwtAudience)
+    async () => await getAwsIdentityToken(`${allowedJwtAudience}-aws`)
   )
 }
 

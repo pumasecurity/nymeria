@@ -7,7 +7,7 @@ const aws = require('./aws')
 const azure = require('./azure')
 
 const uniqueIdentifier = process.env.UNIQUE_IDENTIFIER
-const allowedJwtAudience = `${process.env.ALLOWED_JWT_AUDIENCE}-google`
+const allowedJwtAudience = process.env.ALLOWED_JWT_AUDIENCE
 const awsRoleArn = process.env.AWS_ROLE_ARN
 const azureAdAppId = process.env.AZURE_AD_APP_ID
 const azureTenantId = process.env.AZURE_TENANT_ID
@@ -123,7 +123,7 @@ const initializeAzureIdentity = (azureAdAppId, azureTenantId) => {
   azureIdentity = new ClientAssertionCredential(
     azureTenantId,
     azureAdAppId,
-    async () => await getGoogleIdentityToken(allowedJwtAudience)
+    async () => await getGoogleIdentityToken(`${allowedJwtAudience}-google`)
   )
 }
 
