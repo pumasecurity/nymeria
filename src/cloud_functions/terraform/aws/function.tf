@@ -12,11 +12,13 @@ resource "aws_lambda_function" "upload_to_big3_storage" {
   role             = aws_iam_role.upload_to_big3_storage.arn
   filename         = data.archive_file.upload_to_big3_storage_build.output_path
   source_code_hash = data.archive_file.upload_to_big3_storage_build.output_base64sha256
+  timeout          = 5
 
   environment {
     variables = {
       UNIQUE_IDENTIFIER                     = var.unique_identifier
       API_KEY                               = var.api_key
+      ALLOWED_JWT_AUDIENCE                  = var.allowed_jwt_audience
       AZURE_TENANT_ID                       = var.azure_tenant_id
       AZURE_CLIENT_ID                       = var.azure_aws_service_principal_client_id
       GOOGLE_CLOUD_FEDERATION_CONFIGURATION = var.google_cloud_federation_configuration

@@ -2,7 +2,7 @@
 
 resource "azuread_application" "aws" {
   display_name    = "upload-to-big3-storage-aws"
-  identifier_uris = [var.allowed_jwt_audience]
+  identifier_uris = ["${var.allowed_jwt_audience}-aws"]
 
   web {
     implicit_grant {
@@ -17,9 +17,9 @@ resource "azuread_service_principal" "aws" {
 }
 
 resource "azuread_application_federated_identity_credential" "aws" {
-  application_object_id = azuread_application.google.id
+  application_object_id = azuread_application.aws.id
   display_name          = "upload-to-big3-storage-aws"
-  audiences             = [var.allowed_jwt_audience]
+  audiences             = ["${var.allowed_jwt_audience}-aws"]
   issuer                = var.aws_iam_outbound_issuer
   subject               = "arn:aws:iam::${var.aws_account_id}:role/${var.aws_iam_role_name}"
 }
@@ -28,7 +28,7 @@ resource "azuread_application_federated_identity_credential" "aws" {
 
 resource "azuread_application" "google" {
   display_name    = "upload-to-big3-storage-google"
-  identifier_uris = [var.allowed_jwt_audience]
+  identifier_uris = ["${var.allowed_jwt_audience}-google"]
 
   web {
     implicit_grant {
@@ -45,7 +45,7 @@ resource "azuread_service_principal" "google" {
 resource "azuread_application_federated_identity_credential" "google" {
   application_object_id = azuread_application.google.id
   display_name          = "upload-to-big3-storage-google"
-  audiences             = [var.allowed_jwt_audience]
+  audiences             = ["${var.allowed_jwt_audience}-google"]
   issuer                = "https://accounts.google.com"
   subject               = var.google_service_account_id
 }

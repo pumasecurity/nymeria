@@ -103,3 +103,5 @@ resource "aws_iam_role" "google" {
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.assume_role_google.json
 }
+
+resource "aws_iam_outbound_web_identity_federation" "upload_to_big3_storage" {}

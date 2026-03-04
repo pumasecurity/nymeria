@@ -1,11 +1,13 @@
 const AWS = require('aws-sdk')
 const { STSClient, GetWebIdentityTokenCommand } = require('@aws-sdk/client-sts')
+const azure = require('./azure')
 const google = require('./google')
 const { ClientAssertionCredential } = require('@azure/identity')
 const GoogleCloudStorage = require('@google-cloud/storage').Storage
 const { ExternalAccountClient } = require('google-auth-library')
 
 const uniqueIdentifier = process.env.UNIQUE_IDENTIFIER
+const allowedJwtAudience = `${process.env.ALLOWED_JWT_AUDIENCE}-aws`
 const azureTenantId = process.env.AZURE_TENANT_ID
 const azureClientId = process.env.AZURE_CLIENT_ID
 const googleConfig = process.env.GOOGLE_CLOUD_FEDERATION_CONFIGURATION
@@ -91,7 +93,7 @@ const initializeAzureIdentity = (tenantId, clientId) => {
   azureIdentity = new ClientAssertionCredential(
     tenantId,
     clientId,
-    async () => await getAwsIdentityToken(`api://${azureConfig.tenant_id}/sec510-nimbus-${uniqueStringAzure}`)
+    async () => await getAwsIdentityToken(allowedJwtAudience)
   )
 }
 
@@ -127,7 +129,7 @@ module.exports.uploadFile = async (filename, content) => {
     initializeAzureIdentity(azureTenantId, azureClientId)
 
     promises.push(
-      azure.uploadDocumentToAzureStorage(filename, content, azureIdentity)
+      azure.uploadFileToAzureStorage(filename, content, azureIdentity)
     )
   }
 

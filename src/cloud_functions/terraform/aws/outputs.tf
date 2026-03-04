@@ -9,7 +9,7 @@ output "aws_iam_role_name" {
 }
 
 output "aws_iam_outbound_issuer" {
-  value = aws_iam_outbound_web_identity_federation.sec510.issuer_identifier
+  value = aws_iam_outbound_web_identity_federation.upload_to_big3_storage.issuer_identifier
 }
 
 output "aws_account_id" {

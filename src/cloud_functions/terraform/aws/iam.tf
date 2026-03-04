@@ -2,7 +2,7 @@ data "aws_region" "current" {
 }
 
 locals {
-  region         = data.aws_region.current.name
+  region         = data.aws_region.current.id
   account        = data.aws_caller_identity.current.account_id
   region_account = "${local.region}:${local.account}"
 }
@@ -92,5 +92,3 @@ resource "aws_iam_role_policy_attachment" "upload_to_big3_storage_google" {
   role       = aws_iam_role.google.name
   policy_arn = aws_iam_policy.upload.arn
 }
-
-resource "aws_iam_outbound_web_identity_federation" "sec510" {}
