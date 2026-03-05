@@ -1,3 +1,16 @@
+provider "azurerm" {
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
+
+  skip_provider_registration = true
+}
+
+data "azurerm_client_config" "current" {
+}
+
 resource "random_string" "unique_identifier" {
   length  = 8
   special = false
@@ -15,7 +28,7 @@ resource "random_string" "api_key" {
 }
 
 locals {
-  allowed_jwt_audience = "api://upload-to-big-3-${random_string.unique_identifier.result}"
+  allowed_jwt_audience = "api://${data.azurerm_client_config.current.tenant_id}/upload-to-big-3-${random_string.unique_identifier.result}"
 }
 
 module "aws" {
@@ -27,6 +40,7 @@ module "aws" {
   aws_partition                         = var.aws_partition
   azure_function_identity_principal_id  = module.azure.azure_function_identity_principal_id
   azure_tenant_id                       = module.azure.azure_tenant_id
+  azure_aws_service_principal_client_id = module.azure.aws_azuread_app_id
   google_service_account_id             = module.google.google_service_account_id
   google_cloud_federation_configuration = module.google.aws_workload_identity_client_configuration
   source                                = "./aws"
@@ -38,7 +52,10 @@ module "azure" {
   allowed_jwt_audience                  = local.allowed_jwt_audience
   runtime                               = var.runtime
   azure_location                        = var.azure_location
+  aws_iam_role_name                    = module.aws.aws_iam_role_name
+  aws_account_id                       = module.aws.aws_account_id
   aws_iam_role_arn                      = module.aws.azure_aws_iam_role_arn
+  aws_iam_outbound_issuer               = module.aws.aws_iam_outbound_issuer
   google_service_account_id             = module.google.google_service_account_id
   google_cloud_federation_configuration = module.google.azure_workload_identity_client_configuration
   source                                = "./azure"

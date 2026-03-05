@@ -15,6 +15,11 @@ output "azure_tenant_id" {
   value       = data.azurerm_client_config.current.tenant_id
 }
 
+output "aws_azuread_app_id" {
+  description = "Azure App Registration Client ID for federation from AWS"
+  value       = azuread_application.aws.application_id
+}
+
 output "google_azuread_app_id" {
   description = "Azure App Registration Client ID for federation from Google"
   value       = azuread_application.google.application_id

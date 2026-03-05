@@ -8,6 +8,10 @@ output "aws_iam_role_name" {
   value       = aws_iam_role.upload_to_big3_storage.name
 }
 
+output "aws_iam_outbound_issuer" {
+  value = aws_iam_outbound_web_identity_federation.upload_to_big3_storage.issuer_identifier
+}
+
 output "aws_account_id" {
   description = "AWS Account ID from which to federate"
   value       = data.aws_caller_identity.current.account_id

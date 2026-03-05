@@ -2,7 +2,7 @@ data "aws_region" "current" {
 }
 
 locals {
-  region         = data.aws_region.current.name
+  region         = data.aws_region.current.id
   account        = data.aws_caller_identity.current.account_id
   region_account = "${local.region}:${local.account}"
 }
@@ -23,6 +23,12 @@ data "aws_iam_policy_document" "upload" {
   statement {
     actions   = ["s3:PutObject"]
     resources = ["${aws_s3_bucket.upload_to_big3_storage.arn}/*"]
+    effect    = "Allow"
+  }
+
+  statement {
+    actions   = ["sts:GetWebIdentityToken"]
+    resources = ["*"]
     effect    = "Allow"
   }
 }

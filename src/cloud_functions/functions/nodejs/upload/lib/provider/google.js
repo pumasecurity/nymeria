@@ -123,7 +123,7 @@ const initializeAzureIdentity = (azureAdAppId, azureTenantId) => {
   azureIdentity = new ClientAssertionCredential(
     azureTenantId,
     azureAdAppId,
-    async () => await getGoogleIdentityToken(allowedJwtAudience)
+    async () => await getGoogleIdentityToken(`${allowedJwtAudience}-google`)
   )
 }
 
