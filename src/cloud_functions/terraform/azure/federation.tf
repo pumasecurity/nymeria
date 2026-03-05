@@ -1,3 +1,15 @@
+resource "azuread_application" "azure" {
+  display_name    = "upload-to-big3-storage-azure"
+  identifier_uris = [var.allowed_jwt_audience]
+
+  web {
+    implicit_grant {
+      access_token_issuance_enabled = true
+      id_token_issuance_enabled     = true
+    }
+  }
+}
+
 # Upload Files From AWS
 
 resource "azuread_application" "aws" {

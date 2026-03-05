@@ -1,6 +1,6 @@
 const axios = require('axios')
 const { ManagedIdentityCredential } = require('@azure/identity')
-const { BlobServiceClient, AnonymousCredential } = require('@azure/storage-blob')
+const { BlobServiceClient } = require('@azure/storage-blob')
 const AWS = require('aws-sdk')
 const aws = require('./aws')
 const google = require('./google')

@@ -30,7 +30,7 @@ Make sure you have deployed the infrastructure and are still in a terminal sessi
 cd ./terraform
 export AWS_FUNCTION_URL=$(terraform output --json | jq -r '.aws_function_url.value')
 export API_KEY=$(terraform output --json | jq -r '.api_key.value')
-curl -H "X-API-Key: $API_KEY" "$AWS_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "from_aws", "content": "test"}'
+curl -H "X-API-Key: $API_KEY" "$AWS_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "'$(uuidgen | cut -b 25-36 | awk '{print tolower($0)}')'", "content": "test"}'
 ```
 
 #### Upload Files From Azure
@@ -39,7 +39,7 @@ curl -H "X-API-Key: $API_KEY" "$AWS_FUNCTION_URL" -H "Content-Type: application/
 cd ./terraform
 export AZURE_FUNCTION_URL="https://$(terraform output --json | jq -r '.azure_function_host.value')/api/upload"
 export API_KEY=$(terraform output --json | jq -r '.api_key.value')
-curl -H "X-API-Key: $API_KEY" "$AZURE_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "from_azure", "content": "test"}'
+curl -H "X-API-Key: $API_KEY" "$AZURE_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "'$(uuidgen | cut -b 25-36 | awk '{print tolower($0)}')'", "content": "test"}'
 ```
 
 #### Upload Files From Google Cloud
@@ -48,7 +48,7 @@ curl -H "X-API-Key: $API_KEY" "$AZURE_FUNCTION_URL" -H "Content-Type: applicatio
 cd ./terraform
 export GOOGLE_FUNCTION_URL=$(terraform output --json | jq -r '.google_function_url.value')
 export API_KEY=$(terraform output --json | jq -r '.api_key.value')
-curl -H "X-API-Key: $API_KEY" "$GOOGLE_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "from_google", "content": "test"}'
+curl -H "X-API-Key: $API_KEY" "$GOOGLE_FUNCTION_URL" -H "Content-Type: application/json" -d '{"filename": "'$(uuidgen | cut -b 25-36 | awk '{print tolower($0)}')'", "content": "test"}'
 ```
 
 ### Verify Successful Uploads
